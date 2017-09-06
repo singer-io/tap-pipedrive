@@ -19,7 +19,7 @@ class Tap(object):
             logger.info('Starting to process stream: {}'.format(stream.endpoint))
 
             # schema
-            singer.write_schema(stream.endpoint, stream.schema, key_properties=stream.key_properties)
+            singer.write_schema(stream.endpoint, stream.get_schema(), key_properties=stream.key_properties)
 
             # records
             response = self.execute_request(stream)
