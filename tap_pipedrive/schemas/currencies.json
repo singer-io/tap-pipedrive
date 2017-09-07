@@ -1,41 +1,26 @@
 {
   "type": "object",
   "properties": {
+    "active_flag": {
+      "type": "boolean"
+    },
     "code": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": "string"
     },
     "name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "decimal_points": {
-      "type": [
-        "null",
-        "integer"
-      ]
+      "type": "string"
     },
     "symbol": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "active_flag": {
-      "type": [
-        "null",
-        "boolean"
-      ]
+      "type": "string"
     },
     "is_custom_flag": {
-      "type": [
-        "null",
-        "boolean"
-      ]
+      "type": "boolean"
+    },
+    "decimal_points": {
+      "type": "number"
+    },
+    "id": {
+      "type": "integer"
     }
   }
 }

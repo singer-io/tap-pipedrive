@@ -1,299 +1,23 @@
 {
   "type": "object",
   "properties": {
-    "id": {
-      "type": [
-        "null",
-        "integer"
-      ]
+    "org_name": {
+      "type": "string"
     },
-    "creator_user_id": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "name": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "email": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "has_pic": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "pic_hash": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "active_flag": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "value": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        }
-      }
+    "expected_close_date": {
+      "type": "string"
     },
-    "user_id": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "name": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "email": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "has_pic": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "pic_hash": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "active_flag": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "value": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        }
-      }
+    "person_hidden": {
+      "type": "boolean"
     },
-    "person_id": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "email": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "properties": {
-              "value": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "primary": {
-                "type": [
-                  "null",
-                  "boolean"
-                ]
-              }
-            }
-          }
-        },
-        "phone": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "properties": {
-              "value": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "primary": {
-                "type": [
-                  "null",
-                  "boolean"
-                ]
-              }
-            }
-          }
-        },
-        "value": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        }
-      }
+    "formatted_weighted_value": {
+      "type": "string"
     },
-    "org_id": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "people_count": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "owner_id": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "address": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "cc_email": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "value": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        }
-      }
+    "org_hidden": {
+      "type": "boolean"
     },
-    "stage_id": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "title": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "value": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "currency": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "add_time": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "update_time": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "stage_change_time": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "active": {
-      "type": [
-        "null",
-        "boolean"
-      ]
-    },
-    "deleted": {
-      "type": [
-        "null",
-        "boolean"
-      ]
-    },
-    "status": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "next_activity_date": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "next_activity_time": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "next_activity_id": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "last_activity_id": {
-      "type": [
-        "null",
-        "integer"
-      ]
+    "undone_activities_count": {
+      "type": "integer"
     },
     "last_activity_date": {
       "type": "null"
@@ -301,185 +25,288 @@
     "lost_reason": {
       "type": "null"
     },
-    "visible_to": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "currency": {
+      "type": "string"
+    },
+    "next_activity_type": {
+      "type": "string"
+    },
+    "stage_change_time": {
+      "type": "string"
+    },
+    "notes_count": {
+      "type": "integer"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "files_count": {
+      "type": "integer"
     },
     "close_time": {
       "type": "null"
     },
-    "pipeline_id": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "won_time": {
-      "type": "null"
-    },
-    "first_won_time": {
-      "type": "null"
-    },
-    "lost_time": {
-      "type": "null"
-    },
-    "products_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "files_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "notes_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "followers_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "email_messages_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "activities_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "done_activities_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "undone_activities_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "reference_activities_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "participants_count": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "expected_close_date": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "user_id": {
+      "required": [
+        "active_flag",
+        "email",
+        "has_pic",
+        "id",
+        "name",
+        "pic_hash",
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "active_flag": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "has_pic": {
+          "type": "boolean"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "pic_hash": {
+          "type": "null"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
     },
     "last_incoming_mail_time": {
       "type": "null"
     },
-    "last_outgoing_mail_time": {
-      "type": "null"
+    "org_id": {
+      "required": [
+        "address",
+        "cc_email",
+        "name",
+        "owner_id",
+        "people_count",
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "cc_email": {
+          "type": "string"
+        },
+        "people_count": {
+          "type": "integer"
+        },
+        "address": {
+          "type": "null"
+        },
+        "owner_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "title": {
+      "type": "string"
+    },
+    "email_messages_count": {
+      "type": "integer"
     },
     "stage_order_nr": {
-      "type": [
-        "null",
-        "integer"
-      ]
-    },
-    "person_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "org_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "next_activity_subject": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "next_activity_type": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": "integer"
     },
     "next_activity_duration": {
       "type": "null"
     },
-    "next_activity_note": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "followers_count": {
+      "type": "integer"
+    },
+    "cc_email": {
+      "type": "string"
+    },
+    "next_activity_id": {
+      "type": "integer"
+    },
+    "person_id": {
+      "required": [
+        "email",
+        "name",
+        "phone",
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "phone": {
+          "items": {
+            "required": [
+              "primary",
+              "value"
+            ],
+            "type": "object",
+            "properties": {
+              "primary": {
+                "type": "boolean"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "email": {
+          "items": {
+            "required": [
+              "primary",
+              "value"
+            ],
+            "type": "object",
+            "properties": {
+              "primary": {
+                "type": "boolean"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          "type": "array"
+        }
+      }
+    },
+    "next_activity_time": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "update_time": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "person_name": {
+      "type": "string"
+    },
+    "next_activity_subject": {
+      "type": "string"
+    },
+    "next_activity_date": {
+      "type": "string"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "visible_to": {
+      "type": "string"
+    },
+    "activities_count": {
+      "type": "integer"
     },
     "formatted_value": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": "string"
+    },
+    "participants_count": {
+      "type": "integer"
+    },
+    "won_time": {
+      "type": "null"
+    },
+    "products_count": {
+      "type": "integer"
+    },
+    "creator_user_id": {
+      "required": [
+        "active_flag",
+        "email",
+        "has_pic",
+        "id",
+        "name",
+        "pic_hash",
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "active_flag": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "has_pic": {
+          "type": "boolean"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "pic_hash": {
+          "type": "null"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "add_time": {
+      "type": "string"
+    },
+    "stage_id": {
+      "type": "integer"
     },
     "rotten_time": {
       "type": "null"
     },
+    "done_activities_count": {
+      "type": "integer"
+    },
+    "last_outgoing_mail_time": {
+      "type": "null"
+    },
+    "reference_activities_count": {
+      "type": "integer"
+    },
+    "last_activity_id": {
+      "type": "null"
+    },
+    "value": {
+      "type": "integer"
+    },
+    "pipeline_id": {
+      "type": "integer"
+    },
+    "first_won_time": {
+      "type": "null"
+    },
     "weighted_value": {
-      "type": [
-        "null",
-        "integer"
-      ]
+      "type": "integer"
     },
-    "formatted_weighted_value": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "next_activity_note": {
+      "type": "string"
     },
-    "owner_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "cc_email": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "org_hidden": {
-      "type": [
-        "null",
-        "boolean"
-      ]
-    },
-    "person_hidden": {
-      "type": [
-        "null",
-        "boolean"
-      ]
+    "lost_time": {
+      "type": "null"
     }
   }
 }
