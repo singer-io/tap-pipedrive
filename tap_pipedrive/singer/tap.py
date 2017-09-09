@@ -23,11 +23,12 @@ class Tap(object):
 
             # paginate
             while stream.has_data():
-                # records
+
                 response = self.execute_request(stream)
                 stream.paginate(response)
                 self.validate_response(response)
 
+                # records
                 for row in self.iterate_response(response):
                     singer.write_record(stream.endpoint, row)
 
