@@ -1,6 +1,6 @@
-from tap_pipedrive.singer.stream import Stream
+from tap_pipedrive.stream import PipedriveStream
 
 
-class DealsStream(Stream):
+class DealsStream(PipedriveStream):
     endpoint = 'deals'
     key_properties = ['id', ]

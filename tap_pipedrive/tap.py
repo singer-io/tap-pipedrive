@@ -27,11 +27,14 @@ class PipedriveTap(Tap):
             'User-Agent': self.config['user-agent']
         }
         params = {
-            'api_token': self.config['api_token']
+            'api_token': self.config['api_token'],
+            'start': stream.start,
+            'limit': stream.limit
         }
-
         url = "{}/{}".format(BASE_URL, stream.endpoint)
-        logger.info('Firing request at {}'.format(url))
+        logger.info('Firing request at {} with start {} and limit {}'.format(url,
+                                                                             stream.start,
+                                                                             stream.limit))
         return requests.get(url, headers=headers, params=params)
 
     def validate_response(self, response):

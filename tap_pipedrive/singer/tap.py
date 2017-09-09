@@ -21,12 +21,15 @@ class Tap(object):
             # schema
             singer.write_schema(stream.endpoint, stream.get_schema(), key_properties=stream.key_properties)
 
-            # records
-            response = self.execute_request(stream)
-            self.validate_response(response)
+            # paginate
+            while stream.has_data():
+                # records
+                response = self.execute_request(stream)
+                stream.paginate(response)
+                self.validate_response(response)
 
-            for row in self.iterate_response(response):
-                singer.write_record(stream.endpoint, row)
+                for row in self.iterate_response(response):
+                    singer.write_record(stream.endpoint, row)
 
     def iterate_response(self, response):
         raise NotImplementedError("Implement this method")

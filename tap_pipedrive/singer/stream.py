@@ -11,3 +11,9 @@ class Stream(object):
                                    'schemas/{}.json'.format(self.endpoint))
         schema = utils.load_json(schema_path)
         return schema
+
+    def has_data(self):
+        raise NotImplementedError("Implement this method")
+
+    def paginate(self, response):
+        raise NotImplementedError("Implement this method")
