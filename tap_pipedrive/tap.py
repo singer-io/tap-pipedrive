@@ -1,7 +1,7 @@
 import requests
 import singer
 from .singer.tap import Tap
-from .streams import CurrenciesStream, DealsStream
+from .streams import CurrenciesStream, DealsStream, NotesStream
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 
@@ -12,7 +12,8 @@ logger = singer.get_logger()
 class PipedriveTap(Tap):
     streams = [
         CurrenciesStream(),
-        DealsStream()
+        DealsStream(),
+        NotesStream()
     ]
 
     def get_default_config(self):
