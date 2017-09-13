@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "order_nr": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "key_string": {
+      "type": "string"
+    },
+    "icon_key": {
+      "type": "string"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "color": {
+      "type": "null"
+    },
+    "is_custom_flag": {
+      "type": "boolean"
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "update_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    }
+  }
+}
