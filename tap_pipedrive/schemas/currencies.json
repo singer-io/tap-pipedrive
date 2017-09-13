@@ -17,7 +17,7 @@
       "type": "boolean"
     },
     "decimal_points": {
-      "type": "number"
+      "type": "integer"
     },
     "id": {
       "type": "integer"
