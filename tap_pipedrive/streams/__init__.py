@@ -5,7 +5,8 @@ from .activity_types import ActivityTypesStream
 from .filters import FiltersStream
 from .stages import StagesStream
 from .pipelines import PipelinesStream
+from .goals import GoalsStream
 
 
 __all__ = ['CurrenciesStream', 'DealsStream', 'NotesStream', 'ActivityTypesStream', 'FiltersStream',
-           'StagesStream', "PipelinesStream"]
+           'StagesStream', 'PipelinesStream', '"GoalsStream']
