@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url_title": {
+      "type": "string"
+    },
+    "order_nr": {
+      "type": "integer"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "update_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "selected": {
+      "type": "boolean"
+    }
+  }
+}
