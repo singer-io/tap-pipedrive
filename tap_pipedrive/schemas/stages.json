@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "order_nr": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "deal_probability": {
+      "type": "integer"
+    },
+    "pipeline_id": {
+      "type": "integer"
+    },
+    "rotten_flag": {
+      "type": "boolean"
+    },
+    "rotten_days": {
+      "type": ["null", "integer"]
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "update_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "pipeline_name": {
+      "type": "string"
+    }
+  }
+}
