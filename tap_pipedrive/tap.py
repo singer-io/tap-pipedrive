@@ -1,3 +1,4 @@
+import time
 import requests
 import singer
 from .singer.tap import Tap
@@ -56,3 +57,14 @@ class PipedriveTap(Tap):
                 pass
 
         raise InvalidResponseException("Response from Pipedrive API is not valid, wonder why ..")
+
+    def rate_throttling(self, response):
+        if all(x in response.headers for x in ['X-RateLimit-Remaining', 'X-RateLimit-Reset']):
+            logger.info(int(response.headers['X-RateLimit-Remaining']))
+            if int(response.headers['X-RateLimit-Remaining']) < 1:
+                seconds_to_sleep = int(response.headers['X-RateLimit-Reset'])
+                logger.info('Hit API rate limits, no remaining requests per 10 seconds, will sleep '
+                            'for {} seconds now.'.format(seconds_to_sleep))
+                time.sleep(seconds_to_sleep)
+        else:
+            logger.info('Required headers for rate throttling are not present in response header, unable to throttle ..')

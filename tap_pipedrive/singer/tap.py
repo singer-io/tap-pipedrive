@@ -25,6 +25,7 @@ class Tap(object):
             while stream.has_data():
 
                 response = self.execute_request(stream)
+                self.rate_throttling(response)
                 stream.paginate(response)
                 self.validate_response(response)
 
@@ -43,3 +44,9 @@ class Tap(object):
 
     def get_default_config(self):
         return {}
+
+    def rate_throttling(self, response):
+        """
+        Rate throttling intended to implement on API level
+        """
+        return
