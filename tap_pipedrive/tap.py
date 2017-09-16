@@ -3,7 +3,7 @@ import requests
 import singer
 from .singer.tap import Tap
 from .streams import (CurrenciesStream, DealsStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
-                      PipelinesStream, GoalsStream)
+                      PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream)
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 
@@ -20,7 +20,10 @@ class PipedriveTap(Tap):
         FiltersStream(),
         StagesStream(),
         PipelinesStream(),
-        GoalsStream()
+        GoalsStream(),
+        RecentNotesStream(),
+        RecentUsersStream(),
+        RecentStagesStream()
     ]
 
     def get_default_config(self):
@@ -43,6 +46,7 @@ class PipedriveTap(Tap):
         logger.info('Firing request at {} with start {} and limit {}'.format(url,
                                                                              stream.start,
                                                                              stream.limit))
+        params = stream.update_request_params(params)
         return requests.get(url, headers=headers, params=params)
 
     def validate_response(self, response):

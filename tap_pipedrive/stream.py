@@ -33,3 +33,9 @@ class PipedriveStream(Stream):
             logger.info('Stream {} has more data starting at {}'.format(self.endpoint, self.start))
         else:
             logger.info('Stream {} has no more data'.format(self.endpoint))
+
+    def update_request_params(self, params):
+        """
+        Non recent stream doesn't modify request params
+        """
+        return params
