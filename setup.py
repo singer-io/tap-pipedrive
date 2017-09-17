@@ -5,7 +5,7 @@ from tap_pipedrive import __version__
 setup(
     name="tap-pipedrive",
     version=__version__,
-    license="MIT",
+    license="AGPL",
     description="Singer.io tap for extracting data from the Pipedrive API",
     author="Stitch",
     author_email="eduard.kracmar@hotovo.org",
