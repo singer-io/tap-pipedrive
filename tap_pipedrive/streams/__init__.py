@@ -1,5 +1,4 @@
 from .currencies import CurrenciesStream
-from .deals import DealsStream
 from .notes import NotesStream
 from .activity_types import ActivityTypesStream
 from .filters import FiltersStream
@@ -17,8 +16,8 @@ from .recents.persons import RecentPersonsStream
 from .recents.products import RecentProductsStream
 
 
-__all__ = ['CurrenciesStream', 'DealsStream', 'NotesStream', 'ActivityTypesStream', 'FiltersStream',
-           'StagesStream', 'PipelinesStream', '"GoalsStream',
+__all__ = ['CurrenciesStream', 'NotesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream',
+           'PipelinesStream', '"GoalsStream',
            'RecentNotesStream', 'RecentUsersStream', 'RecentStagesStream', 'RecentActivitiesStream',
            'RecentDealsStream', 'RecentFilesStream', 'RecentOrganizationsStream', 'RecentPersonsStream',
            'RecentProductsStream']

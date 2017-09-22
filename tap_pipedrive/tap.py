@@ -2,7 +2,7 @@ import time
 import requests
 import singer
 from .singer.tap import Tap
-from .streams import (CurrenciesStream, DealsStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
+from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
                       PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream,
                       RecentActivitiesStream, RecentDealsStream, RecentFilesStream, RecentOrganizationsStream,
                       RecentPersonsStream, RecentProductsStream)
@@ -16,7 +16,6 @@ logger = singer.get_logger()
 class PipedriveTap(Tap):
     streams = [
         CurrenciesStream(),
-        DealsStream(),
         NotesStream(),
         ActivityTypesStream(),
         FiltersStream(),
