@@ -71,7 +71,6 @@ class PipedriveTap(Tap):
 
     def rate_throttling(self, response):
         if all(x in response.headers for x in ['X-RateLimit-Remaining', 'X-RateLimit-Reset']):
-            logger.info(int(response.headers['X-RateLimit-Remaining']))
             if int(response.headers['X-RateLimit-Remaining']) < 1:
                 seconds_to_sleep = int(response.headers['X-RateLimit-Reset'])
                 logger.info('Hit API rate limits, no remaining requests per 10 seconds, will sleep '

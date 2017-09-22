@@ -18,7 +18,7 @@ class PipedriveStream(Stream):
         payload = response.json()
 
         if 'additional_data' in payload and 'pagination' in payload['additional_data']:
-            logger.info('Paginate: valid response')
+            logger.debug('Paginate: valid response')
             pagination = payload['additional_data']['pagination']
             if 'more_items_in_collection' in pagination:
                 self.more_items_in_collection = pagination['more_items_in_collection']
