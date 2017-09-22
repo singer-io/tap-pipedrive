@@ -25,13 +25,16 @@ class Tap(object):
             while stream.has_data():
 
                 response = self.execute_request(stream)
+                stream.metrics_http_request_timer(response)
                 self.rate_throttling(response)
                 stream.paginate(response)
                 self.validate_response(response)
 
-                # records
-                for row in self.iterate_response(response):
-                    stream.write_record(row)
+                # records with metrics
+                with singer.metrics.record_counter(stream.get_name()) as counter:
+                    for row in self.iterate_response(response):
+                        stream.write_record(row)
+                        counter.increment()
 
     def iterate_response(self, response):
         raise NotImplementedError("Implement this method")

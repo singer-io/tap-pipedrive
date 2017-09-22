@@ -39,3 +39,7 @@ class PipedriveStream(Stream):
         Non recent stream doesn't modify request params
         """
         return params
+
+    def metrics_http_request_timer(self, response):
+        with singer.metrics.http_request_timer(self.get_name()) as timer:
+            timer.tags[singer.metrics.Tag.http_status_code] = response.status_code

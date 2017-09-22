@@ -26,3 +26,6 @@ class Stream(object):
 
     def get_name(self):
         return self.endpoint
+
+    def metrics_http_request_timer(self, response):
+        pass

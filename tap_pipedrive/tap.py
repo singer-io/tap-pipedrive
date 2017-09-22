@@ -79,3 +79,4 @@ class PipedriveTap(Tap):
                 time.sleep(seconds_to_sleep)
         else:
             logger.info('Required headers for rate throttling are not present in response header, unable to throttle ..')
+
