@@ -31,7 +31,10 @@
             "type": "string"
           },
           "phone": {
-            "type": "string"
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "activated": {
             "type": "boolean"

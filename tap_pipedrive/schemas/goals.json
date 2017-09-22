@@ -47,7 +47,7 @@
       "type": "integer"
     },
     "pipeline_id": {
-      "type": ["null", "integer"]
+      "type": "null"
     },
     "master_expected": {
       "type": "integer"
@@ -56,7 +56,7 @@
       "type": "integer"
     },
     "delivered_sum": {
-      "type": "integer"
+      "type": "number"
     },
     "period_start": {
       "type": "string"
