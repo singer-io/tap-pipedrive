@@ -16,10 +16,10 @@ class Tap(object):
         logger.info('Starting sync')
 
         for stream in self.streams:
-            logger.info('Starting to process stream: {}'.format(stream.endpoint))
+            logger.info('Starting to process stream: {}'.format(stream.get_name()))
 
             # schema
-            singer.write_schema(stream.endpoint, stream.get_schema(), key_properties=stream.key_properties)
+            stream.write_schema()
 
             # paginate
             while stream.has_data():
@@ -31,7 +31,7 @@ class Tap(object):
 
                 # records
                 for row in self.iterate_response(response):
-                    singer.write_record(stream.endpoint, row)
+                    stream.write_record(row)
 
     def iterate_response(self, response):
         raise NotImplementedError("Implement this method")
