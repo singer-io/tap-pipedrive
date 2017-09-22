@@ -9,8 +9,16 @@ from .goals import GoalsStream
 from .recents.notes import RecentNotesStream
 from .recents.users import RecentUsersStream
 from .recents.stages import RecentStagesStream
+from .recents.activities import RecentActivitiesStream
+from .recents.deals import RecentDealsStream
+from .recents.files import RecentFilesStream
+from .recents.organizations import RecentOrganizationsStream
+from .recents.persons import RecentPersonsStream
+from .recents.products import RecentProductsStream
 
 
 __all__ = ['CurrenciesStream', 'DealsStream', 'NotesStream', 'ActivityTypesStream', 'FiltersStream',
            'StagesStream', 'PipelinesStream', '"GoalsStream',
-           'RecentNotesStream', 'RecentUsersStream', "RecentStagesStream"]
+           'RecentNotesStream', 'RecentUsersStream', 'RecentStagesStream', 'RecentActivitiesStream',
+           'RecentDealsStream', 'RecentFilesStream', 'RecentOrganizationsStream', 'RecentPersonsStream',
+           'RecentProductsStream']

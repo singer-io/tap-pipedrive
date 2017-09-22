@@ -1,0 +1,138 @@
+{
+  "type": "object",
+  "properties": {
+    "item": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "deal_id": {
+          "type": "integer"
+        },
+        "person_id": {
+          "type": "integer"
+        },
+        "org_id": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "null"
+        },
+        "email_message_id": {
+          "type": "null"
+        },
+        "activity_id": {
+          "type": "null"
+        },
+        "note_id": {
+          "type": "null"
+        },
+        "log_id": {
+          "type": "null"
+        },
+        "add_time": {
+          "type": "string"
+        },
+        "update_time": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "file_type": {
+          "type": "string"
+        },
+        "file_size": {
+          "type": "integer"
+        },
+        "active_flag": {
+          "type": "boolean"
+        },
+        "inline_flag": {
+          "type": "boolean"
+        },
+        "remote_location": {
+          "type": "string"
+        },
+        "remote_id": {
+          "type": "string"
+        },
+        "cid": {
+          "type": "null"
+        },
+        "s3_bucket": {
+          "type": "null"
+        },
+        "mail_message_id": {
+          "type": "null"
+        },
+        "deal_name": {
+          "type": "string"
+        },
+        "person_name": {
+          "type": "string"
+        },
+        "people_name": {
+          "type": "string"
+        },
+        "org_name": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "null"
+        },
+        "url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "active_flag",
+        "activity_id",
+        "add_time",
+        "cid",
+        "deal_id",
+        "deal_name",
+        "description",
+        "email_message_id",
+        "file_name",
+        "file_size",
+        "file_type",
+        "id",
+        "inline_flag",
+        "log_id",
+        "mail_message_id",
+        "name",
+        "note_id",
+        "org_id",
+        "org_name",
+        "people_name",
+        "person_id",
+        "person_name",
+        "product_id",
+        "product_name",
+        "remote_id",
+        "remote_location",
+        "s3_bucket",
+        "update_time",
+        "url",
+        "user_id"
+      ]
+    }
+  }
+}

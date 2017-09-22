@@ -1,0 +1,241 @@
+{
+  "type": "object",
+  "properties": {
+    "item": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "company_id": {
+          "type": "integer"
+        },
+        "owner_id": {
+          "type": "integer"
+        },
+        "org_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "open_deals_count": {
+          "type": "integer"
+        },
+        "related_open_deals_count": {
+          "type": "integer"
+        },
+        "closed_deals_count": {
+          "type": "integer"
+        },
+        "related_closed_deals_count": {
+          "type": "integer"
+        },
+        "participant_open_deals_count": {
+          "type": "integer"
+        },
+        "participant_closed_deals_count": {
+          "type": "integer"
+        },
+        "email_messages_count": {
+          "type": "integer"
+        },
+        "activities_count": {
+          "type": "integer"
+        },
+        "done_activities_count": {
+          "type": "integer"
+        },
+        "undone_activities_count": {
+          "type": "integer"
+        },
+        "reference_activities_count": {
+          "type": "integer"
+        },
+        "files_count": {
+          "type": "integer"
+        },
+        "notes_count": {
+          "type": "integer"
+        },
+        "followers_count": {
+          "type": "integer"
+        },
+        "won_deals_count": {
+          "type": "integer"
+        },
+        "related_won_deals_count": {
+          "type": "integer"
+        },
+        "lost_deals_count": {
+          "type": "integer"
+        },
+        "related_lost_deals_count": {
+          "type": "integer"
+        },
+        "active_flag": {
+          "type": "boolean"
+        },
+        "phone": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "primary": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "primary",
+              "value"
+            ]
+          }
+        },
+        "email": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "primary": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "primary",
+              "value"
+            ]
+          }
+        },
+        "first_char": {
+          "type": "string"
+        },
+        "update_time": {
+          "type": "string"
+        },
+        "add_time": {
+          "type": "string"
+        },
+        "visible_to": {
+          "type": "string"
+        },
+        "picture_id": {
+          "type": "null"
+        },
+        "next_activity_date": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "next_activity_time": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "next_activity_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "last_activity_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "last_activity_date": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "last_incoming_mail_time": {
+          "type": "null"
+        },
+        "last_outgoing_mail_time": {
+          "type": "null"
+        },
+        "org_name": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "cc_email": {
+          "type": "string"
+        },
+        "owner_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "active_flag",
+        "activities_count",
+        "add_time",
+        "cc_email",
+        "closed_deals_count",
+        "company_id",
+        "done_activities_count",
+        "email",
+        "email_messages_count",
+        "files_count",
+        "first_char",
+        "first_name",
+        "followers_count",
+        "id",
+        "last_activity_date",
+        "last_activity_id",
+        "last_incoming_mail_time",
+        "last_name",
+        "last_outgoing_mail_time",
+        "lost_deals_count",
+        "name",
+        "next_activity_date",
+        "next_activity_id",
+        "next_activity_time",
+        "notes_count",
+        "open_deals_count",
+        "org_id",
+        "org_name",
+        "owner_id",
+        "owner_name",
+        "participant_closed_deals_count",
+        "participant_open_deals_count",
+        "phone",
+        "picture_id",
+        "reference_activities_count",
+        "related_closed_deals_count",
+        "related_lost_deals_count",
+        "related_open_deals_count",
+        "related_won_deals_count",
+        "undone_activities_count",
+        "update_time",
+        "visible_to",
+        "won_deals_count"
+      ]
+    }
+  }
+}
