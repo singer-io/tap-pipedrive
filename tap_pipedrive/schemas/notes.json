@@ -8,8 +8,9 @@
       "type": "null"
     }, 
     "update_time": {
-      "type": "string"
-    }, 
+      "type": "string",
+      "format": "date-time"
+    },
     "user_id": {
       "type": "integer"
     }, 
@@ -94,7 +95,8 @@
       "type": "integer"
     }, 
     "add_time": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     }
   }
 }

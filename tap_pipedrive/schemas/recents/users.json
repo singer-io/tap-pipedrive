@@ -40,13 +40,16 @@
             "type": "boolean"
           },
           "last_login": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           },
           "created": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           },
           "modified": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           },
           "signup_flow_variation": {
             "type": "string"

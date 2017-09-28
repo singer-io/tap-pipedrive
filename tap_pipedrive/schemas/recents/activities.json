@@ -41,10 +41,12 @@
           "type": "string"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "marked_as_done_time": {
-          "type": "string"
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "subject": {
           "type": "string"
@@ -62,7 +64,8 @@
           "type": "boolean"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "gcal_event_id": {
           "type": "null"

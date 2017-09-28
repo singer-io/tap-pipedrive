@@ -47,10 +47,12 @@
           "type": "integer"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "prices": {
           "type": "object",

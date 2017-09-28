@@ -35,10 +35,12 @@
           "type": "null"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "pipeline_name": {
           "type": "string"

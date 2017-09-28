@@ -29,7 +29,8 @@
       "type": "boolean"
     },
     "add_time": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "goal_type": {
       "type": "string"

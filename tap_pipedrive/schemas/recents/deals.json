@@ -38,16 +38,16 @@
           "type": "string"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "stage_change_time": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "active": {
           "type": "boolean"
@@ -98,31 +98,23 @@
           "type": "string"
         },
         "close_time": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "pipeline_id": {
           "type": "integer"
         },
         "won_time": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "first_won_time": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "lost_time": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["string", "null"],
+          "format": "date-time"
         },
         "products_count": {
           "type": "integer"

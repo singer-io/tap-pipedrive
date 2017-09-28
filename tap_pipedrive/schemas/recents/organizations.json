@@ -89,10 +89,12 @@
           "type": "string"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "visible_to": {
           "type": "string"

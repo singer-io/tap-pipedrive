@@ -29,10 +29,12 @@
           "type": "string"
         },
         "add_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "update_time": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "active_flag": {
           "type": "boolean"
