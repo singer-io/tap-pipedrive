@@ -51,8 +51,8 @@ class PipedriveTap(Tap):
         }
         url = "{}/{}".format(BASE_URL, stream.endpoint)
         logger.debug('Firing request at {} with start {} and limit {}'.format(url,
-                                                                             stream.start,
-                                                                             stream.limit))
+                                                                              stream.start,
+                                                                              stream.limit))
         params = stream.update_request_params(params)
         logger.debug('Params: {}'.format(params))
 
@@ -77,8 +77,9 @@ class PipedriveTap(Tap):
             if int(response.headers['X-RateLimit-Remaining']) < 1:
                 seconds_to_sleep = int(response.headers['X-RateLimit-Reset'])
                 logger.debug('Hit API rate limits, no remaining requests per 10 seconds, will sleep '
-                            'for {} seconds now.'.format(seconds_to_sleep))
+                             'for {} seconds now.'.format(seconds_to_sleep))
                 time.sleep(seconds_to_sleep)
         else:
-            logger.debug('Required headers for rate throttling are not present in response header, unable to throttle ..')
+            logger.debug('Required headers for rate throttling are not present in response header, '
+                         'unable to throttle ..')
 
