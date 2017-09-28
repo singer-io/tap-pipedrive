@@ -31,7 +31,13 @@ class RecentsStream(PipedriveStream):
         singer.write_schema(self.schema, self.get_schema(), key_properties=self.key_properties)
 
     def write_record(self, row):
-        singer.write_record(self.schema, row)
+        if self.record_is_newer_equal_null(row):
+            singer.write_record(self.schema, row)
+            return True
+        return False
 
     def get_name(self):
-        return "recents [item={}]".format(self.items)
+        return self.schema
+
+    def get_row_state(self, row):
+        return row['data'][self.state_field]

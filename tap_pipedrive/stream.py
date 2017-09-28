@@ -68,12 +68,15 @@ class PipedriveStream(Stream):
             return True
 
         # state field is null
-        if row[self.state_field] is None:
+        if self.get_row_state(row) is None:
             return True
 
         # newer or equal
-        current_state = pendulum.parse(row[self.state_field])
+        current_state = pendulum.parse(self.get_row_state(row))
         if current_state >= self.state:
             return True
 
         return False
+
+    def get_row_state(self, row):
+        return row[self.state_field]

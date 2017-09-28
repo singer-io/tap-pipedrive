@@ -38,7 +38,7 @@ class PipedriveTap(Tap):
 
     def iterate_response(self, response):
         payload = response.json()
-        return payload['data']
+        return [] if payload['data'] is None else payload['data']
 
     def execute_request(self, stream):
         headers = {
