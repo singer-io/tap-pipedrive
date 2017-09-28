@@ -67,7 +67,8 @@ class PipedriveTap(Tap):
             except Exception as e:
                 pass
 
-        raise InvalidResponseException("Response from Pipedrive API is not valid, wonder why ..")
+        raise InvalidResponseException("Response with status code {} from Pipedrive API is not valid, "
+                                       "wonder why ..".format(response.status_code))
 
     def rate_throttling(self, response):
         if all(x in response.headers for x in ['X-RateLimit-Remaining', 'X-RateLimit-Reset']):
