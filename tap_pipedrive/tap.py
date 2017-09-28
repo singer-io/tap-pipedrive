@@ -60,7 +60,7 @@ class PipedriveTap(Tap):
         if isinstance(response, requests.Response) and response.status_code == 200:
             try:
                 payload = response.json()
-                if payload['success'] and payload['data']:
+                if payload['success'] and 'data' in payload:
                     return True
 
             # TODO narrow down
