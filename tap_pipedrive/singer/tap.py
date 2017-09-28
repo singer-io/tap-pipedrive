@@ -31,9 +31,9 @@ class Tap(object):
 
                 response = self.execute_request(stream)
                 stream.metrics_http_request_timer(response)
+                self.validate_response(response)
                 self.rate_throttling(response)
                 stream.paginate(response)
-                self.validate_response(response)
 
                 # records with metrics
                 with singer.metrics.record_counter(stream.get_name()) as counter:
