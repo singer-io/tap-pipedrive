@@ -31,9 +31,9 @@ class PipedriveStream(Stream):
             self.more_items_in_collection = False
 
         if self.more_items_in_collection:
-            logger.info('Stream {} has more data starting at {}'.format(self.endpoint, self.start))
+            logger.debug('Stream {} has more data starting at {}'.format(self.endpoint, self.start))
         else:
-            logger.info('Stream {} has no more data'.format(self.endpoint))
+            logger.debug('Stream {} has no more data'.format(self.endpoint))
 
     def update_request_params(self, params):
         """

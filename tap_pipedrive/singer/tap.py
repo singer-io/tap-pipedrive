@@ -15,10 +15,10 @@ class Tap(object):
         self.state = state
 
     def do_sync(self):
-        logger.info('Starting sync')
+        logger.debug('Starting sync')
 
         for stream in self.streams:
-            logger.info('Starting to process stream: {}'.format(stream.get_name()))
+            logger.debug('Starting to process stream: {}'.format(stream.get_name()))
 
             # stream state, from state/bookmark or start_date
             stream.set_initial_state(self.state, self.config['start_date'])
