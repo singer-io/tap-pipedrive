@@ -1,4 +1,5 @@
 import singer
+import pendulum
 from tap_pipedrive.singer.stream import Stream
 
 
@@ -43,3 +44,36 @@ class PipedriveStream(Stream):
     def metrics_http_request_timer(self, response):
         with singer.metrics.http_request_timer(self.get_name()) as timer:
             timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
+    def state_is_newer_or_equal(self, current_state):
+        if self.state is None:
+            self.state = current_state
+            return True
+
+        if current_state >= self.state:
+            self.state = current_state
+            return True
+
+        return False
+
+    def write_record(self, row):
+        if self.record_is_newer_equal_null(row):
+            singer.write_record(self.endpoint, row)
+            return True
+        return False
+
+    def record_is_newer_equal_null(self, row):
+        # no bookmarking in stream or state is null
+        if not self.state_field or self.state is None:
+            return True
+
+        # state field is null
+        if row[self.state_field] is None:
+            return True
+
+        # newer or equal
+        current_state = pendulum.parse(row[self.state_field])
+        if current_state >= self.state:
+            return True
+
+        return False

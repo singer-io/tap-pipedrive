@@ -8,7 +8,7 @@ logger = singer.get_logger()
 
 
 def main():
-    args = singer.utils.parse_args(['api_token'])
+    args = singer.utils.parse_args(['api_token', 'start_date'])
 
     if args.properties:
         logger.error('Tap does not support --properties')
