@@ -5,7 +5,7 @@ from .singer.tap import Tap
 from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
                       PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream,
                       RecentActivitiesStream, RecentDealsStream, RecentFilesStream, RecentOrganizationsStream,
-                      RecentPersonsStream, RecentProductsStream)
+                      RecentPersonsStream, RecentProductsStream, RecentDeleteLogsStream)
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 
@@ -29,7 +29,8 @@ class PipedriveTap(Tap):
         RecentFilesStream(),
         RecentOrganizationsStream(),
         RecentPersonsStream(),
-        RecentProductsStream()
+        RecentProductsStream(),
+        RecentDeleteLogsStream()
         # RecentStagesStream(),
     ]
 
