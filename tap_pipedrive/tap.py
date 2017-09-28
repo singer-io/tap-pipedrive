@@ -16,7 +16,6 @@ logger = singer.get_logger()
 class PipedriveTap(Tap):
     streams = [
         CurrenciesStream(),
-        NotesStream(),
         ActivityTypesStream(),
         FiltersStream(),
         StagesStream(),
@@ -32,6 +31,7 @@ class PipedriveTap(Tap):
         RecentProductsStream(),
         RecentDeleteLogsStream()
         # RecentStagesStream(),
+        # NotesStream(),
     ]
 
     def get_default_config(self):
