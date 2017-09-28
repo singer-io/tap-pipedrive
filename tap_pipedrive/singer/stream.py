@@ -38,9 +38,6 @@ class Stream(object):
 
     def update_state(self, row):
         if self.state_field:
-            if self.state_field not in row:
-                raise Exception('Invalid state field "{}" was not found within row {}'.format(self.state_field, row))
-
             # nullable update_time breaks bookmarking
             if self.get_row_state(row) is not None:
                 current_state = pendulum.parse(self.get_row_state(row))
