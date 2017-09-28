@@ -5,3 +5,4 @@ class RecentActivitiesStream(RecentsStream):
     items = 'activity'
     schema = 'activities'
     key_properties = ['id', ]
+    state_field = 'update_time'

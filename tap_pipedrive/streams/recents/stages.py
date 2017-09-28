@@ -5,3 +5,4 @@ class RecentStagesStream(RecentsStream):
     items = 'stage'
     schema = 'stages'
     key_properties = ['id', ]
+    state_field = 'update_time'
