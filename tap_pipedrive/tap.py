@@ -24,13 +24,13 @@ class PipedriveTap(Tap):
         GoalsStream(),
         RecentNotesStream(),
         RecentUsersStream(),
-        # RecentStagesStream(),
         RecentActivitiesStream(),
         RecentDealsStream(),
         RecentFilesStream(),
         RecentOrganizationsStream(),
         RecentPersonsStream(),
         RecentProductsStream()
+        # RecentStagesStream(),
     ]
 
     def get_default_config(self):
