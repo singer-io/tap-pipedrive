@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+from requests.exceptions import ConnectionError, RequestException
 import singer
 import pendulum
 from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
@@ -111,8 +112,7 @@ class PipedriveTap(object):
                 if payload['success'] and 'data' in payload:
                     return True
 
-            # TODO narrow down
-            except Exception as e:
+            except (ConnectionError, RequestException) as e:
                 pass
 
         raise InvalidResponseException("Response with status code {} from Pipedrive API is not valid, "
