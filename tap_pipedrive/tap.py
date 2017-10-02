@@ -1,7 +1,8 @@
+import os
 import time
 import requests
 import singer
-from .singer.tap import Tap
+import pendulum
 from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
                       PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream,
                       RecentActivitiesStream, RecentDealsStream, RecentFilesStream, RecentOrganizationsStream,
@@ -13,7 +14,7 @@ from .exceptions import InvalidResponseException
 logger = singer.get_logger()
 
 
-class PipedriveTap(Tap):
+class PipedriveTap(object):
     streams = [
         CurrenciesStream(),
         ActivityTypesStream(),
@@ -33,6 +34,47 @@ class PipedriveTap(Tap):
         # RecentStagesStream(),
         # NotesStream(),
     ]
+
+    def __init__(self, config, state):
+        self.config = self.get_default_config()
+        self.config.update(config)
+        self.config['start_date'] = pendulum.parse(self.config['start_date'])
+        self.state = state
+
+    def do_sync(self):
+        logger.debug('Starting sync')
+
+        for stream in self.streams:
+            logger.debug('Starting to process stream: {}'.format(stream.schema))
+
+            # stream state, from state/bookmark or start_date
+            stream.set_initial_state(self.state, self.config['start_date'])
+
+            # schema
+            stream.write_schema()
+
+            # paginate
+            while stream.has_data():
+
+                response = self.execute_request(stream)
+                stream.metrics_http_request_timer(response)
+                self.validate_response(response)
+                self.rate_throttling(response)
+                stream.paginate(response)
+
+                # records with metrics
+                with singer.metrics.record_counter(stream.schema) as counter:
+                    with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
+                        for row in self.iterate_response(response):
+                            row = optimus_prime.transform(row, stream.get_schema())
+                            if stream.write_record(row):
+                                counter.increment()
+                            stream.update_state(row)
+
+            # update state / bookmarking only when supported by stream
+            if stream.state_field:
+                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field, str(stream.state))
+            singer.write_state(self.state)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS

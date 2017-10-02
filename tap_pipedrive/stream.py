@@ -1,16 +1,56 @@
+import os
 import singer
 import pendulum
-from tap_pipedrive.singer.stream import Stream
 
 
 logger = singer.get_logger()
 
 
-class PipedriveStream(Stream):
+class PipedriveStream(object):
+    endpoint = ''
+    key_properties = []
+    state_field = None
+    state = None
+    schema = ''
+    schema_path = 'schemas/{}.json'
+
     start = 0
     limit = 100
     next_start = 100
     more_items_in_collection = True
+
+    def get_schema(self):
+        schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                   self.schema_path.format(self.schema))
+        schema = singer.utils.load_json(schema_path)
+        return schema
+
+    def write_schema(self):
+        singer.write_schema(self.schema, self.get_schema(), key_properties=self.key_properties)
+
+    def get_name(self):
+        return self.endpoint
+
+    def update_state(self, row):
+        if self.state_field:
+            # nullable update_time breaks bookmarking
+            if self.get_row_state(row) is not None:
+                current_state = pendulum.parse(self.get_row_state(row))
+
+                if self.state_is_newer_or_equal(current_state):
+                    self.state = current_state
+
+    def set_initial_state(self, state, start_date):
+        try:
+            dt = state['bookmarks'][self.schema][self.state_field]
+            if dt is not None:
+                self.state = pendulum.parse(dt)
+                return
+
+        except (TypeError, KeyError) as e:
+            pass
+
+        self.state = start_date
 
     def has_data(self):
         return self.more_items_in_collection
@@ -31,9 +71,9 @@ class PipedriveStream(Stream):
             self.more_items_in_collection = False
 
         if self.more_items_in_collection:
-            logger.debug('Stream {} has more data starting at {}'.format(self.endpoint, self.start))
+            logger.debug('Stream {} has more data starting at {}'.format(self.schema, self.start))
         else:
-            logger.debug('Stream {} has no more data'.format(self.endpoint))
+            logger.debug('Stream {} has no more data'.format(self.schema))
 
     def update_request_params(self, params):
         """
@@ -42,7 +82,7 @@ class PipedriveStream(Stream):
         return params
 
     def metrics_http_request_timer(self, response):
-        with singer.metrics.http_request_timer(self.get_name()) as timer:
+        with singer.metrics.http_request_timer(self.schema) as timer:
             timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
 
     def state_is_newer_or_equal(self, current_state):
@@ -58,7 +98,7 @@ class PipedriveStream(Stream):
 
     def write_record(self, row):
         if self.record_is_newer_equal_null(row):
-            singer.write_record(self.endpoint, row)
+            singer.write_record(self.schema, row)
             return True
         return False
 
