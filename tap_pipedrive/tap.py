@@ -1,4 +1,3 @@
-import os
 import time
 import requests
 from requests.exceptions import ConnectionError, RequestException
