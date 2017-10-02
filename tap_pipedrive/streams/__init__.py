@@ -14,7 +14,7 @@ from .recents.files import RecentFilesStream
 from .recents.organizations import RecentOrganizationsStream
 from .recents.persons import RecentPersonsStream
 from .recents.products import RecentProductsStream
-from .recents.delete_logs import RecentDeleteLogsStream
+from .recents.delete_log import RecentDeleteLogsStream
 
 
 __all__ = ['CurrenciesStream', 'NotesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream',
