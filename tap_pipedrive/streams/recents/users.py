@@ -7,3 +7,6 @@ class RecentUsersStream(RecentsStream):
     key_properties = ['id', ]
     # disabled bookmarking till settled it's data / array
     # state_field = 'modified'
+
+    def process_row(self, row):
+        return row['data'][0]

@@ -66,6 +66,7 @@ class PipedriveTap(object):
                 with singer.metrics.record_counter(stream.schema) as counter:
                     with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
                         for row in self.iterate_response(response):
+                            row = stream.process_row(row)
                             row = optimus_prime.transform(row, stream.get_schema())
                             if stream.write_record(row):
                                 counter.increment()

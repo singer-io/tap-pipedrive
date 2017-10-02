@@ -1,223 +1,212 @@
 {
   "type": "object",
   "properties": {
-    "item": {
-      "type": "string"
-    },
     "id": {
       "type": "integer"
     },
-    "data": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "company_id": {
-          "type": "integer"
-        },
-        "owner_id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "open_deals_count": {
-          "type": "integer"
-        },
-        "related_open_deals_count": {
-          "type": "integer"
-        },
-        "closed_deals_count": {
-          "type": "integer"
-        },
-        "related_closed_deals_count": {
-          "type": "integer"
-        },
-        "email_messages_count": {
-          "type": "integer"
-        },
-        "people_count": {
-          "type": "integer"
-        },
-        "activities_count": {
-          "type": "integer"
-        },
-        "done_activities_count": {
-          "type": "integer"
-        },
-        "undone_activities_count": {
-          "type": "integer"
-        },
-        "reference_activities_count": {
-          "type": "integer"
-        },
-        "files_count": {
-          "type": "integer"
-        },
-        "notes_count": {
-          "type": "integer"
-        },
-        "followers_count": {
-          "type": "integer"
-        },
-        "won_deals_count": {
-          "type": "integer"
-        },
-        "related_won_deals_count": {
-          "type": "integer"
-        },
-        "lost_deals_count": {
-          "type": "integer"
-        },
-        "related_lost_deals_count": {
-          "type": "integer"
-        },
-        "active_flag": {
-          "type": "boolean"
-        },
-        "category_id": {
-          "type": "null"
-        },
-        "picture_id": {
-          "type": "null"
-        },
-        "country_code": {
-          "type": "null"
-        },
-        "first_char": {
-          "type": "string"
-        },
-        "update_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "add_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "visible_to": {
-          "type": "string"
-        },
-        "next_activity_date": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "next_activity_time": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "next_activity_id": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "last_activity_id": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "last_activity_date": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "address": {
-          "type": "null"
-        },
-        "address_subpremise": {
-          "type": "null"
-        },
-        "address_street_number": {
-          "type": "null"
-        },
-        "address_route": {
-          "type": "null"
-        },
-        "address_sublocality": {
-          "type": "null"
-        },
-        "address_locality": {
-          "type": "null"
-        },
-        "address_admin_area_level_1": {
-          "type": "null"
-        },
-        "address_admin_area_level_2": {
-          "type": "null"
-        },
-        "address_country": {
-          "type": "null"
-        },
-        "address_postal_code": {
-          "type": "null"
-        },
-        "address_formatted_address": {
-          "type": "null"
-        },
-        "cc_email": {
-          "type": "string"
-        },
-        "owner_name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "active_flag",
-        "activities_count",
-        "add_time",
-        "address",
-        "address_admin_area_level_1",
-        "address_admin_area_level_2",
-        "address_country",
-        "address_formatted_address",
-        "address_locality",
-        "address_postal_code",
-        "address_route",
-        "address_street_number",
-        "address_sublocality",
-        "address_subpremise",
-        "category_id",
-        "cc_email",
-        "closed_deals_count",
-        "company_id",
-        "country_code",
-        "done_activities_count",
-        "email_messages_count",
-        "files_count",
-        "first_char",
-        "followers_count",
-        "id",
-        "last_activity_date",
-        "last_activity_id",
-        "lost_deals_count",
-        "name",
-        "next_activity_date",
-        "next_activity_id",
-        "next_activity_time",
-        "notes_count",
-        "open_deals_count",
-        "owner_id",
-        "owner_name",
-        "people_count",
-        "picture_id",
-        "reference_activities_count",
-        "related_closed_deals_count",
-        "related_lost_deals_count",
-        "related_open_deals_count",
-        "related_won_deals_count",
-        "undone_activities_count",
-        "update_time",
-        "visible_to",
-        "won_deals_count"
+    "company_id": {
+      "type": "integer"
+    },
+    "owner_id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "open_deals_count": {
+      "type": "integer"
+    },
+    "related_open_deals_count": {
+      "type": "integer"
+    },
+    "closed_deals_count": {
+      "type": "integer"
+    },
+    "related_closed_deals_count": {
+      "type": "integer"
+    },
+    "email_messages_count": {
+      "type": "integer"
+    },
+    "people_count": {
+      "type": "integer"
+    },
+    "activities_count": {
+      "type": "integer"
+    },
+    "done_activities_count": {
+      "type": "integer"
+    },
+    "undone_activities_count": {
+      "type": "integer"
+    },
+    "reference_activities_count": {
+      "type": "integer"
+    },
+    "files_count": {
+      "type": "integer"
+    },
+    "notes_count": {
+      "type": "integer"
+    },
+    "followers_count": {
+      "type": "integer"
+    },
+    "won_deals_count": {
+      "type": "integer"
+    },
+    "related_won_deals_count": {
+      "type": "integer"
+    },
+    "lost_deals_count": {
+      "type": "integer"
+    },
+    "related_lost_deals_count": {
+      "type": "integer"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "category_id": {
+      "type": "null"
+    },
+    "picture_id": {
+      "type": "null"
+    },
+    "country_code": {
+      "type": "null"
+    },
+    "first_char": {
+      "type": "string"
+    },
+    "update_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "visible_to": {
+      "type": "string"
+    },
+    "next_activity_date": {
+      "type": [
+        "null",
+        "string"
       ]
+    },
+    "next_activity_time": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "next_activity_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_activity_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_activity_date": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "address": {
+      "type": "null"
+    },
+    "address_subpremise": {
+      "type": "null"
+    },
+    "address_street_number": {
+      "type": "null"
+    },
+    "address_route": {
+      "type": "null"
+    },
+    "address_sublocality": {
+      "type": "null"
+    },
+    "address_locality": {
+      "type": "null"
+    },
+    "address_admin_area_level_1": {
+      "type": "null"
+    },
+    "address_admin_area_level_2": {
+      "type": "null"
+    },
+    "address_country": {
+      "type": "null"
+    },
+    "address_postal_code": {
+      "type": "null"
+    },
+    "address_formatted_address": {
+      "type": "null"
+    },
+    "cc_email": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
     }
-  }
+  },
+  "required": [
+    "active_flag",
+    "activities_count",
+    "add_time",
+    "address",
+    "address_admin_area_level_1",
+    "address_admin_area_level_2",
+    "address_country",
+    "address_formatted_address",
+    "address_locality",
+    "address_postal_code",
+    "address_route",
+    "address_street_number",
+    "address_sublocality",
+    "address_subpremise",
+    "category_id",
+    "cc_email",
+    "closed_deals_count",
+    "company_id",
+    "country_code",
+    "done_activities_count",
+    "email_messages_count",
+    "files_count",
+    "first_char",
+    "followers_count",
+    "id",
+    "last_activity_date",
+    "last_activity_id",
+    "lost_deals_count",
+    "name",
+    "next_activity_date",
+    "next_activity_id",
+    "next_activity_time",
+    "notes_count",
+    "open_deals_count",
+    "owner_id",
+    "owner_name",
+    "people_count",
+    "picture_id",
+    "reference_activities_count",
+    "related_closed_deals_count",
+    "related_lost_deals_count",
+    "related_open_deals_count",
+    "related_won_deals_count",
+    "undone_activities_count",
+    "update_time",
+    "visible_to",
+    "won_deals_count"
+  ]
 }

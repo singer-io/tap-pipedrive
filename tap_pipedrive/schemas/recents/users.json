@@ -1,107 +1,93 @@
 {
   "type": "object",
   "properties": {
-    "item": {
-      "type": "string"
-    },
     "id": {
       "type": "integer"
     },
-    "data": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "default_currency": {
-            "type": "string"
-          },
-          "locale": {
-            "type": "string"
-          },
-          "lang": {
-            "type": "integer"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phone": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "activated": {
-            "type": "boolean"
-          },
-          "last_login": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modified": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "signup_flow_variation": {
-            "type": "string"
-          },
-          "has_created_company": {
-            "type": "boolean"
-          },
-          "is_admin": {
-            "type": "integer"
-          },
-          "timezone_name": {
-            "type": "string"
-          },
-          "timezone_offset": {
-            "type": "string"
-          },
-          "active_flag": {
-            "type": "boolean"
-          },
-          "role_id": {
-            "type": "integer"
-          },
-          "icon_url": {
-            "type": "null"
-          },
-          "is_you": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "activated",
-          "active_flag",
-          "created",
-          "default_currency",
-          "email",
-          "has_created_company",
-          "icon_url",
-          "id",
-          "is_admin",
-          "is_you",
-          "lang",
-          "last_login",
-          "locale",
-          "modified",
-          "name",
-          "phone",
-          "role_id",
-          "signup_flow_variation",
-          "timezone_name",
-          "timezone_offset"
-        ]
-      }
+    "name": {
+      "type": "string"
+    },
+    "default_currency": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "integer"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "activated": {
+      "type": "boolean"
+    },
+    "last_login": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signup_flow_variation": {
+      "type": "string"
+    },
+    "has_created_company": {
+      "type": "boolean"
+    },
+    "is_admin": {
+      "type": "integer"
+    },
+    "timezone_name": {
+      "type": "string"
+    },
+    "timezone_offset": {
+      "type": "string"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "role_id": {
+      "type": "integer"
+    },
+    "icon_url": {
+      "type": "null"
+    },
+    "is_you": {
+      "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "activated",
+    "active_flag",
+    "created",
+    "default_currency",
+    "email",
+    "has_created_company",
+    "icon_url",
+    "id",
+    "is_admin",
+    "is_you",
+    "lang",
+    "last_login",
+    "locale",
+    "modified",
+    "name",
+    "phone",
+    "role_id",
+    "signup_flow_variation",
+    "timezone_name",
+    "timezone_offset"
+  ]
 }

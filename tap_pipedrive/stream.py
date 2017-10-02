@@ -120,3 +120,6 @@ class PipedriveStream(object):
 
     def get_row_state(self, row):
         return row[self.state_field]
+
+    def process_row(self, row):
+        return row
