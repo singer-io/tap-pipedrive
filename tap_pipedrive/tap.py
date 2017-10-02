@@ -56,8 +56,10 @@ class PipedriveTap(object):
             # paginate
             while stream.has_data():
 
-                response = self.execute_request(stream)
-                stream.metrics_http_request_timer(response)
+                with singer.metrics.http_request_timer(stream.schema) as timer:
+                    response = self.execute_request(stream)
+                    timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
                 self.validate_response(response)
                 self.rate_throttling(response)
                 stream.paginate(response)

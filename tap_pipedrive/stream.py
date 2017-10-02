@@ -81,10 +81,6 @@ class PipedriveStream(object):
         """
         return params
 
-    def metrics_http_request_timer(self, response):
-        with singer.metrics.http_request_timer(self.schema) as timer:
-            timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
-
     def state_is_newer_or_equal(self, current_state):
         if self.state is None:
             self.state = current_state
