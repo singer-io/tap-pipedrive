@@ -8,7 +8,7 @@ setup(
     license="AGPL",
     description="Singer.io tap for extracting data from the Pipedrive API",
     author="Stitch",
-    author_email="eduard.kracmar@hotovo.org",
+    author_email="dev@stitchdata.com",
     url="https://singer.io",
     py_modules=['tap_pipedrive'],
     packages=find_packages(),
