@@ -10,7 +10,8 @@ class PipedriveStream(object):
     endpoint = ''
     key_properties = []
     state_field = None
-    state = None
+    initial_state = None
+    earliest_state = None
     schema = ''
     schema_path = 'schemas/{}.json'
 
@@ -38,19 +39,21 @@ class PipedriveStream(object):
                 current_state = pendulum.parse(self.get_row_state(row))
 
                 if self.state_is_newer_or_equal(current_state):
-                    self.state = current_state
+                    self.earliest_state = current_state
 
     def set_initial_state(self, state, start_date):
         try:
             dt = state['bookmarks'][self.schema][self.state_field]
             if dt is not None:
-                self.state = pendulum.parse(dt)
+                self.initial_state = pendulum.parse(dt)
+                self.earliest_state = self.initial_state
                 return
 
         except (TypeError, KeyError) as e:
             pass
 
-        self.state = start_date
+        self.initial_state = start_date
+        self.earliest_state = self.initial_state
 
     def has_data(self):
         return self.more_items_in_collection
@@ -82,12 +85,12 @@ class PipedriveStream(object):
         return params
 
     def state_is_newer_or_equal(self, current_state):
-        if self.state is None:
-            self.state = current_state
+        if self.earliest_state is None:
+            # self.state = current_state
             return True
 
-        if current_state >= self.state:
-            self.state = current_state
+        if current_state >= self.earliest_state:
+            self.earliest_state = current_state
             return True
 
         return False
@@ -100,7 +103,7 @@ class PipedriveStream(object):
 
     def record_is_newer_equal_null(self, row):
         # no bookmarking in stream or state is null
-        if not self.state_field or self.state is None:
+        if not self.state_field or self.initial_state is None:
             return True
 
         # state field is null
@@ -109,7 +112,7 @@ class PipedriveStream(object):
 
         # newer or equal
         current_state = pendulum.parse(self.get_row_state(row))
-        if current_state >= self.state:
+        if current_state >= self.initial_state:
             return True
 
         return False

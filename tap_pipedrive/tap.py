@@ -76,7 +76,8 @@ class PipedriveTap(object):
 
             # update state / bookmarking only when supported by stream
             if stream.state_field:
-                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field, str(stream.state))
+                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
+                                                   str(stream.earliest_state))
             singer.write_state(self.state)
 
     def get_default_config(self):
