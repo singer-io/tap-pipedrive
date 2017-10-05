@@ -17,7 +17,7 @@ class RecentsStream(PipedriveStream):
         Filter recents enpoint data with items and since_timestamp
         """
         params.update({
-            'since_timestamp': self.state.to_datetime_string(),
+            'since_timestamp': self.initial_state.subtract(seconds=1).to_datetime_string(),
             'items': self.items
         })
         return params
