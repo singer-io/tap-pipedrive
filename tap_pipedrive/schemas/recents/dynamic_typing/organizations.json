@@ -120,6 +120,12 @@
         "string"
       ]
     },
+    "timeline_last_activity_time": {
+      "type": "null"
+    },
+    "timeline_last_activity_time_by_owner": {
+      "type": "null"
+    },
     "address": {
       "type": "null"
     },
@@ -204,6 +210,8 @@
     "related_lost_deals_count",
     "related_open_deals_count",
     "related_won_deals_count",
+    "timeline_last_activity_time",
+    "timeline_last_activity_time_by_owner",
     "undone_activities_count",
     "update_time",
     "visible_to",
