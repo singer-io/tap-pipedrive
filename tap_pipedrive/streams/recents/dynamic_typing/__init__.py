@@ -55,10 +55,7 @@ class DynamicTypingRecentsStream(RecentsStream):
 
                         schema['properties'][property['key']] = property_content
 
-                        # print(payload)
-
             except Exception as e:
-                # print(e)
                 logger.error(e)
                 exit(1)
 
