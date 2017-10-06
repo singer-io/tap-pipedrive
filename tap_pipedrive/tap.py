@@ -3,6 +3,7 @@ import pendulum
 import requests
 import singer
 from requests.exceptions import ConnectionError, RequestException
+from json import JSONDecodeError
 from singer import set_currently_syncing
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
@@ -131,8 +132,7 @@ class PipedriveTap(object):
                 payload = response.json()
                 if payload['success'] and 'data' in payload:
                     return True
-
-            except (ConnectionError, RequestException) as e:
+            except (AttributeError, JSONDecodeError) as e:
                 pass
 
         raise InvalidResponseException("Response with status code {} from Pipedrive API is not valid, "
