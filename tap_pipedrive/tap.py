@@ -108,23 +108,28 @@ class PipedriveTap(object):
         payload = response.json()
         return [] if payload['data'] is None else payload['data']
 
-    def execute_request(self, stream):
-        headers = {
-            'User-Agent': self.config['user-agent']
-        }
+    def execute_stream_request(self, stream):
         params = {
-            'api_token': self.config['api_token'],
             'start': stream.start,
             'limit': stream.limit
         }
-        url = "{}/{}".format(BASE_URL, stream.endpoint)
-        logger.debug('Firing request at {} with start {} and limit {}'.format(url,
-                                                                              stream.start,
-                                                                              stream.limit))
         params = stream.update_request_params(params)
-        logger.debug('Params: {}'.format(params))
+        return self.execute_request(stream.endpoint, params=params)
 
-        return requests.get(url, headers=headers, params=params)
+    def execute_request(self, endpoint, params=None):
+        headers = {
+            'User-Agent': self.config['user-agent']
+        }
+        _params = {
+            'api_token': self.config['api_token'],
+        }
+        if params:
+            _params.update(params)
+
+        url = "{}/{}".format(BASE_URL, endpoint)
+        logger.debug('Firing request at {} with params: {}'.format(url, _params))
+
+        return requests.get(url, headers=headers, params=_params)
 
     def validate_response(self, response):
         if isinstance(response, requests.Response) and response.status_code == 200:
