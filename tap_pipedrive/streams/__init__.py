@@ -4,18 +4,20 @@ from .filters import FiltersStream
 from .stages import StagesStream
 from .pipelines import PipelinesStream
 from .goals import GoalsStream
-from .recents.notes import RecentNotesStream
 from .recents.users import RecentUsersStream
-from .recents.activities import RecentActivitiesStream
-from .recents.deals import RecentDealsStream
 from .recents.files import RecentFilesStream
-from .recents.organizations import RecentOrganizationsStream
-from .recents.persons import RecentPersonsStream
-from .recents.products import RecentProductsStream
 from .recents.delete_log import RecentDeleteLogsStream
+from .recents.dynamic_typing.notes import RecentNotesStream
+from .recents.dynamic_typing.activities import RecentActivitiesStream
+from .recents.dynamic_typing.deals import RecentDealsStream
+from .recents.dynamic_typing.organizations import RecentOrganizationsStream
+from .recents.dynamic_typing.persons import RecentPersonsStream
+from .recents.dynamic_typing.products import RecentProductsStream
 
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
-           'GoalsStream', 'RecentNotesStream', 'RecentUsersStream', 'RecentActivitiesStream', 'RecentDealsStream',
-           'RecentFilesStream', 'RecentOrganizationsStream', 'RecentPersonsStream', 'RecentProductsStream',
-           'RecentDeleteLogsStream']
+           'GoalsStream',
+           'RecentUsersStream', 'RecentFilesStream', 'RecentDeleteLogsStream'
+           'RecentNotesStream', 'RecentActivitiesStream', 'RecentDealsStream', 'RecentOrganizationsStream',
+           'RecentPersonsStream', 'RecentProductsStream',
+           ]

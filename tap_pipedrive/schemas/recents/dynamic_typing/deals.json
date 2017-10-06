@@ -164,54 +164,6 @@
     "last_outgoing_mail_time": {
       "type": "null"
     },
-    "6c6ad03c59918d636b9b0a2a0b263a89213bf4a4": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "6b6086386165f20cfeb5975312ee06a740a644f3": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "3c57855879a6c4557d6651a1b41dcaa014a23693": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "3c57855879a6c4557d6651a1b41dcaa014a23693_timezone_id": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "644ba3b62f24fb14b9b22b02422945f9d4763eb8": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197_until": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197_timezone_id": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
     "stage_order_nr": {
       "type": "integer"
     },
@@ -271,14 +223,6 @@
     }
   },
   "required": [
-    "3c57855879a6c4557d6651a1b41dcaa014a23693",
-    "3c57855879a6c4557d6651a1b41dcaa014a23693_timezone_id",
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197",
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197_timezone_id",
-    "4daf9a594f9d12ab246cb8b98a72c0a6bebd7197_until",
-    "644ba3b62f24fb14b9b22b02422945f9d4763eb8",
-    "6b6086386165f20cfeb5975312ee06a740a644f3",
-    "6c6ad03c59918d636b9b0a2a0b263a89213bf4a4",
     "active",
     "activities_count",
     "add_time",
