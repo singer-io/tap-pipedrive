@@ -50,6 +50,8 @@ class PipedriveTap(object):
             resume_from_stream = self.state['currently_syncing']
 
         for stream in self.streams:
+            stream.tap = self
+
             if resume_from_stream:
                 if stream.schema == resume_from_stream:
                     logger.info('Resuming from {}'.format(resume_from_stream))

@@ -7,6 +7,7 @@ logger = singer.get_logger()
 
 
 class PipedriveStream(object):
+    tap = None
     endpoint = ''
     key_properties = []
     state_field = None
@@ -14,6 +15,7 @@ class PipedriveStream(object):
     earliest_state = None
     schema = ''
     schema_path = 'schemas/{}.json'
+    schema_cache = None
 
     start = 0
     limit = 100
@@ -21,6 +23,11 @@ class PipedriveStream(object):
     more_items_in_collection = True
 
     def get_schema(self):
+        if not self.schema_cache:
+            self.schema_cache = self.load_schema()
+        return self.schema_cache
+
+    def load_schema(self):
         schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                    self.schema_path.format(self.schema))
         schema = singer.utils.load_json(schema_path)
