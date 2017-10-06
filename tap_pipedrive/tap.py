@@ -3,6 +3,7 @@ import requests
 from requests.exceptions import ConnectionError, RequestException
 import singer
 import pendulum
+from singer import set_currently_syncing
 from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
                       PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream,
                       RecentActivitiesStream, RecentDealsStream, RecentFilesStream, RecentOrganizationsStream,
@@ -44,11 +45,28 @@ class PipedriveTap(object):
     def do_sync(self):
         logger.debug('Starting sync')
 
+        # resuming when currently_syncing within state
+        resume_from_stream = False
+        if self.state and 'currently_syncing' in self.state:
+            resume_from_stream = self.state['currently_syncing']
+
         for stream in self.streams:
-            logger.debug('Starting to process stream: {}'.format(stream.schema))
+            if resume_from_stream:
+                if stream.schema == resume_from_stream:
+                    logger.info('Resuming from {}'.format(resume_from_stream))
+                    resume_from_stream = False
+                else:
+                    logger.info('Skipping stream {} as resuming from {}'.format(stream.schema, resume_from_stream))
+                    continue
 
             # stream state, from state/bookmark or start_date
             stream.set_initial_state(self.state, self.config['start_date'])
+
+            # currently syncing
+            if stream.state_field:
+                set_currently_syncing(self.state, stream.schema)
+                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field, str(stream.initial_state))
+                singer.write_state(self.state)
 
             # schema
             stream.write_schema()
@@ -79,6 +97,10 @@ class PipedriveTap(object):
                 self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
                                                    str(stream.earliest_state))
             singer.write_state(self.state)
+
+        # clear currently_syncing
+        del self.state['currently_syncing']
+        singer.write_state(self.state)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS
