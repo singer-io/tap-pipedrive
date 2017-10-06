@@ -1,4 +1,3 @@
-import os
 import singer
 from tap_pipedrive.stream import PipedriveStream
 
