@@ -1,8 +1,0 @@
-from tap_pipedrive.streams.recents import RecentsStream
-
-
-class RecentStagesStream(RecentsStream):
-    items = 'stage'
-    schema = 'stages'
-    key_properties = ['id', ]
-    state_field = 'update_time'

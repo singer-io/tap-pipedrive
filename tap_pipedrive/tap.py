@@ -1,15 +1,15 @@
 import time
-import requests
-from requests.exceptions import ConnectionError, RequestException
-import singer
 import pendulum
+import requests
+import singer
+from requests.exceptions import ConnectionError, RequestException
 from singer import set_currently_syncing
-from .streams import (CurrenciesStream, NotesStream, ActivityTypesStream, FiltersStream, StagesStream,
-                      PipelinesStream, GoalsStream, RecentNotesStream, RecentUsersStream, RecentStagesStream,
-                      RecentActivitiesStream, RecentDealsStream, RecentFilesStream, RecentOrganizationsStream,
-                      RecentPersonsStream, RecentProductsStream, RecentDeleteLogsStream)
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
+from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
+                      GoalsStream, RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
+                      RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
+                      RecentDeleteLogsStream)
 
 
 logger = singer.get_logger()
@@ -32,8 +32,6 @@ class PipedriveTap(object):
         RecentPersonsStream(),
         RecentProductsStream(),
         RecentDeleteLogsStream()
-        # RecentStagesStream(),
-        # NotesStream(),
     ]
 
     def __init__(self, config, state):
