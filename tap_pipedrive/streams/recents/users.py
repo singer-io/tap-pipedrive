@@ -5,7 +5,8 @@ class RecentUsersStream(RecentsStream):
     items = 'user'
     schema = 'users'
     key_properties = ['id', ]
-    state_field = 'modified'
+    # temporary disabled due current Pipedrive API limitations
+    # state_field = 'modified'
 
     def process_row(self, row):
         return row['data'][0]
