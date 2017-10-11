@@ -11,10 +11,7 @@
       "type": "integer"
     },
     "stage_id": {
-      "type": [
-        "integer",
-        "null"
-      ]
+      "type": ["integer", "null"]
     },
     "active_goal_id": {
       "type": "integer"
