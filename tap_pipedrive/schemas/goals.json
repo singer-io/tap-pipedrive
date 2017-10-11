@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "company_id": {
+      "type": "integer"
+    },
+    "user_id": {
+      "type": "integer"
+    },
+    "stage_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "active_goal_id": {
+      "type": "integer"
+    },
+    "period": {
+      "type": "string"
+    },
+    "expected": {
+      "type": "integer"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "goal_type": {
+      "type": "string"
+    },
+    "expected_sum": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "expected_type": {
+      "type": "string"
+    },
+    "created_by_user_id": {
+      "type": "integer"
+    },
+    "pipeline_id": {
+      "type": "null"
+    },
+    "master_expected": {
+      "type": "integer"
+    },
+    "delivered": {
+      "type": "integer"
+    },
+    "delivered_sum": {
+      "type": "number"
+    },
+    "period_start": {
+      "type": "string"
+    },
+    "period_end": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    }
+  }
+}

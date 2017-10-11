@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "null"
+    },
+    "tax": {
+      "type": "integer"
+    },
+    "active_flag": {
+      "type": "boolean"
+    },
+    "selectable": {
+      "type": "boolean"
+    },
+    "first_char": {
+      "type": "string"
+    },
+    "visible_to": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "integer"
+    },
+    "files_count": {
+      "type": "null"
+    },
+    "followers_count": {
+      "type": "integer"
+    },
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "update_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "prices": {
+      "type": "object",
+      "properties": {
+        "USD": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "product_id": {
+              "type": "integer"
+            },
+            "price": {
+              "type": "integer"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "cost": {
+              "type": "number"
+            },
+            "overhead_cost": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "cost",
+            "currency",
+            "id",
+            "overhead_cost",
+            "price",
+            "product_id"
+          ]
+        }
+      },
+      "required": [
+        "USD"
+      ]
+    },
+    "owner_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "active_flag",
+    "add_time",
+    "code",
+    "files_count",
+    "first_char",
+    "followers_count",
+    "id",
+    "name",
+    "owner_id",
+    "owner_name",
+    "prices",
+    "selectable",
+    "tax",
+    "unit",
+    "update_time",
+    "visible_to"
+  ]
+}

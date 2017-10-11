@@ -1,0 +1,102 @@
+{
+  "type": "object", 
+  "properties": {
+    "active_flag": {
+      "type": "boolean"
+    }, 
+    "last_update_user_id": {
+      "type": "null"
+    }, 
+    "update_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "user_id": {
+      "type": "integer"
+    }, 
+    "deal_id": {
+      "type": "integer"
+    }, 
+    "pinned_to_organization_flag": {
+      "type": "boolean"
+    }, 
+    "user": {
+      "required": [
+        "email", 
+        "icon_url", 
+        "is_you", 
+        "name"
+      ], 
+      "type": "object", 
+      "properties": {
+        "icon_url": {
+          "type": "null"
+        }, 
+        "is_you": {
+          "type": "boolean"
+        }, 
+        "email": {
+          "type": "string"
+        }, 
+        "name": {
+          "type": "string"
+        }
+      }
+    }, 
+    "org_id": {
+      "type": "integer"
+    }, 
+    "deal": {
+      "required": [
+        "title"
+      ], 
+      "type": "object", 
+      "properties": {
+        "title": {
+          "type": "string"
+        }
+      }
+    }, 
+    "content": {
+      "type": "string"
+    }, 
+    "person": {
+      "required": [
+        "name"
+      ], 
+      "type": "object", 
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }, 
+    "pinned_to_person_flag": {
+      "type": "boolean"
+    }, 
+    "pinned_to_deal_flag": {
+      "type": "boolean"
+    }, 
+    "person_id": {
+      "type": "integer"
+    }, 
+    "organization": {
+      "required": [
+        "name"
+      ], 
+      "type": "object", 
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }, 
+    "id": {
+      "type": "integer"
+    }, 
+    "add_time": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
