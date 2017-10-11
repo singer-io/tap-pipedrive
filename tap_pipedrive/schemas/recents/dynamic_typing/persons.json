@@ -92,6 +92,9 @@
           },
           "primary": {
             "type": "boolean"
+          },
+          "label": {
+            "type": "string"
           }
         },
         "required": [
@@ -110,6 +113,9 @@
           },
           "primary": {
             "type": "boolean"
+          },
+          "label": {
+            "type": "string"
           }
         },
         "required": [
