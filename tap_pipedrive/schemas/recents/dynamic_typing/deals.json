@@ -52,6 +52,9 @@
     "status": {
       "type": "string"
     },
+    "probability": {
+      "type": "null"
+    },
     "next_activity_date": {
       "type": [
         "null",
