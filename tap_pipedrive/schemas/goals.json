@@ -33,7 +33,7 @@
       "type": "string"
     },
     "expected_sum": {
-      "type": "integer"
+      "type": "number"
     },
     "currency": {
       "type": "string"
