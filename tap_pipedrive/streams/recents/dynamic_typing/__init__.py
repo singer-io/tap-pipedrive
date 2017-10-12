@@ -18,8 +18,7 @@ class DynamicTypingRecentsStream(RecentsStream):
             try:
                 fields_response = self.tap.execute_request(endpoint=self.fields_endpoint)
             except (ConnectionError, RequestException) as e:
-                logger.error(e)
-                exit(1)
+                raise e
 
             try:
                 assert fields_response.status_code == 200, 'Invalid response from API, ' \
@@ -56,8 +55,7 @@ class DynamicTypingRecentsStream(RecentsStream):
                         schema['properties'][property['key']] = property_content
 
             except Exception as e:
-                logger.error(e)
-                exit(1)
+                raise e
 
             self.schema_cache = schema
         return self.schema_cache

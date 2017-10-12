@@ -79,9 +79,7 @@ class PipedriveTap(object):
                     try:
                         response = self.execute_stream_request(stream)
                     except (ConnectionError, RequestException) as e:
-                        # TODO how to handle API HTTP request exceptions?
-                        logger.error(e)
-                        exit(1)
+                        raise e
                     timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
 
                 self.validate_response(response)
