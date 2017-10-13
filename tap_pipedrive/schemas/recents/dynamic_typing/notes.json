@@ -8,13 +8,13 @@
       "type": "integer"
     },
     "deal_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "person_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "org_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "content": {
       "type": "string"
@@ -43,7 +43,7 @@
       "type": "null"
     },
     "organization": {
-      "type": "object",
+      "type": ["null", "object"],
       "properties": {
         "name": {
           "type": "string"
@@ -54,7 +54,7 @@
       ]
     },
     "person": {
-      "type": "object",
+      "type": ["null", "object"],
       "properties": {
         "name": {
           "type": "string"
@@ -65,7 +65,7 @@
       ]
     },
     "deal": {
-      "type": "object",
+      "type": ["null", "object"],
       "properties": {
         "title": {
           "type": "string"
@@ -79,13 +79,13 @@
       "type": "object",
       "properties": {
         "email": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "name": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "icon_url": {
-          "type": "null"
+          "type": ["null", "string"]
         },
         "is_you": {
           "type": "boolean"

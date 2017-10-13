@@ -112,37 +112,37 @@
       "type": "null"
     },
     "address": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_subpremise": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_street_number": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_route": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_sublocality": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_locality": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_admin_area_level_1": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_admin_area_level_2": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_country": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_postal_code": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "address_formatted_address": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "cc_email": {
       "type": "string"

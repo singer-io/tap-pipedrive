@@ -44,7 +44,7 @@
       }
     }, 
     "org_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     }, 
     "deal": {
       "required": [
@@ -84,7 +84,7 @@
       "required": [
         "name"
       ], 
-      "type": "object", 
+      "type": ["null", "object"], 
       "properties": {
         "name": {
           "type": "string"

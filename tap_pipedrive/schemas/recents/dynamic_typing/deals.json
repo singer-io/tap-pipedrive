@@ -11,10 +11,10 @@
       "type": "integer"
     },
     "person_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "org_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "stage_id": {
       "type": "integer"
@@ -137,10 +137,10 @@
       "type": "integer"
     },
     "person_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "org_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "next_activity_subject": {
       "type": ["null", "string"]
@@ -158,7 +158,8 @@
       "type": "string"
     },
     "rotten_time": {
-      "type": "null"
+      "type": ["null", "string"],
+      "format": "date-time"
     },
     "weighted_value": {
       "type": "number"
@@ -195,7 +196,6 @@
     "first_won_time",
     "followers_count",
     "formatted_value",
-    "formatted_weighted_value",
     "id",
     "last_activity_date",
     "last_activity_id",
@@ -233,7 +233,6 @@
     "user_id",
     "value",
     "visible_to",
-    "weighted_value",
     "won_time"
   ]
 }

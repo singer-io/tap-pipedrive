@@ -43,13 +43,13 @@
       "type": "string"
     },
     "deal_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "org_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "person_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "active_flag": {
       "type": "boolean"
@@ -71,7 +71,7 @@
       "type": "string"
     },
     "participants": {
-      "type": "array",
+      "type": ["null", "array"],
       "items": {
         "type": "object",
         "properties": {
@@ -89,13 +89,13 @@
       }
     },
     "person_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "org_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "deal_title": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "assigned_to_user_id": {
       "type": "integer"
@@ -107,10 +107,10 @@
       "type": "string"
     },
     "person_dropbox_bcc": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "deal_dropbox_bcc": {
-      "type": "string"
+      "type": ["null", "string"]
     }
   },
   "required": [

@@ -17,10 +17,10 @@
       "type": "string"
     },
     "first_name": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "last_name": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "open_deals_count": {
       "type": "integer"
@@ -136,7 +136,7 @@
       "type": "string"
     },
     "picture_id": {
-      "type": "null"
+      "type": ["integer", "null"]
     },
     "next_activity_date": {
       "type": ["null", "string"]

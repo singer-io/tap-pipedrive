@@ -8,28 +8,28 @@
       "type": "integer"
     },
     "deal_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "person_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "org_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "product_id": {
       "type": "null"
     },
     "email_message_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "activity_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "note_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "log_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "add_time": {
       "type": "string",
@@ -61,25 +61,25 @@
       "type": "string"
     },
     "cid": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "s3_bucket": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "mail_message_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "deal_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "person_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "people_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "org_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "product_name": {
       "type": "null"

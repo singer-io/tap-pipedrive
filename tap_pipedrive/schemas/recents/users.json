@@ -38,7 +38,7 @@
       "format": "date-time"
     },
     "signup_flow_variation": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "has_created_company": {
       "type": "boolean"
@@ -59,7 +59,7 @@
       "type": "integer"
     },
     "icon_url": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "is_you": {
       "type": "boolean"
