@@ -13,13 +13,8 @@ setup(
     py_modules=['tap_pipedrive'],
     packages=find_packages(),
     install_requires=[
-        "click>=6.7",
-        'attrs==16.3.0',
         'singer-python==3.1.1',
         'requests==2.12.4',
-        'backoff==1.3.2',
-        'requests_mock==1.3.0',
-        'nose'
     ],
     entry_points={
         'console_scripts': [
