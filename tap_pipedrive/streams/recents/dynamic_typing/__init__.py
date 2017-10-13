@@ -49,8 +49,11 @@ class DynamicTypingRecentsStream(RecentsStream):
                         else:
                             property_content['type'].append('string')
 
-                        if not property['mandatory_flag']:
-                            property_content['type'].append('null')
+                        # allow all dynamic properties to be null since this 
+                        # happens in practice probably because a property could
+                        # be marked mandatory for some amount of time and not
+                        # mandatory for another amount of time
+                        property_content['type'].append('null')
 
                         schema['properties'][property['key']] = property_content
 

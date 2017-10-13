@@ -68,7 +68,7 @@
       "type": "null"
     },
     "note": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "participants": {
       "type": ["null", "array"],

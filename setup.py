@@ -13,7 +13,7 @@ setup(
     py_modules=['tap_pipedrive'],
     packages=find_packages(),
     install_requires=[
-        'singer-python==3.1.1',
+        'singer-python==3.6.3',
         'requests==2.12.4',
     ],
     entry_points={
@@ -22,10 +22,8 @@ setup(
         ]
     },
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Console",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
