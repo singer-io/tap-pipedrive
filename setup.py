@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="tap-pipedrive",
-    version="0.0.1",
+    version="0.0.2",
     license="AGPL",
     description="Singer.io tap for extracting data from the Pipedrive API",
     author="Stitch",
