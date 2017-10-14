@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from tap_pipedrive import __version__
 
 
 setup(
