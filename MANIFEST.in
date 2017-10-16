@@ -1,0 +1,4 @@
+include LICENSE
+include tap_pipedrive/schemas/*.json
+include tap_pipedrive/schemas/recents/*.json
+include tap_pipedrive/schemas/recents/dynamic_typing/*.json

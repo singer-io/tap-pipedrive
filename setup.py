@@ -5,6 +5,7 @@ setup(name="tap-pipedrive",
       version="0.0.3",
       description="Singer.io tap for extracting data from the Pipedrive API",
       author="Stitch",
+      author_email="dev@stitchdata.com",
       url="http://singer.io",
       classifiers=["Programming Language :: Python :: 3 :: Only"],
       py_modules=["tap_pipedrive"],
@@ -17,12 +18,5 @@ setup(name="tap-pipedrive",
           tap-pipedrive=tap_pipedrive.cli:main
       """,
       packages=["tap_pipedrive"],
-      package_data = {
-          "tap_pipedrive": [
-              "schemas/*.json",
-              "schemas/recents/*.json",
-              "schemas/recents/dynamic_typing/*.json"
-          ],
-      },
       include_package_data=True,
 )
