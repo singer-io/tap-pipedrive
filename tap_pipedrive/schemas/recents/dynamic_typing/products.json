@@ -46,7 +46,8 @@
       "format": "date-time"
     },
     "prices": {
-      "type": ["null", "object"],
+      "type": ["null", "object", "array"],
+      "items": { "type": "object" },
       "properties": {
         "USD": {
           "type": "object",
