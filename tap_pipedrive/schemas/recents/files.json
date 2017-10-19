@@ -32,33 +32,33 @@
       "type": ["null", "integer"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "file_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "file_type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "file_size": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "inline_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "remote_location": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "remote_id": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "cid": {
       "type": ["null", "string"]
@@ -85,10 +85,10 @@
       "type": ["null", "string"]
     },
     "url": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "description": {
       "type": ["null", "string"]

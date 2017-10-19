@@ -5,34 +5,34 @@
       "type": "integer"
     },
     "company_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "done": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "reference_type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "reference_id": {
       "type": ["null", "integer"]
     },
     "due_date": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "due_time": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "duration": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "marked_as_done_time": {
@@ -52,10 +52,10 @@
       "type": ["null", "integer"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "gcal_event_id": {
@@ -98,13 +98,13 @@
       "type": ["null", "string"]
     },
     "assigned_to_user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "created_by_user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "owner_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "person_dropbox_bcc": {
       "type": ["null", "string"]

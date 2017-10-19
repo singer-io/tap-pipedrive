@@ -11,61 +11,61 @@
       "type": "integer"
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "open_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "related_open_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "closed_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "related_closed_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "email_messages_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "people_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "done_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "undone_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "reference_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "files_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "notes_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "followers_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "won_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "related_won_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "lost_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "related_lost_deals_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "category_id": {
       "type": ["null", "integer"]
@@ -77,18 +77,18 @@
       "type": ["null", "string"]
     },
     "first_char": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "visible_to": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "next_activity_date": {
       "type": ["null", "string"]
@@ -147,10 +147,10 @@
       "type": ["null", "string"]
     },
     "cc_email": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "owner_name": {
-      "type": "string"
+      "type": ["null", "string"]
     }
   },
   "required": [

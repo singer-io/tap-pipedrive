@@ -5,28 +5,28 @@
       "type": "integer"
     },
     "order_nr": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "key_string": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "icon_key": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "color": {
       "type": ["null", "string"]
     },
     "is_custom_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {

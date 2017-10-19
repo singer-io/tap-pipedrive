@@ -5,22 +5,22 @@
       "type": "integer"
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "temporary_flag": {
       "type": ["null", "boolean"]
     },
     "user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
@@ -28,7 +28,7 @@
       "format": "date-time"
     },
     "visible_to": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "custom_view_id": {
       "type": ["null", "integer"]

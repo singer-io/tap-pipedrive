@@ -5,48 +5,48 @@
       "type": "integer"
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "code": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "unit": {
       "type": ["null", "string"]
     },
     "tax": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "selectable": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "first_char": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "visible_to": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "owner_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "files_count": {
       "type": ["null", "integer"]
     },
     "followers_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "prices": {
-      "type": "object",
+      "type": ["null", "object"],
       "properties": {
         "USD": {
           "type": "object",
@@ -79,13 +79,10 @@
             "product_id"
           ]
         }
-      },
-      "required": [
-        "USD"
-      ]
+      }
     },
     "owner_name": {
-      "type": "string"
+      "type": ["null", "string"]
     }
   },
   "required": [

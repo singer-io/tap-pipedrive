@@ -5,28 +5,28 @@
       "type": "integer"
     },
     "order_nr": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "deal_probability": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "pipeline_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "rotten_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "rotten_days": {
       "type": ["null", "integer"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
@@ -34,7 +34,7 @@
       "format": "date-time"
     },
     "pipeline_name": {
-      "type": "string"
+      "type": ["null", "string"]
     }
   }
 }

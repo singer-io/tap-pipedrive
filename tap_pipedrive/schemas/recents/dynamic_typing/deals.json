@@ -5,10 +5,10 @@
       "type": "integer"
     },
     "creator_user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "person_id": {
       "type": ["null", "integer"]
@@ -17,23 +17,23 @@
       "type": ["null", "integer"]
     },
     "stage_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "title": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "value": {
-      "type": "number"
+      "type": ["null", "number"]
     },
     "currency": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "stage_change_time": {
@@ -41,13 +41,13 @@
       "format": "date-time"
     },
     "active": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "deleted": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "status": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "probability": {
       "type": ["null", "number"]
@@ -71,14 +71,14 @@
       "type": ["null", "string"]
     },
     "visible_to": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "close_time": {
       "type": ["string", "null"],
       "format": "date-time"
     },
     "pipeline_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "won_time": {
       "type": ["string", "null"],
@@ -93,34 +93,34 @@
       "format": "date-time"
     },
     "products_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "files_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "notes_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "followers_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "email_messages_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "done_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "undone_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "reference_activities_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "participants_count": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "expected_close_date": {
       "type": ["null", "string"]
@@ -134,7 +134,7 @@
       "format": "date-time"
     },
     "stage_order_nr": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "person_name": {
       "type": ["null", "string"]
@@ -155,29 +155,29 @@
       "type": ["null", "string"]
     },
     "formatted_value": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "rotten_time": {
       "type": ["null", "string"],
       "format": "date-time"
     },
     "weighted_value": {
-      "type": "number"
+      "type": ["null", "number"]
     },
     "formatted_weighted_value": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "owner_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "cc_email": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "org_hidden": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "person_hidden": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     }
   },
   "required": [

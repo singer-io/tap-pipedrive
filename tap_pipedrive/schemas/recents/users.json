@@ -8,13 +8,13 @@
       "type": "string"
     },
     "default_currency": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "locale": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "lang": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "email": {
       "type": "string"
@@ -23,46 +23,46 @@
       "type": ["null", "string"]
     },
     "activated": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "last_login": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "created": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "modified": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "signup_flow_variation": {
       "type": ["null", "string"]
     },
     "has_created_company": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "is_admin": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "timezone_name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "timezone_offset": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "role_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "icon_url": {
       "type": ["null", "string"]
     },
     "is_you": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     }
   },
   "required": [

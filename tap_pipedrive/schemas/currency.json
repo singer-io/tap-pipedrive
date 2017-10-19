@@ -2,22 +2,22 @@
   "type": "object",
   "properties": {
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "code": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "name": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "symbol": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "is_custom_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "decimal_points": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "id": {
       "type": "integer"

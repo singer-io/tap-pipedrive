@@ -5,65 +5,65 @@
       "type": "integer"
     },
     "company_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "stage_id": {
       "type": ["integer", "null"]
     },
     "active_goal_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "period": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "expected": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "goal_type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "expected_sum": {
-      "type": "number"
+      "type": ["null", "number"]
     },
     "currency": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "expected_type": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "created_by_user_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "pipeline_id": {
       "type": ["null", "integer"]
     },
     "master_expected": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "delivered": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "delivered_sum": {
-      "type": "number"
+      "type": ["null", "number"]
     },
     "period_start": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "period_end": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "user_name": {
-      "type": "string"
+      "type": ["null", "string"]
     }
   }
 }

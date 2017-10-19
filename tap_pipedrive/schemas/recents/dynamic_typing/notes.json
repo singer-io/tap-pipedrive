@@ -17,27 +17,27 @@
       "type": ["null", "integer"]
     },
     "content": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "add_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "update_time": {
-      "type": "string",
+      "type": ["null", "string"],
       "format": "date-time"
     },
     "active_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "pinned_to_deal_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "pinned_to_person_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "pinned_to_organization_flag": {
-      "type": "boolean"
+      "type": ["null", "boolean"]
     },
     "last_update_user_id": {
       "type": ["null", "integer"]
