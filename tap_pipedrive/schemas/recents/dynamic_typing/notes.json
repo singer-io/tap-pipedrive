@@ -40,7 +40,7 @@
       "type": "boolean"
     },
     "last_update_user_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "organization": {
       "type": ["null", "object"],
