@@ -20,7 +20,7 @@
       "type": "boolean"
     },
     "color": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "is_custom_flag": {
       "type": "boolean"

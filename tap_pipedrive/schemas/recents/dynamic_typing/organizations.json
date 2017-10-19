@@ -68,13 +68,13 @@
       "type": "boolean"
     },
     "category_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "picture_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "country_code": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "first_char": {
       "type": "string"
@@ -106,10 +106,12 @@
       "type": ["null", "string"]
     },
     "timeline_last_activity_time": {
-      "type": "null"
+      "type": ["null", "string"],
+      "format": "date-time"
     },
     "timeline_last_activity_time_by_owner": {
-      "type": "null"
+      "type": ["null", "string"],
+      "format": "date-time"
     },
     "address": {
       "type": ["null", "string"]

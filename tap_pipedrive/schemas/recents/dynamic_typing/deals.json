@@ -50,7 +50,7 @@
       "type": "string"
     },
     "probability": {
-      "type": "null"
+      "type": ["null", "number"]
     },
     "next_activity_date": {
       "type": ["null", "string"]

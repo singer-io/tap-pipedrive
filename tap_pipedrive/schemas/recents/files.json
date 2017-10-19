@@ -17,7 +17,7 @@
       "type": ["null", "integer"]
     },
     "product_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "email_message_id": {
       "type": ["null", "integer"]
@@ -82,7 +82,7 @@
       "type": ["null", "string"]
     },
     "product_name": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "url": {
       "type": "string"
@@ -91,7 +91,7 @@
       "type": "string"
     },
     "description": {
-      "type": "null"
+      "type": ["null", "string"]
     }
   },
   "required": [

@@ -154,10 +154,12 @@
       "type": ["null", "string"]
     },
     "timeline_last_activity_time": {
-      "type": "null"
+      "type": ["null", "string"],
+      "format": "date-time"
     },
     "timeline_last_activity_time_by_owner": {
-      "type": "null"
+      "type": ["null", "string"],
+      "format": "date-time"
     },
     "last_incoming_mail_time": {
       "type": ["null", "string"],

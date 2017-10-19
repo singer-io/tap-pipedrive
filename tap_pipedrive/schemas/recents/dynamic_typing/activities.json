@@ -20,7 +20,7 @@
       "type": "string"
     },
     "reference_id": {
-      "type": "null"
+      "type": ["null", "integer"]
     },
     "due_date": {
       "type": "string"
