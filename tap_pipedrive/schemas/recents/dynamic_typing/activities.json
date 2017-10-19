@@ -40,7 +40,7 @@
       "format": "date-time"
     },
     "subject": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "deal_id": {
       "type": ["null", "integer"]
