@@ -59,13 +59,13 @@
       "format": "date-time"
     },
     "gcal_event_id": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "google_calendar_id": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "google_calendar_etag": {
-      "type": "null"
+      "type": ["null", "string"]
     },
     "note": {
       "type": ["null", "string"]
