@@ -29,11 +29,14 @@ class DynamicTypingRecentsStream(RecentsStream):
                     if property['key'] not in self.static_fields:
                         logger.debug(property['key'], property['field_type'], property['mandatory_flag'])
 
-                        assert property['key'] not in schema['properties'], 'Dynamic property {} exists in ' \
-                                                                            'static JSON schema of {} stream.'.format(
-                            property['key'],
-                            self.schema
-                        )
+                        if property['key'] in schema['properties']:
+                            logger.warn('Dynamic property "{}" overrides with type {} existing entry in ' \
+                                        'static JSON schema of {} stream.'.format(
+                                            property['key'],
+                                            property['field_type'],
+                                            self.schema
+                                        )
+                            )
 
                         property_content = {
                             'type': []

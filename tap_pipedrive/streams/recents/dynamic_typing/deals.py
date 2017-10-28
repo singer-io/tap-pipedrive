@@ -14,7 +14,7 @@ class RecentDealsStream(DynamicTypingRecentsStream):
                      'lost_reason', 'lost_time', 'next_activity_date', 'next_activity_duration', 'next_activity_id',
                      'next_activity_note', 'next_activity_subject', 'next_activity_time', 'next_activity_type',
                      'notes_count', 'org_hidden', 'org_id', 'org_name', 'owner_name', 'participants_count',
-                     'person_hidden', 'person_id', 'person_name', 'pipeline_id', 'products_count',
+                     'person_hidden', 'person_id', 'person_name', 'pipeline_id', 'products_count', 'probability',
                      'reference_activities_count', 'rotten_time', 'stage_change_time', 'stage_id', 'stage_order_nr',
                      'status', 'title', 'undone_activities_count', 'update_time', 'user_id', 'value', 'visible_to',
                      'weighted_value', 'won_time']
