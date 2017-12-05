@@ -4,7 +4,7 @@ This is a [Singer](https://singer.io) tap that produces JSON-formatted data foll
 
 This tap:
 - Pulls raw data from Pipedrive's [REST API](https://developers.pipedrive.com/docs/api/v1/)
-- Extracts the following resources from HubSpot
+- Extracts the following resources from Pipedrive
   - [Currencies](https://developers.pipedrive.com/docs/api/v1/#!/Currencies)
   - [ActivityTypes](https://developers.pipedrive.com/docs/api/v1/#!/ActivityTypes)
   - [Filters](https://developers.pipedrive.com/docs/api/v1/#!/Filters)
