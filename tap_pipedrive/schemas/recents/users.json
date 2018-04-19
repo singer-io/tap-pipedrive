@@ -26,8 +26,15 @@
       "type": ["null", "boolean"]
     },
     "last_login": {
-      "type": ["null", "string"],
-      "format": "date-time"
+      "anyOf": [
+        {
+          "type": ["null", "string"],
+          "format": "date-time"
+        },
+        {
+          "type": ["null", "string"]
+        }
+      ]
     },
     "created": {
       "type": ["null", "string"],
