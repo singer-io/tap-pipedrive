@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.14
+  * Marks the products.json schema file to allow a null USD.cost [#24](https://github.com/singer-io/tap-pipedrive/pull/24)
+
 ## 0.0.13
   * Marks `timeline_last_activity_time` and `timeline_last_activity_time_by_owner` as not required in **organizations** and **persons** streams
 
