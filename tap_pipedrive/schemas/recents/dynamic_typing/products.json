@@ -65,7 +65,7 @@
               "type": "string"
             },
             "cost": {
-              "type": "number"
+              "type": ["null", "number"]
             },
             "overhead_cost": {
               "type": "number"
