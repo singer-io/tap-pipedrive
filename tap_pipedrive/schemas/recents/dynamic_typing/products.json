@@ -53,22 +53,22 @@
           "type": "object",
           "properties": {
             "id": {
-              "type": "integer"
+              "type": ["null", "integer"]
             },
             "product_id": {
-              "type": "integer"
+              "type": ["null", "integer"]
             },
             "price": {
-              "type": "integer"
+              "type": ["null", "integer"]
             },
             "currency": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "cost": {
               "type": ["null", "number"]
             },
             "overhead_cost": {
-              "type": "number"
+              "type": ["null", "number"]
             }
           },
           "required": [
