@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.15
+  * Additional schema updates to allow nulls [#26](https://github.com/singer-io/tap-pipedrive/pull/26)
+
 ## 0.0.14
   * Marks the products.json schema file to allow a null USD.cost [#24](https://github.com/singer-io/tap-pipedrive/pull/24)
 
