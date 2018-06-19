@@ -1,7 +1,7 @@
 import singer
 from requests import RequestException
 from tap_pipedrive.streams.recents import RecentsStream
-
+import re
 
 logger = singer.get_logger()
 
@@ -10,6 +10,12 @@ class DynamicTypingRecentsStream(RecentsStream):
     schema_path = 'schemas/recents/dynamic_typing/{}.json'
     static_fields = []
     fields_endpoint = ''
+
+    def get_property_name(self, property):
+        if re.match('^[0-9A-Fa-f]{40}', property.get('key')):
+            return re.sub('[^A-Za-z0-9_]', '_', property.get('name'))
+        else:
+            return property.get('key')
 
     def get_schema(self):
         if not self.schema_cache:
@@ -27,7 +33,7 @@ class DynamicTypingRecentsStream(RecentsStream):
 
                 for property in payload['data']:
                     if property['key'] not in self.static_fields:
-                        logger.debug(property['key'], property['field_type'], property['mandatory_flag'])
+                        logger.debug("%s, %s, %s, %s", property.get('key'), property.get('name'), property.get('field_type'), property.get('mandatory_flag'))
 
                         if property['key'] in schema['properties']:
                             logger.warn('Dynamic property "{}" overrides with type {} existing entry in ' \
@@ -52,13 +58,16 @@ class DynamicTypingRecentsStream(RecentsStream):
                         else:
                             property_content['type'].append('string')
 
+                        property_name = self.get_property_name(property)
+                        logger.info("Property name for property %s: %s", property.get('key'), property_name)
+                            
                         # allow all dynamic properties to be null since this 
                         # happens in practice probably because a property could
                         # be marked mandatory for some amount of time and not
                         # mandatory for another amount of time
                         property_content['type'].append('null')
 
-                        schema['properties'][property['key']] = property_content
+                        schema['properties'][property_name] = property_content
 
             except Exception as e:
                 raise e
