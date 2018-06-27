@@ -73,8 +73,7 @@ class DynamicTypingRecentsStream(RecentsStream):
                             property_content['type'].append('string')
 
                         property_name = self.get_property_name(property)
-                        logger.info("Property name for property %s: %s", property.get('key'), property_name)
-                            
+
                         # allow all dynamic properties to be null since this 
                         # happens in practice probably because a property could
                         # be marked mandatory for some amount of time and not
