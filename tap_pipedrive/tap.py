@@ -91,6 +91,9 @@ class PipedriveTap(object):
                     with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
                         for row in self.iterate_response(response):
                             row = stream.process_row(row)
+
+                            if not row: # in case of a non-empty response with an empty element
+                                continue
                             row = optimus_prime.transform(row, stream.get_schema())
                             if stream.write_record(row):
                                 counter.increment()
@@ -103,7 +106,10 @@ class PipedriveTap(object):
             singer.write_state(self.state)
 
         # clear currently_syncing
-        del self.state['currently_syncing']
+        try:
+            del self.state['currently_syncing']
+        except KeyError as e:
+            pass
         singer.write_state(self.state)
 
     def get_default_config(self):
