@@ -24,7 +24,7 @@ class DynamicTypingRecentsStream(RecentsStream):
         return self.UNDERSCORE_CONSOLIDATION.sub('_', result) # Consolidate consecutive underscores
 
     def get_property_name(self, property):
-        if re.match(self.GUID_REGEX, property.get('key')):
+        if self.GUID_REGEX.match(property.get('key')):
             result = self.sanitize_field_name(property.get('name'))
             logger.info("Translated GUID property key %s to custom field name %s", property.get('key'), result)
             return  result
