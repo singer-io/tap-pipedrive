@@ -11,9 +11,23 @@ class DynamicTypingRecentsStream(RecentsStream):
     static_fields = []
     fields_endpoint = ''
 
+    # This regex is used to transform column names for custom columns with GUIDs.
+    GUID_REGEX = re.compile(r"^[0-9A-Fa-f]{40}")
+    SEPARATORS_TRANSLATION = re.compile(r"[-\s]")
+    COLUMN_NAME_TRANSLATION = re.compile(r"[^a-zA-Z0-9_]")
+    UNDERSCORE_CONSOLIDATION = re.compile(r"_+")
+
+    def sanitize_field_name(self, name):
+        result = name.lower()
+        result = self.SEPARATORS_TRANSLATION.sub('_', result) # Replace separator characters with underscores
+        result = self.COLUMN_NAME_TRANSLATION.sub('', result) # Remove all other non-alphanumeric characters
+        return self.UNDERSCORE_CONSOLIDATION.sub('_', result) # Consolidate consecutive underscores
+
     def get_property_name(self, property):
-        if re.match('^[0-9A-Fa-f]{40}', property.get('key')):
-            return re.sub('[^A-Za-z0-9_]', '_', property.get('name'))
+        if re.match(self.GUID_REGEX, property.get('key')):
+            result = self.sanitize_field_name(property.get('name'))
+            logger.info("Translated GUID property key %s to custom field name %s", property.get('key'), result)
+            return  result
         else:
             return property.get('key')
 
