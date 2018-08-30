@@ -9,6 +9,7 @@ from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       GoalsStream, RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
+                      RecentProduct_DealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
                       RecentDeleteLogsStream)
 
@@ -28,6 +29,7 @@ class PipedriveTap(object):
         RecentUsersStream(),
         RecentActivitiesStream(),
         RecentDealsStream(),
+        RecentProduct_DealsStream(),
         RecentFilesStream(),
         RecentOrganizationsStream(),
         RecentPersonsStream(),
@@ -164,4 +166,3 @@ class PipedriveTap(object):
         else:
             logger.debug('Required headers for rate throttling are not present in response header, '
                          'unable to throttle ..')
-
