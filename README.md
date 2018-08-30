@@ -15,6 +15,7 @@ This tap:
   - [Recent Users](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Activities](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Deals](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
+  - [Recent Product_Deals](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Files](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Organizations](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Persons](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
