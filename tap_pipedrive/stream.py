@@ -22,6 +22,8 @@ class PipedriveStream(object):
     next_start = 100
     more_items_in_collection = True
 
+    id_list = False
+
     def get_schema(self):
         if not self.schema_cache:
             self.schema_cache = self.load_schema()
@@ -129,3 +131,31 @@ class PipedriveStream(object):
 
     def process_row(self, row):
         return row
+
+
+class PipedriveIterStream(PipedriveStream):
+    id_list = True 
+
+    def get_deal_ids(self, tap):
+        self.endpoint = self.base_endpoint
+        all_deal_ids = []
+        while self.more_items_in_collection:
+
+            with singer.metrics.http_request_timer(self.schema) as timer:
+                try:
+                    response = tap.execute_stream_request(self)
+                except (ConnectionError, RequestException) as e:
+                    raise e
+                timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
+            tap.validate_response(response)
+            tap.rate_throttling(response)
+            self.paginate(response)
+
+            ndeals = len(response.json()['data'])
+            this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals)]
+            all_deal_ids += this_page_ids
+
+        self.more_items_in_collection = True  # set back to True for pagination of results from each deal_id
+
+        return all_deal_ids

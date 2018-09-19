@@ -10,7 +10,7 @@ from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       GoalsStream, RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
-                      RecentDeleteLogsStream)
+                      RecentDeleteLogsStream, DealStageChangeStream)
 
 
 logger = singer.get_logger()
@@ -20,8 +20,8 @@ class PipedriveTap(object):
     streams = [
         CurrenciesStream(),
         ActivityTypesStream(),
-        FiltersStream(),
         StagesStream(),
+        FiltersStream(),
         PipelinesStream(),
         GoalsStream(),
         RecentNotesStream(),
@@ -32,7 +32,8 @@ class PipedriveTap(object):
         RecentOrganizationsStream(),
         RecentPersonsStream(),
         RecentProductsStream(),
-        RecentDeleteLogsStream()
+        RecentDeleteLogsStream(),
+        DealStageChangeStream()
     ]
 
     def __init__(self, config, state):
@@ -72,32 +73,23 @@ class PipedriveTap(object):
             # schema
             stream.write_schema()
 
-            # paginate
-            while stream.has_data():
+            if stream.id_list: # see if we want to iterate over a list of deal_ids
+                all_deal_ids = stream.get_deal_ids(self)
+                is_last_id = False
 
-                with singer.metrics.http_request_timer(stream.schema) as timer:
-                    try:
-                        response = self.execute_stream_request(stream)
-                    except (ConnectionError, RequestException) as e:
-                        raise e
-                    timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+                for deal_id in all_deal_ids:
 
-                self.validate_response(response)
-                self.rate_throttling(response)
-                stream.paginate(response)
+                    if deal_id == all_deal_ids[-1]:
+                        is_last_id = True
 
-                # records with metrics
-                with singer.metrics.record_counter(stream.schema) as counter:
-                    with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
-                        for row in self.iterate_response(response):
-                            row = stream.process_row(row)
-
-                            if not row: # in case of a non-empty response with an empty element
-                                continue
-                            row = optimus_prime.transform(row, stream.get_schema())
-                            if stream.write_record(row):
-                                counter.increment()
-                            stream.update_state(row)
+                    stream.update_endpoint(deal_id)
+                    stream.start = 0   # set back to zero for each new deal_id
+                    self.do_paginate(stream)
+                    if not is_last_id:
+                        stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
+            else:
+                # paginate
+                self.do_paginate(stream)
 
             # update state / bookmarking only when supported by stream
             if stream.state_field:
@@ -111,6 +103,34 @@ class PipedriveTap(object):
         except KeyError as e:
             pass
         singer.write_state(self.state)
+
+
+    def do_paginate(self, stream):
+        while stream.has_data():
+
+            with singer.metrics.http_request_timer(stream.schema) as timer:
+                try:
+                    response = self.execute_stream_request(stream)
+                except (ConnectionError, RequestException) as e:
+                    raise e
+                timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
+            self.validate_response(response)
+            self.rate_throttling(response)
+            stream.paginate(response)
+
+            # records with metrics
+            with singer.metrics.record_counter(stream.schema) as counter:
+                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
+                    for row in self.iterate_response(response):
+                        row = stream.process_row(row)
+
+                        if not row: # in case of a non-empty response with an empty element
+                            continue
+                        row = optimus_prime.transform(row, stream.get_schema())
+                        if stream.write_record(row):
+                            counter.increment()
+                        stream.update_state(row)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS
