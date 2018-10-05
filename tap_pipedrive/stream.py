@@ -137,9 +137,9 @@ class PipedriveIterStream(PipedriveStream):
     id_list = True 
 
     def get_deal_ids(self, tap):
-        self.endpoint = self.base_endpoint
-        all_deal_ids = []
+
         while self.more_items_in_collection:
+            self.endpoint = self.base_endpoint
 
             with singer.metrics.http_request_timer(self.schema) as timer:
                 try:
@@ -152,10 +152,11 @@ class PipedriveIterStream(PipedriveStream):
             tap.rate_throttling(response)
             self.paginate(response)
 
+            self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
+            self.next_start = self.start  # note pagination for next loop
             ndeals = len(response.json()['data'])
             this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals)]
-            all_deal_ids += this_page_ids
-
-        self.more_items_in_collection = True  # set back to True for pagination of results from each deal_id
-
-        return all_deal_ids
+            
+            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            for deal_id in this_page_ids:
+                yield deal_id

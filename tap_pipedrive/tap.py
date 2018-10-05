@@ -74,19 +74,23 @@ class PipedriveTap(object):
             stream.write_schema()
 
             if stream.id_list: # see if we want to iterate over a list of deal_ids
-                all_deal_ids = stream.get_deal_ids(self)
-                is_last_id = False
 
-                for deal_id in all_deal_ids:
-
-                    if deal_id == all_deal_ids[-1]:
+                for deal_id in stream.get_deal_ids(self):
+                    is_last_id = False
+                    if deal_id == stream.these_deals[-1]: #find out if this is last deal_id in the current set
                         is_last_id = True
-
+                    
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
                     self.do_paginate(stream)
+                    
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
+                    elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of deal_ids
+                        stream.more_items_in_collection = True
+                        stream.start = stream.next_start
+                    else:
+                        stream.more_items_in_collection = False
             else:
                 # paginate
                 self.do_paginate(stream)

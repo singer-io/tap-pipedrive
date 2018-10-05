@@ -39,7 +39,7 @@
     },
 
     "additional_data": {
-      "type": ["null", "string", "array", "object"]
+      "type": ["null", "string"]
     }
   }
 }
