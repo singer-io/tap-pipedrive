@@ -22,6 +22,8 @@ class PipedriveStream(object):
     next_start = 100
     more_items_in_collection = True
 
+    id_list = False
+
     def get_schema(self):
         if not self.schema_cache:
             self.schema_cache = self.load_schema()
@@ -129,3 +131,32 @@ class PipedriveStream(object):
 
     def process_row(self, row):
         return row
+
+
+class PipedriveIterStream(PipedriveStream):
+    id_list = True 
+
+    def get_deal_ids(self, tap):
+
+        while self.more_items_in_collection:
+            self.endpoint = self.base_endpoint
+
+            with singer.metrics.http_request_timer(self.schema) as timer:
+                try:
+                    response = tap.execute_stream_request(self)
+                except (ConnectionError, RequestException) as e:
+                    raise e
+                timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
+            tap.validate_response(response)
+            tap.rate_throttling(response)
+            self.paginate(response)
+
+            self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
+            self.next_start = self.start  # note pagination for next loop
+            ndeals = len(response.json()['data'])
+            this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals)]
+            
+            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            for deal_id in this_page_ids:
+                yield deal_id
