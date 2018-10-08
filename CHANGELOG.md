@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.0
+  * Add dealflow stream [#36](https://github.com/singer-io/tap-pipedrive/pull/36)
+
 ## 0.0.15
   * Additional schema updates to allow nulls [#26](https://github.com/singer-io/tap-pipedrive/pull/26)
 
