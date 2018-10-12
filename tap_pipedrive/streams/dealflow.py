@@ -5,10 +5,11 @@ class DealStageChangeStream(PipedriveIterStream):
 	base_endpoint = 'deals'
 	id_endpoint = 'deals/{}/flow'
 	schema = 'dealflow'
+	state_field = 'log_time'
 	key_properties = ['id', ]
 
 	def get_name(self):
-		return self.schema
+	    return self.schema
 
 	def process_row(self, row):
 		if row['object'] == 'dealChange':

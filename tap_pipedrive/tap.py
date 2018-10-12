@@ -91,6 +91,8 @@ class PipedriveTap(object):
                         stream.start = stream.next_start
                     else:
                         stream.more_items_in_collection = False
+
+                stream.earliest_state = stream.stream_start
             else:
                 # paginate
                 self.do_paginate(stream)
