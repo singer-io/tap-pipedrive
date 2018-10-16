@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.1
+  * Add bookmarking to the dealflow stream [#38](https://github.com/singer-io/tap-pipedrive/pull/38)
+
 ## 0.1.0
   * Add dealflow stream [#36](https://github.com/singer-io/tap-pipedrive/pull/36)
 
