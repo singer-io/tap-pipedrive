@@ -1,10 +1,13 @@
+import json
 import time
 import pendulum
 import requests
 import singer
+import sys
+
 from requests.exceptions import ConnectionError, RequestException
 from json import JSONDecodeError
-from singer import set_currently_syncing
+from singer import set_currently_syncing, metadata
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
@@ -36,14 +39,56 @@ class PipedriveTap(object):
         DealStageChangeStream()
     ]
 
-    def __init__(self, config, state):
+    def __init__(self, config, state, catalog):
         self.config = self.get_default_config()
         self.config.update(config)
         self.config['start_date'] = pendulum.parse(self.config['start_date'])
         self.state = state
+        self.catalog = catalog
+
+
+    def _load_metadata(self, stream):
+        mdata = metadata.new()
+        mdata = metadata.write(mdata, (), 'table-key-properties', stream.key_properties)
+
+        for field_name in stream.load_schema()['properties'].keys():
+            if field_name in stream.key_properties:
+                mdata = metadata.write(mdata, ('properties', field_name), 'inclusion', 'automatic')
+            else:
+                mdata = metadata.write(mdata, ('properties', field_name), 'inclusion', 'available')
+        return metadata.to_list(mdata)
+
+
+    def _discover_streams(self):
+        discovered_streams = []
+
+        for stream in self.streams:
+            discovered_streams.append({'stream': stream.get_name(), 'tap_stream_id': stream.get_name(), 'schema': stream.load_schema(), 'metadata': self._load_metadata(stream)})
+        return discovered_streams
+
+
+    def do_discover(self):
+        logger.info("Starting discover")
+        catalog = {"streams": self._discover_streams()}
+        json.dump(catalog, sys.stdout, indent=2)
+        logger.info("Finished discover")
+
+
+    def stream_is_selected(self, mdata):
+        return mdata.get((), {}).get('selected', False)
+
+    def get_selected_streams(self):
+        selected_stream_names = []
+        for stream in self.catalog.streams:
+            mdata = metadata.to_map(stream.metadata)
+            if self.stream_is_selected(mdata):
+                selected_stream_names.append(stream.tap_stream_id)
+        return selected_stream_names
 
     def do_sync(self):
         logger.debug('Starting sync')
+
+        selected_stream_names = self.get_selected_streams()
 
         # resuming when currently_syncing within state
         resume_from_stream = False
@@ -52,6 +97,9 @@ class PipedriveTap(object):
 
         for stream in self.streams:
             stream.tap = self
+            stream_name = stream.get_name()
+            catalog_entry = self.catalog.get_stream(stream_name)
+            mdata = metadata.to_map(catalog_entry.metadata)
 
             if resume_from_stream:
                 if stream.schema == resume_from_stream:
@@ -60,6 +108,10 @@ class PipedriveTap(object):
                 else:
                     logger.info('Skipping stream {} as resuming from {}'.format(stream.schema, resume_from_stream))
                     continue
+
+            if stream_name not in selected_stream_names:
+                logger.info("%s: Skipping - not selected", stream_name)
+                continue
 
             # stream state, from state/bookmark or start_date
             stream.set_initial_state(self.state, self.config['start_date'])
@@ -79,11 +131,11 @@ class PipedriveTap(object):
                     is_last_id = False
                     if deal_id == stream.these_deals[-1]: #find out if this is last deal_id in the current set
                         is_last_id = True
-                    
+
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
-                    self.do_paginate(stream)
-                    
+                    self.do_paginate(stream, mdata)
+
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
                     elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of deal_ids
@@ -95,7 +147,7 @@ class PipedriveTap(object):
                 stream.earliest_state = stream.stream_start
             else:
                 # paginate
-                self.do_paginate(stream)
+                self.do_paginate(stream, mdata)
 
             # update state / bookmarking only when supported by stream
             if stream.state_field:
@@ -111,7 +163,7 @@ class PipedriveTap(object):
         singer.write_state(self.state)
 
 
-    def do_paginate(self, stream):
+    def do_paginate(self, stream, mdata):
         while stream.has_data():
 
             with singer.metrics.http_request_timer(stream.schema) as timer:
@@ -133,7 +185,7 @@ class PipedriveTap(object):
 
                         if not row: # in case of a non-empty response with an empty element
                             continue
-                        row = optimus_prime.transform(row, stream.get_schema())
+                        row = optimus_prime.transform(row, stream.get_schema(), mdata)
                         if stream.write_record(row):
                             counter.increment()
                         stream.update_state(row)
@@ -190,4 +242,3 @@ class PipedriveTap(object):
         else:
             logger.debug('Required headers for rate throttling are not present in response header, '
                          'unable to throttle ..')
-
