@@ -2,7 +2,6 @@ import os
 import singer
 import pendulum
 
-
 logger = singer.get_logger()
 
 
@@ -137,9 +136,9 @@ class PipedriveIterStream(PipedriveStream):
     id_list = True 
     
     def get_deal_ids(self, tap):
-        self.stream_start = pendulum.now()
+        self.stream_start = pendulum.now('UTC') # explicitly set timezone to UTC
         checkpoint = self.earliest_state
-
+        
         while self.more_items_in_collection:
             
             self.endpoint = self.base_endpoint
@@ -158,10 +157,11 @@ class PipedriveIterStream(PipedriveStream):
             self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
             self.next_start = self.start  # note pagination for next loop
             ndeals = len(response.json()['data'])
+
+            # check update_time to catch all deals that have been added but have not had other changes
             this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals) 
-                             if response.json()['data'][i]['stage_change_time'] is not None 
-                             and pendulum.parse(response.json()['data'][i]['stage_change_time']) < self.stream_start
-                             and pendulum.parse(response.json()['data'][i]['stage_change_time']) >= checkpoint]
+                              if pendulum.parse(response.json()['data'][i]['update_time']) >= checkpoint and 
+                                 pendulum.parse(response.json()['data'][i]['update_time']) < self.stream_start]
             
             self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
             for deal_id in this_page_ids:
