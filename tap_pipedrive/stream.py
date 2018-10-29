@@ -2,7 +2,6 @@ import os
 import singer
 import pendulum
 
-
 logger = singer.get_logger()
 
 
@@ -134,14 +133,17 @@ class PipedriveStream(object):
 
 
 class PipedriveIterStream(PipedriveStream):
-    id_list = True 
+    id_list = True
     
     def get_deal_ids(self, tap):
-        self.stream_start = pendulum.now()
-        checkpoint = self.earliest_state
+
+        # note when the stream starts syncing
+        self.stream_start = pendulum.now('UTC') # explicitly set timezone to UTC
+
+        # create checkpoint at inital_state to only find stage changes more recent than initial_state (bookmark)
+        checkpoint = self.initial_state
 
         while self.more_items_in_collection:
-            
             self.endpoint = self.base_endpoint
 
             with singer.metrics.http_request_timer(self.schema) as timer:
@@ -157,12 +159,26 @@ class PipedriveIterStream(PipedriveStream):
 
             self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
             self.next_start = self.start  # note pagination for next loop
-            ndeals = len(response.json()['data'])
-            this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals) 
-                             if response.json()['data'][i]['stage_change_time'] is not None 
-                             and pendulum.parse(response.json()['data'][i]['stage_change_time']) < self.stream_start
-                             and pendulum.parse(response.json()['data'][i]['stage_change_time']) >= checkpoint]
-            
+
+            # find all deals ids for deals added or with stage changes after start and before stop
+            this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
+
             self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
             for deal_id in this_page_ids:
                 yield deal_id
+
+
+    def find_deal_ids(self, data, start, stop):
+
+        # find all deals that were *added* after the start time and before the stop time
+        added_ids = [data[i]['id'] for i in range(len(data)) if (start <= pendulum.parse(data[i]['add_time']) < stop)]
+
+        # find all deals that a) had a stage change at any time (i.e., the stage_change_time is not None),
+        #                     b) had a stage change after the start time and before the stop time, and
+        #                     c) are not in added_ids
+        changed_ids = [data[i]['id']
+                       for i in range(len(data))
+                       if (data[i]['id'] not in added_ids)
+                       and (data[i]['stage_change_time'] is not None
+                            and start <= pendulum.parse(data[i]['stage_change_time']) < stop)]
+        return added_ids + changed_ids
