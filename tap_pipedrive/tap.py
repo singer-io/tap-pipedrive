@@ -76,13 +76,19 @@ class PipedriveTap(object):
 
                 for deal_id in stream.get_deal_ids(self):
                     is_last_id = False
+
                     if deal_id == stream.these_deals[-1]: #find out if this is last deal_id in the current set
                         is_last_id = True
-                    
+
+                    # if last page of deals, more_items in collection will be False
+                    # Need to set it to True to get deal_id pagination for the first deal on the last page
+                    if deal_id == stream.these_deals[0]:
+                        stream.more_items_in_collection = True
+
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
                     self.do_paginate(stream)
-                    
+
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
                     elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of deal_ids
@@ -91,7 +97,8 @@ class PipedriveTap(object):
                     else:
                         stream.more_items_in_collection = False
 
-                stream.earliest_state = stream.stream_start
+                # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
+                stream.earliest_state = stream.stream_start.subtract(hours=3)
             else:
                 # paginate
                 self.do_paginate(stream)
