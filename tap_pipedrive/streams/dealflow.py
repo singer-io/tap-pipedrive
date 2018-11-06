@@ -12,8 +12,8 @@ class DealStageChangeStream(PipedriveIterStream):
 	    return self.schema
 
     def process_row(self, row):
-	    if row['object'] == 'dealChange':
-	        return row['data']
+        if row['object'] == 'dealChange':
+            return row['data']
 
     def update_endpoint(self, deal_id):
 	    self.endpoint = self.id_endpoint.format(deal_id)
