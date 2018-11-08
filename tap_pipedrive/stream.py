@@ -160,9 +160,14 @@ class PipedriveIterStream(PipedriveStream):
             ndeals = len(response.json()['data'])
 
             # check update_time to catch all deals that have been added but have not had other changes
-            this_page_ids = [response.json()['data'][i]['id'] for i in range(ndeals) 
-                              if pendulum.parse(response.json()['data'][i]['update_time']) >= checkpoint and 
-                                 pendulum.parse(response.json()['data'][i]['update_time']) < self.stream_start]
+            this_page_add_ids = [response.json()['data'][i]['id'] for i in range(ndeals) 
+                                    if (self.stream_start > pendulum.parse(response.json()['data'][i]['add_time']) >= checkpoint)]
+            this_page_change_ids = [response.json()['data'][i]['id'] for i in range(ndeals) 
+                                        if response.json()['data'][i]['id'] not in this_page_add_ids and 
+                                          (response.json()['data'][i]['stage_change_time'] is not None and 
+                                           self.stream_start > pendulum.parse(response.json()['data'][i]['stage_change_time']) >= checkpoint)]
+
+            this_page_ids = this_page_add_ids + this_page_change_ids
             
             self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
             for deal_id in this_page_ids:
