@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.0
+  * Remove `goals` stream [#44](https://github.com/singer-io/tap-pipedrive/pull/44)
+
 ## 0.1.1
   * Add bookmarking to the dealflow stream [#38](https://github.com/singer-io/tap-pipedrive/pull/38)
 
