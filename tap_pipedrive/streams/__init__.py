@@ -3,7 +3,6 @@ from .activity_types import ActivityTypesStream
 from .filters import FiltersStream
 from .stages import StagesStream
 from .pipelines import PipelinesStream
-from .goals import GoalsStream
 from .recents.users import RecentUsersStream
 from .recents.files import RecentFilesStream
 from .recents.delete_log import RecentDeleteLogsStream
@@ -17,7 +16,6 @@ from .dealflow import DealStageChangeStream
 
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
-           'GoalsStream',
            'RecentUsersStream', 'RecentFilesStream', 'RecentDeleteLogsStream'
            'RecentNotesStream', 'RecentActivitiesStream', 'RecentDealsStream', 'RecentOrganizationsStream',
            'RecentPersonsStream', 'RecentProductsStream', 'DealStageChangeStream'

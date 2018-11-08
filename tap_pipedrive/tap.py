@@ -8,7 +8,7 @@ from singer import set_currently_syncing
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
-                      GoalsStream, RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
+                      RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
                       RecentDeleteLogsStream, DealStageChangeStream)
 
@@ -23,7 +23,6 @@ class PipedriveTap(object):
         StagesStream(),
         FiltersStream(),
         PipelinesStream(),
-        GoalsStream(),
         RecentNotesStream(),
         RecentUsersStream(),
         RecentActivitiesStream(),
