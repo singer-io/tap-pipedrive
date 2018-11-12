@@ -137,7 +137,7 @@ class PipedriveIterStream(PipedriveStream):
     id_list = True 
     
     def get_deal_ids(self, tap):
-        self.stream_start = pendulum.now('UTC').subtract(hours=1) # explicitly set timezone to UTC
+        self.stream_start = pendulum.now('UTC') # explicitly set timezone to UTC
         checkpoint = self.earliest_state.subtract(hours=24)
 
         while self.more_items_in_collection:
