@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2
+  * Fixed missing deals in dealflow stream
+
 ## 0.2.1
   * Update version of `requests` to `2.20.0` in response to CVE 2018-18074
 
