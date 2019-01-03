@@ -48,10 +48,7 @@
         "name": {
           "type": "string"
         }
-      },
-      "required": [
-        "name"
-      ]
+      }
     },
     "person": {
       "type": ["null", "object"],
@@ -70,10 +67,7 @@
         "title": {
           "type": "string"
         }
-      },
-      "required": [
-        "title"
-      ]
+      }
     },
     "user": {
       "type": "object",
@@ -90,32 +84,7 @@
         "is_you": {
           "type": "boolean"
         }
-      },
-      "required": [
-        "email",
-        "icon_url",
-        "is_you",
-        "name"
-      ]
+      }
     }
-  },
-  "required": [
-    "active_flag",
-    "add_time",
-    "content",
-    "deal",
-    "deal_id",
-    "id",
-    "last_update_user_id",
-    "org_id",
-    "organization",
-    "person",
-    "person_id",
-    "pinned_to_deal_flag",
-    "pinned_to_organization_flag",
-    "pinned_to_person_flag",
-    "update_time",
-    "user",
-    "user_id"
-  ]
+  }
 }

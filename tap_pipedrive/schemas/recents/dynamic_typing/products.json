@@ -70,38 +70,12 @@
             "overhead_cost": {
               "type": ["null", "number"]
             }
-          },
-          "required": [
-            "cost",
-            "currency",
-            "id",
-            "overhead_cost",
-            "price",
-            "product_id"
-          ]
+          }
         }
       }
     },
     "owner_name": {
       "type": ["null", "string"]
     }
-  },
-  "required": [
-    "active_flag",
-    "add_time",
-    "code",
-    "files_count",
-    "first_char",
-    "followers_count",
-    "id",
-    "name",
-    "owner_id",
-    "owner_name",
-    "prices",
-    "selectable",
-    "tax",
-    "unit",
-    "update_time",
-    "visible_to"
-  ]
+  }
 }

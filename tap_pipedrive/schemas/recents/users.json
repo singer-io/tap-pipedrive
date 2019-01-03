@@ -71,27 +71,5 @@
     "is_you": {
       "type": ["null", "boolean"]
     }
-  },
-  "required": [
-    "activated",
-    "active_flag",
-    "created",
-    "default_currency",
-    "email",
-    "has_created_company",
-    "icon_url",
-    "id",
-    "is_admin",
-    "is_you",
-    "lang",
-    "last_login",
-    "locale",
-    "modified",
-    "name",
-    "phone",
-    "role_id",
-    "signup_flow_variation",
-    "timezone_name",
-    "timezone_offset"
-  ]
+  }
 }
