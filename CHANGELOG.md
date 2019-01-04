@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.3
+  * Removes the `required` elements from JSON schemas as they are unnecessary [#45](https://github.com/singer-io/tap-pipedrive/pull/45)
+
 ## 0.2.2
   * Fixed missing deals in dealflow stream
 
