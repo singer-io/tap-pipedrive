@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.4
+  * Allows a file's user_id field to be nullable [#49](https://github.com/singer-io/tap-pipedrive/pull/49)
+
 ## 0.2.3
   * Removes the `required` elements from JSON schemas as they are unnecessary [#45](https://github.com/singer-io/tap-pipedrive/pull/45)
 
