@@ -13,10 +13,11 @@ from .recents.dynamic_typing.organizations import RecentOrganizationsStream
 from .recents.dynamic_typing.persons import RecentPersonsStream
 from .recents.dynamic_typing.products import RecentProductsStream
 from .dealflow import DealStageChangeStream
+from .deal_products import DealsProductsStream
 
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
            'RecentUsersStream', 'RecentFilesStream', 'RecentDeleteLogsStream'
            'RecentNotesStream', 'RecentActivitiesStream', 'RecentDealsStream', 'RecentOrganizationsStream',
-           'RecentPersonsStream', 'RecentProductsStream', 'DealStageChangeStream'
+           'RecentPersonsStream', 'RecentProductsStream', 'DealStageChangeStream', 'DealsProductsStream'
            ]
