@@ -3,7 +3,7 @@ import pendulum
 import requests
 import singer
 from requests.exceptions import ConnectionError, RequestException
-#from json import JSONDecodeError
+from json import JSONDecodeError
 from singer import set_currently_syncing
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
