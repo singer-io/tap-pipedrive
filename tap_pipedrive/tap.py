@@ -1,16 +1,19 @@
+import sys
 import time
+import json
 import pendulum
 import requests
 import singer
 from requests.exceptions import ConnectionError, RequestException
 from json import JSONDecodeError
-from singer import set_currently_syncing
+from singer import set_currently_syncing, metadata
+from singer.catalog import Catalog, CatalogEntry, Schema
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
-                      RecentDeleteLogsStream, DealStageChangeStream)
+                      RecentDeleteLogsStream, DealStageChangeStream, DealsProductsStream)
 
 
 logger = singer.get_logger()
@@ -32,7 +35,8 @@ class PipedriveTap(object):
         RecentPersonsStream(),
         RecentProductsStream(),
         RecentDeleteLogsStream(),
-        DealStageChangeStream()
+        DealStageChangeStream(),
+        DealsProductsStream()
     ]
 
     def __init__(self, config, state):
@@ -41,7 +45,42 @@ class PipedriveTap(object):
         self.config['start_date'] = pendulum.parse(self.config['start_date'])
         self.state = state
 
-    def do_sync(self):
+    def do_discover(self):
+        logger.info('Starting discover')
+
+        catalog = Catalog([])
+
+        for stream in self.streams:
+            stream.tap = self
+
+            schema = Schema.from_dict(stream.get_schema())
+            key_properties = stream.key_properties
+
+            metadata = []
+            for prop, json_schema in schema.properties.items():
+                inclusion = 'available'
+                if prop in key_properties:
+                    inclusion = 'automatic'
+                metadata.append({
+                    'breadcrumb': ['properties', prop],
+                    'metadata': {
+                        'inclusion': inclusion
+                    }
+                })
+
+            catalog.streams.append(CatalogEntry(
+                stream=stream.schema,
+                tap_stream_id=stream.schema,
+                key_properties=key_properties,
+                schema=schema,
+                metadata=metadata
+            ))
+
+        json.dump(catalog.to_dict(), sys.stdout, indent=2)
+
+        logger.info('Finished discover')
+
+    def do_sync(self, catalog):
         logger.debug('Starting sync')
 
         # resuming when currently_syncing within state
@@ -49,7 +88,16 @@ class PipedriveTap(object):
         if self.state and 'currently_syncing' in self.state:
             resume_from_stream = self.state['currently_syncing']
 
+        selected_streams = self.get_selected_streams(catalog)
+
+        if 'currently_syncing' in self.state and resume_from_stream not in selected_streams:
+            resume_from_stream = False
+            del self.state['currently_syncing']
+
         for stream in self.streams:
+            if stream.schema not in selected_streams:
+                continue
+
             stream.tap = self
 
             if resume_from_stream:
@@ -100,8 +148,11 @@ class PipedriveTap(object):
                 # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
                 stream.earliest_state = stream.stream_start.subtract(hours=3)
             else:
+                catalog_stream = catalog.get_stream(stream.schema)
+                stream_metadata = metadata.to_map(catalog_stream.metadata)
+
                 # paginate
-                self.do_paginate(stream)
+                self.do_paginate(stream, stream_metadata)
 
             # update state / bookmarking only when supported by stream
             if stream.state_field:
@@ -116,8 +167,16 @@ class PipedriveTap(object):
             pass
         singer.write_state(self.state)
 
+    def get_selected_streams(self, catalog):
+        selected_streams = set()
+        for stream in catalog.streams:
+            mdata = metadata.to_map(stream.metadata)
+            root_metadata = mdata.get(())
+            if root_metadata and root_metadata.get('selected') is True:
+                selected_streams.add(stream.tap_stream_id)
+        return list(selected_streams)
 
-    def do_paginate(self, stream):
+    def do_paginate(self, stream, stream_metadata):
         while stream.has_data():
 
             with singer.metrics.http_request_timer(stream.schema) as timer:
@@ -139,7 +198,7 @@ class PipedriveTap(object):
 
                         if not row: # in case of a non-empty response with an empty element
                             continue
-                        row = optimus_prime.transform(row, stream.get_schema())
+                        row = optimus_prime.transform(row, stream.get_schema(), stream_metadata)
                         if stream.write_record(row):
                             counter.increment()
                         stream.update_state(row)
