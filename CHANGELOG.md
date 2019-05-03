@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.1
+  * Discover catalog when none was passed in sync mode [#52](https://github.com/singer-io/tap-pipedrive/pull/52)
+
 ## 1.0.0
   * Add stream/field selection
   * Add `deal_products` endpoint
