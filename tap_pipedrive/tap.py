@@ -1,6 +1,4 @@
-import sys
 import time
-import json
 import pendulum
 import requests
 import singer
