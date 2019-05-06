@@ -135,7 +135,7 @@ class PipedriveTap(object):
 
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
-                    self.do_paginate(stream)
+                    self.do_paginate(stream, stream_metadata)
 
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
