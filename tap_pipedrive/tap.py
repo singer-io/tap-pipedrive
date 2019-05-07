@@ -37,6 +37,24 @@ class PipedriveTap(object):
         DealsProductsStream()
     ]
 
+    selected_by_default_stream_names = {
+        'currency',
+        'activity_types',
+        'stages',
+        'filters',
+        'pipelines',
+        'notes',
+        'users',
+        'activities',
+        'deals',
+        'files',
+        'organizations',
+        'persons',
+        'products',
+        'delete_log',
+        'dealflow'
+    }
+
     def __init__(self, config, state):
         self.config = self.get_default_config()
         self.config.update(config)
@@ -47,6 +65,7 @@ class PipedriveTap(object):
         logger.info('Starting discover')
 
         catalog = Catalog([])
+
 
         for stream in self.streams:
             stream.tap = self
@@ -59,10 +78,27 @@ class PipedriveTap(object):
                 inclusion = 'available'
                 if prop in key_properties:
                     inclusion = 'automatic'
+                if stream.schema in self.selected_by_default_stream_names:
+                    metadata.append({
+                        'breadcrumb': ['properties', prop],
+                        'metadata': {
+                            'selected-by-default': True,
+                            'inclusion': inclusion
+                        }
+                    })
+                else:
+                    metadata.append({
+                        'breadcrumb': ['properties', prop],
+                        'metadata': {
+                            'inclusion': inclusion
+                        }
+                    })
+
+            if stream.schema in self.selected_by_default_stream_names:
                 metadata.append({
-                    'breadcrumb': ['properties', prop],
+                    'breadcrumb': [],
                     'metadata': {
-                        'inclusion': inclusion
+                        'selected-by-default': True
                     }
                 })
 
@@ -74,10 +110,23 @@ class PipedriveTap(object):
                 metadata=metadata
             ))
 
+
+        return catalog
+
+    def convert_selected_by_default_metadata(self, catalog):
+        for stream in catalog.streams:
+            for md in stream.metadata:
+                is_selected = md.get('metadata',{}).get('selected')
+                is_selected_by_default = md.get('metadata',{}).get('selected-by-default', False)
+                if is_selected_by_default and is_selected is None:
+                    md['metadata']['selected'] = True
         return catalog
 
     def do_sync(self, catalog):
         logger.debug('Starting sync')
+
+        # convert selected-by-default metadata to selected
+        self.convert_selected_by_default_metadata(catalog)
 
         # resuming when currently_syncing within state
         resume_from_stream = False
@@ -131,7 +180,11 @@ class PipedriveTap(object):
 
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
-                    self.do_paginate(stream)
+
+                    catalog_stream = catalog.get_stream(stream.schema)
+                    stream_metadata = metadata.to_map(catalog_stream.metadata)
+
+                    self.do_paginate(stream, stream_metadata)
 
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
@@ -168,7 +221,7 @@ class PipedriveTap(object):
         for stream in catalog.streams:
             mdata = metadata.to_map(stream.metadata)
             root_metadata = mdata.get(())
-            if root_metadata and root_metadata.get('selected') is True:
+            if stream.is_selected() or (root_metadata and root_metadata.get('selected') is True):
                 selected_streams.add(stream.tap_stream_id)
         return list(selected_streams)
 
@@ -251,4 +304,3 @@ class PipedriveTap(object):
         else:
             logger.debug('Required headers for rate throttling are not present in response header, '
                          'unable to throttle ..')
-
