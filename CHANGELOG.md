@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2
+  * Fix deal id pagination [#53](https://github.com/singer-io/tap-pipedrive/pull/53)
+
 ## 1.0.1
   * Discover catalog when none was passed in sync mode [#52](https://github.com/singer-io/tap-pipedrive/pull/52)
 
