@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+  * Discover catalog when none was passed in sync mode [#52](https://github.com/singer-io/tap-pipedrive/pull/52)
+
+## 1.0.0
+  * Add stream/field selection
+  * Add `deal_products` endpoint
+  * [#51](https://github.com/singer-io/tap-pipedrive/pull/51)
+
 ## 0.2.4
   * Allows a file's user_id field to be nullable [#49](https://github.com/singer-io/tap-pipedrive/pull/49)
 

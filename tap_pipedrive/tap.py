@@ -1,6 +1,4 @@
-import sys
 import time
-import json
 import pendulum
 import requests
 import singer
@@ -76,9 +74,7 @@ class PipedriveTap(object):
                 metadata=metadata
             ))
 
-        json.dump(catalog.to_dict(), sys.stdout, indent=2)
-
-        logger.info('Finished discover')
+        return catalog
 
     def do_sync(self, catalog):
         logger.debug('Starting sync')
