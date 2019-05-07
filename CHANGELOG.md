@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.2
+## 1.0.3
   * Fix deal id pagination [#53](https://github.com/singer-io/tap-pipedrive/pull/53)
 
 ## 1.0.1
