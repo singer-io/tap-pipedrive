@@ -116,6 +116,9 @@ class PipedriveTap(object):
             # schema
             stream.write_schema()
 
+            catalog_stream = catalog.get_stream(stream.schema)
+            stream_metadata = metadata.to_map(catalog_stream.metadata)
+
             if stream.id_list: # see if we want to iterate over a list of deal_ids
 
                 for deal_id in stream.get_deal_ids(self):
@@ -131,7 +134,7 @@ class PipedriveTap(object):
 
                     stream.update_endpoint(deal_id)
                     stream.start = 0   # set back to zero for each new deal_id
-                    self.do_paginate(stream)
+                    self.do_paginate(stream, stream_metadata)
 
                     if not is_last_id:
                         stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
@@ -144,9 +147,6 @@ class PipedriveTap(object):
                 # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
                 stream.earliest_state = stream.stream_start.subtract(hours=3)
             else:
-                catalog_stream = catalog.get_stream(stream.schema)
-                stream_metadata = metadata.to_map(catalog_stream.metadata)
-
                 # paginate
                 self.do_paginate(stream, stream_metadata)
 
