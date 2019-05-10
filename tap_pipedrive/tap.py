@@ -217,7 +217,7 @@ class PipedriveTap(object):
 
     def execute_request(self, endpoint, params=None):
         # Ouath
-        if self.config['access_token']:
+        if hasattr(self.config, 'access_token') and self.config['access_token']:
             headers = {
                 'User-Agent': self.config['user-agent'],
                 'Authorization': 'Bearer ' + self.config['access_token']
