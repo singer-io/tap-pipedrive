@@ -231,7 +231,7 @@ class PipedriveTap(object):
                 'User-Agent': self.config['user-agent']
             }
             _params = {
-                'api_token': self.config['api_token'],
+                'api_token': self.config['api_token']
             }
             url = "{}/{}".format(BASE_URL, endpoint)
             logger.debug('Firing request at {} with params: {}'.format(url, _params))
