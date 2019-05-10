@@ -216,7 +216,7 @@ class PipedriveTap(object):
         return self.execute_request(stream.endpoint, params=params)
 
     def execute_request(self, endpoint, params=None):
-        # Ouath
+        # Using bearer token generated via OAuth authentication
         if hasattr(self.config, 'access_token') and self.config['access_token']:
             headers = {
                 'User-Agent': self.config['user-agent'],
@@ -225,7 +225,7 @@ class PipedriveTap(object):
             _params={}
             url = "{}/{}".format(BASE_OAUTH_URL, endpoint)
             logger.debug('Firing request at {} with ouath:'.format(url))
-        #  api_token
+        #  Using api_token
         else:
             headers = {
                 'User-Agent': self.config['user-agent']
