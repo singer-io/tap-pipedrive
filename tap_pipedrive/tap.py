@@ -227,6 +227,9 @@ class PipedriveTap(object):
             logger.debug('Firing request at {} with ouath:'.format(url))
         #  api_token
         else:
+            headers = {
+                'User-Agent': self.config['user-agent']
+            }
             _params = {
                 'api_token': self.config['api_token'],
             }
