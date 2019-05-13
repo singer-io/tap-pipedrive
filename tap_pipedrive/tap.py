@@ -6,8 +6,7 @@ from requests.exceptions import ConnectionError, RequestException
 from json import JSONDecodeError
 from singer import set_currently_syncing, metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
-from .config import BASE_URL, CONFIG_DEFAULTS
-from .config import BASE_OAUTH_URL, CONFIG_DEFAULTS
+from .config import BASE_URL, BASE_OAUTH_URL CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
@@ -224,7 +223,7 @@ class PipedriveTap(object):
             }
             _params={}
             url = "{}/{}".format(BASE_OAUTH_URL, endpoint)
-            logger.debug('Firing request at {} with ouath:'.format(url))
+            logger.debug('Firing request at {} with OAuth:'.format(url))
         #  Using api_token
         else:
             headers = {
