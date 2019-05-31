@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+ * Make bookmark property automatic [commit](https://github.com/singer-io/tap-pipedrive/commit/1390c9c36491c80ffc0f89b4efc25500412d16f1)
+
 ## 1.0.3
   * Fix deal id pagination [#53](https://github.com/singer-io/tap-pipedrive/pull/53)
 
