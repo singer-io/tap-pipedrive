@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.5
+ * Handles null `add_time` for deals when retrieving IDs [#67](https://github.com/singer-io/tap-pipedrive/pull/67)
+
 ## 1.0.4
  * Make bookmark property automatic [commit](https://github.com/singer-io/tap-pipedrive/commit/1390c9c36491c80ffc0f89b4efc25500412d16f1)
 
