@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.6
+  * Use anyOf schema for a date-time field in the deals schema [#71](https://github.com/singer-io/tap-pipedrive/pull/71)
+
 ## 1.0.5
  * Handles null `add_time` for deals when retrieving IDs [#67](https://github.com/singer-io/tap-pipedrive/pull/67)
 
