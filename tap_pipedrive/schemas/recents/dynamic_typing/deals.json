@@ -85,8 +85,13 @@
       "format": "date-time"
     },
     "first_won_time": {
-      "type": ["string", "null"],
-      "format": "date-time"
+      "anyOf": [
+        {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        {"type": ["string", "null"]}
+      ]
     },
     "lost_time": {
       "type": ["string", "null"],
