@@ -1,7 +1,4 @@
 version: 2.1
-orbs:
-  slack: circleci/slack@3.4.2
-
 jobs:
   build:
     docker:
@@ -28,8 +25,6 @@ jobs:
                        --password=$SANDBOX_PASSWORD \
                        --client-id=50 \
                        tap_tester.suites.pipedrive
-      - slack/notify-on-failure:
-          only_for_branches: master
 
 workflows:
   version: 2
