@@ -6,7 +6,7 @@ from requests.exceptions import ConnectionError, RequestException
 from json import JSONDecodeError
 from singer import set_currently_syncing, metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
-from .config import BASE_URL, CONFIG_DEFAULTS
+from .config import BASE_URL, BASE_OAUTH_URL CONFIG_DEFAULTS
 from .exceptions import InvalidResponseException
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
@@ -215,17 +215,28 @@ class PipedriveTap(object):
         return self.execute_request(stream.endpoint, params=params)
 
     def execute_request(self, endpoint, params=None):
-        headers = {
-            'User-Agent': self.config['user-agent']
-        }
-        _params = {
-            'api_token': self.config['api_token'],
-        }
+        # Using bearer token generated via OAuth authentication
+        if 'access_token' in self.config:
+            headers = {
+                'User-Agent': self.config['user-agent'],
+                'Authorization': 'Bearer ' + self.config['access_token']
+            }
+            _params={}
+            url = "{}/{}".format(BASE_OAUTH_URL, endpoint)
+            logger.debug('Firing request at {} with OAuth:'.format(url))
+        #  Using api_token
+        else:
+            headers = {
+                'User-Agent': self.config['user-agent']
+            }
+            _params = {
+                'api_token': self.config['api_token']
+            }
+            url = "{}/{}".format(BASE_URL, endpoint)
+            logger.debug('Firing request at {} with params: {}'.format(url, _params))
+
         if params:
             _params.update(params)
-
-        url = "{}/{}".format(BASE_URL, endpoint)
-        logger.debug('Firing request at {} with params: {}'.format(url, _params))
 
         return requests.get(url, headers=headers, params=_params)
 
@@ -251,4 +262,3 @@ class PipedriveTap(object):
         else:
             logger.debug('Required headers for rate throttling are not present in response header, '
                          'unable to throttle ..')
-
