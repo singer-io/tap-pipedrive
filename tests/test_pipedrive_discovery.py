@@ -75,7 +75,11 @@ class PipedriveDiscovery(unittest.TestCase):
         menagerie.verify_check_exit_status(self, exit_status, check_job_name)
 
         # verify the tap discovered the right streams
-        catalog = menagerie.get_catalogs(conn_id)
+        catalog = menagerie.get_catalog(conn_id)
+
+        print(">>>>>>>>>>>>>>")
+        print(catalog)
+        print(">>>>>>>>>>>>>>")
 
         # assert we find the correct streams
         self.assertEqual(self.expected_check_streams(),
@@ -98,9 +102,6 @@ class PipedriveDiscovery(unittest.TestCase):
             'notes': ['update_time'],
             'organizations': ['update_time'],
             'deals': ['update_time']}
-        print(">>>>>>>>>>>>>>")
-        print(catalog)
-        print(">>>>>>>>>>>>>>")
         for tap_stream_id in self.expected_check_streams():
             found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
             print(found_stream)
