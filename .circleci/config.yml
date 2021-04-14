@@ -1,8 +1,8 @@
-version: 2.1
+version: 2
 jobs:
   build:
     docker:
-      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:tap-tester
+      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:tap-tester-v4
     steps:
       - checkout
       - run:
@@ -23,8 +23,8 @@ jobs:
                        --orchestrator=stitch-orchestrator \
                        --email=harrison+sandboxtest@stitchdata.com \
                        --password=$SANDBOX_PASSWORD \
-                       --token=$STITCH_API_TOKEN \
                        --client-id=50 \
+                       --token=$STITCH_API_TOKEN \
                        tests
 
 workflows:
