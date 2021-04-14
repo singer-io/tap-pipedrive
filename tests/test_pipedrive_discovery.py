@@ -101,7 +101,10 @@ class PipedriveDiscovery(unittest.TestCase):
             'organizations': ['update_time'],
             'deals': ['update_time']}
         print(">>>>>>>>>>>>>>")
-        print(self.expected_check_streams())
+        print(catalog)
+        print(">>>>>>>>>>>>>>")
+        print(catalog['stream'])
+        print(">>>>>>>>>>>>>>")
         for tap_stream_id in self.expected_check_streams():
             found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
             print(found_stream)
