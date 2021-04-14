@@ -23,6 +23,7 @@ jobs:
                        --orchestrator=stitch-orchestrator \
                        --email=harrison+sandboxtest@stitchdata.com \
                        --password=$SANDBOX_PASSWORD \
+                       --token=$STITCH_API_TOKEN \
                        --client-id=50 \
                        tests
 
