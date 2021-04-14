@@ -1,6 +1,4 @@
-import tap_tester.connections as connections
-import tap_tester.menagerie   as menagerie
-import tap_tester.runner      as runner
+from tap_tester import connections, menagerie, runner
 import unittest
 import os
 
@@ -102,8 +100,6 @@ class PipedriveDiscovery(unittest.TestCase):
             'deals': ['update_time']}
         print(">>>>>>>>>>>>>>")
         print(catalog)
-        print(">>>>>>>>>>>>>>")
-        print(catalog['stream'])
         print(">>>>>>>>>>>>>>")
         for tap_stream_id in self.expected_check_streams():
             found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
