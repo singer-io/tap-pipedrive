@@ -8,8 +8,8 @@ from tap_pipedrive.tap import PipedriveTap
 
 logger = singer.get_logger()
 
-
-def main_impl():
+@singer.utils.handle_top_exception(logger)
+def main():
     args = singer.utils.parse_args(['api_token', 'start_date'])
 
     pipedrive_tap = PipedriveTap(args.config, args.state)
@@ -25,13 +25,6 @@ def main_impl():
             catalog = pipedrive_tap.do_discover()
         pipedrive_tap.do_sync(catalog)
 
-
-def main():
-    try:
-        main_impl()
-    except Exception as e:
-        logger.critical(e)
-        raise e
 
 
 if __name__ == '__main__':
