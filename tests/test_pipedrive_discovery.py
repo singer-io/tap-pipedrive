@@ -75,7 +75,7 @@ class PipedriveDiscovery(unittest.TestCase):
         menagerie.verify_check_exit_status(self, exit_status, check_job_name)
 
         # verify the tap discovered the right streams
-        catalog = menagerie.get_catalog(conn_id)
+        catalog = menagerie.get_catalogs(conn_id)
 
         # assert we find the correct streams
         self.assertEqual(self.expected_check_streams(),
