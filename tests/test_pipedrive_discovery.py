@@ -79,7 +79,7 @@ class PipedriveDiscovery(unittest.TestCase):
 
         # assert we find the correct streams
         self.assertEqual(self.expected_check_streams(),
-                         {c['tap_stream_id'] for c in catalog['streams']})
+                         {c['tap_stream_id'] for c in catalog})
 
         known_replication_keys = {
             'persons': ['update_time'],
@@ -100,7 +100,7 @@ class PipedriveDiscovery(unittest.TestCase):
             'deals': ['update_time']}
 
         for tap_stream_id in self.expected_check_streams():
-            found_stream = [c for c in catalog['streams'] if c['tap_stream_id'] == tap_stream_id][0]
+            found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
             print(found_stream)
             found_key_properties = set(found_stream['key_properties'])
             stream_metadata = found_stream['metadata']
