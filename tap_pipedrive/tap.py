@@ -1,13 +1,19 @@
 import time
+import sys
+import math
 import pendulum
 import requests
 import singer
+import simplejson
+import backoff
 from requests.exceptions import ConnectionError, RequestException
 from json import JSONDecodeError
 from singer import set_currently_syncing, metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
 from .config import BASE_URL, CONFIG_DEFAULTS
-from .exceptions import InvalidResponseException
+from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadRequestError, PipedriveUnauthorizedError, PipedrivePaymentRequiredError, 
+                        PipedriveForbiddenError, PipedriveGoneError, PipedriveUnsupportedMediaError, PipedriveUnprocessableEntityError, PipedriveTooManyRequestsError, 
+                        PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError)
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
@@ -15,6 +21,76 @@ from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, Stag
 
 
 logger = singer.get_logger()
+
+
+ERROR_CODE_EXCEPTION_MAPPING = {
+    400: {
+        "raise_exception": PipedriveBadRequestError,
+        "message": "Request is missing or has a bad parameter."
+    },
+    401: {
+        "raise_exception": PipedriveUnauthorizedError,
+        "message": "Invalid authorization credentials."
+    },
+    402: {
+        "raise_exception": PipedrivePaymentRequiredError,
+        "message": "Company account is not open (possible reason: trial expired, payment details not entered)."
+    },
+    403: {
+        "raise_exception": PipedriveForbiddenError,
+        "message": "Invalid authorization credentials or permissions."
+    },
+    404: {
+        "raise_exception": PipedriveNotFoundError,
+        "message": "The requested resource doesn't exist."
+    },
+    410: {
+        "raise_exception": PipedriveGoneError,
+        "message": "The old resource is permanently unavailable."
+    },
+    415: {
+        "raise_exception": PipedriveUnsupportedMediaError,
+        "message": "The feature is not available."
+    },
+    422: {
+        "raise_exception": PipedriveUnprocessableEntityError,
+        "message": "Webhook limit reached."
+    },
+    429: {
+        "raise_exception": PipedriveTooManyRequestsError,
+        "message": "Rate limit has been exceeded."
+    },
+    500: {
+        "raise_exception": PipedriveInternalServiceError,
+        "message": "Internal Service Error from PipeDrive."
+    },
+    501: {
+        "raise_exception": PipedriveNotImplementedError,
+        "message": "Functionality is not exist."
+    },
+    503: {
+        "raise_exception": PipedriveServiceUnavailableError,
+        "message": "Schedule maintainance on Pipedrive's end."
+    },
+}
+
+def is_not_status_code_fn(status_code):
+    def gen_fn(exc):
+        if getattr(exc, 'response', None) and getattr(exc.response, 'status_code', None) and exc.response.status_code not in status_code:
+            return True
+        # Retry other errors up to the max
+        return False
+    return gen_fn
+
+def retry_after_wait_gen():
+    while True:
+        # This is called in an except block so we can retrieve the exception
+        # and check it.
+        exc_info = sys.exc_info()
+        resp = exc_info[1].response
+        sleep_time_str = resp.headers.get('X-RateLimit-Reset')
+        logger.info("Received 429 -- sleeping for %s seconds", sleep_time_str)
+        yield math.floor(float(sleep_time_str))
 
 
 class PipedriveTap(object):
@@ -214,6 +290,8 @@ class PipedriveTap(object):
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
+    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
+    @backoff.on_exception(retry_after_wait_gen, PipedriveTooManyRequestsInSecondError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
             'User-Agent': self.config['user-agent']
@@ -226,20 +304,25 @@ class PipedriveTap(object):
 
         url = "{}/{}".format(BASE_URL, endpoint)
         logger.debug('Firing request at {} with params: {}'.format(url, _params))
+        response = requests.get(url, headers=headers, params=_params)
 
-        return requests.get(url, headers=headers, params=_params)
+        if response.status_code == 200 and isinstance(response, requests.Response) :
+            try:
+                # Verifying json is valid or not
+                response.json()
+                return response
+            except simplejson.scanner.JSONDecodeError as e:
+                raise e
+        else:
+            raise_for_error(response)
 
     def validate_response(self, response):
-        if isinstance(response, requests.Response) and response.status_code == 200:
-            try:
-                payload = response.json()
-                if payload['success'] and 'data' in payload:
-                    return True
-            except (AttributeError, JSONDecodeError) as e:
-                pass
-
-        raise InvalidResponseException("Response with status code {} from Pipedrive API is not valid, "
-                                       "wonder why ..".format(response.status_code))
+        try:
+            payload = response.json()
+            if payload['success'] and 'data' in payload:
+                return True
+        except (AttributeError, simplejson.scanner.JSONDecodeError): # Verifying response in execute_request
+            pass
 
     def rate_throttling(self, response):
         if all(x in response.headers for x in ['X-RateLimit-Remaining', 'X-RateLimit-Reset']):
@@ -252,3 +335,37 @@ class PipedriveTap(object):
             logger.debug('Required headers for rate throttling are not present in response header, '
                          'unable to throttle ..')
 
+def raise_for_error(response):   
+    try:
+        response.raise_for_status()
+    except (requests.HTTPError, requests.ConnectionError) as error:
+        try:
+            error_code = response.status_code
+
+            # Handling status code 429 specially since the required information is present in the headers
+            if error_code == 429:
+                resp_headers = response.headers
+                api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
+
+                #Raise PipedriveTooManyRequestsInSecondError exception if 2 seconds limit is reached
+                if int(resp_headers.get("X-RateLimit-Remaining")) < 1:
+                    message = "HTTP-error-code: 429, Error: {} Please retry after {} seconds.".format(api_rate_limit_message, resp_headers.get("X-RateLimit-Reset"))
+                    raise PipedriveTooManyRequestsInSecondError(message, response) from None
+
+                message = "HTTP-error-code: 429, Error: Daily {} Please retry after {} seconds.".format(api_rate_limit_message, resp_headers.get("X-RateLimit-Reset"))
+
+            else:
+                # Forming a response message for raising custom exception
+                try:
+                    json_resp = response.json()
+                except Exception:
+                    json_resp = {}
+
+                message_text = json_resp.get("error", ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("message", "Unknown Error"))
+                message = "HTTP-error-code: {}, Error: {}".format(error_code, message_text)
+
+            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", PipedriveError)
+            raise exc(message, response) from None
+
+        except (ValueError, TypeError):
+            raise PipedriveError(error) from None
