@@ -10,6 +10,9 @@ class PipedriveDiscovery(PipeDriveBaseTest):
         return "tap_tester_pipedrive_discovery"
 
     def test_run(self):
+        """
+        Run tap in check mode and verify exit codes and metadata meet expectations. 
+        """
         conn_id = connections.ensure_connection(self)
 
         # run and verify the tap in discovermode. 

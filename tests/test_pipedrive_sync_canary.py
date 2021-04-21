@@ -13,7 +13,7 @@ class PipeDriveSyncTest(PipeDriveBaseTest):
     def test_run(self):
         """
         Testing that sync creates the appropriate catalog with valid metadata.
-        • Verify that all fields and all streams have selected set to True in the metadata
+        Verify that all fields and all streams have selected set to True in the metadata
         """
         conn_id = connections.ensure_connection(self)
 
