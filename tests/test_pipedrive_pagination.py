@@ -9,7 +9,7 @@ class PaginationTest(PipeDriveBaseTest):
         return "tap_tester_pipedrive_pagination_test"
 
     def test_run(self):
-        page_size = 2
+        page_size = 100
         conn_id = connections.ensure_connection(self)
 
         expected_streams = ["deals"]
