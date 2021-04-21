@@ -9,12 +9,15 @@ class PaginationTest(PipeDriveBaseTest):
         return "tap_tester_pipedrive_pagination_test"
 
     def test_run(self):
+        # page size for "deals"
         page_size = 100
         conn_id = connections.ensure_connection(self)
 
+        # Checking pagination for "deals" stream
         expected_streams = ["deals"]
         found_catalogs = self.run_and_verify_check_mode(conn_id)
 
+        # table and field selection
         test_catalogs = [catalog for catalog in found_catalogs
                                       if catalog.get('stream') in expected_streams]
 
@@ -26,13 +29,16 @@ class PaginationTest(PipeDriveBaseTest):
 
         for stream in expected_streams:
             with self.subTest(stream=stream):
+                # expected values
                 expected_primary_keys = self.expected_pks()
 
+                # collect information for assertions from syncs 1 & 2 base on expected values
                 record_count_sync = record_count_by_stream.get(stream, 0)
                 primary_keys_list = [(message.get('data').get(expected_pk) for expected_pk in expected_primary_keys)
                                        for message in synced_records.get(stream).get('messages')
                                        if message.get('action') == 'upsert']
 
+                # verify records are more than page size so multiple page is working
                 self.assertGreater(record_count_sync, page_size)
 
                 if record_count_sync > page_size:
@@ -42,4 +48,5 @@ class PaginationTest(PipeDriveBaseTest):
                     primary_keys_page_1 = set(primary_keys_list_1)
                     primary_keys_page_2 = set(primary_keys_list_2)
 
+                    # Verify by private keys that data is unique for page
                     self.assertTrue(primary_keys_page_1.isdisjoint(primary_keys_page_2))
