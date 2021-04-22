@@ -1,4 +1,4 @@
-from tap_tester import runner, menagerie, connections
+from tap_tester import runner, connections
 
 from base import PipeDriveBaseTest
 

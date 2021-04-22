@@ -1,6 +1,4 @@
-from tap_tester import connections, menagerie, runner
-import unittest
-import os
+from tap_tester import connections
 from base import PipeDriveBaseTest
 
 class PipeDriveSyncTest(PipeDriveBaseTest):

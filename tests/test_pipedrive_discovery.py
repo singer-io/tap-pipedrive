@@ -1,6 +1,5 @@
-from tap_tester import connections, menagerie, runner
-import unittest
-import os
+from tap_tester import connections
+import re
 from base import PipeDriveBaseTest
 
 class PipedriveDiscovery(PipeDriveBaseTest):
@@ -18,9 +17,14 @@ class PipedriveDiscovery(PipeDriveBaseTest):
         # run and verify the tap in discovermode. 
         catalog = self.run_and_verify_check_mode(conn_id)
 
+        # Verify stream names follow naming convention
+        # streams should only have lowercase alphas and underscores
+        found_catalog_names = {c['stream'] for c in catalog}
+        self.assertTrue(all([re.fullmatch(r"[a-z_]+",  name) for name in found_catalog_names]),
+                        msg="One or more streams don't follow standard naming")
+
         for tap_stream_id in self.expected_streams():
             found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
-            # print(found_stream)
             found_key_properties = set(found_stream['key_properties'])
             stream_metadata = found_stream['metadata']
 

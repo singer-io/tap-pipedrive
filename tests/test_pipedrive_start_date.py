@@ -1,6 +1,4 @@
-from tap_tester import connections, menagerie, runner
-import unittest
-import os
+from tap_tester import connections, runner
 from base import PipeDriveBaseTest
 
 class PipedriveStartDateTest(PipeDriveBaseTest):
@@ -69,9 +67,6 @@ class PipedriveStartDateTest(PipeDriveBaseTest):
         # run sync
         record_count_by_stream_2 = self.run_and_verify_sync(conn_id_2)
         synced_records_2 = runner.get_records_from_target_output()
-
-        print(">>>>>>>>>>>>>")
-        print(synced_records_2)
 
         # Verify the total number of records replicated in sync 1 is greater than the number
         # of records replicated in sync 2

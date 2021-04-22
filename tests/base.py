@@ -4,7 +4,6 @@ from datetime import timedelta
 from datetime import datetime as dt
 import time
 
-import singer
 from tap_tester import connections, menagerie, runner
 
 class PipeDriveBaseTest(unittest.TestCase):
@@ -120,9 +119,6 @@ class PipeDriveBaseTest(unittest.TestCase):
         menagerie.verify_check_exit_status(self, exit_status, check_job_name)
 
         found_catalogs = menagerie.get_catalogs(conn_id)
-        print(">>>>>>>>>>>")
-        print(found_catalogs)
-        print(">>>>>>>>>>>")
         self.assertGreater(len(found_catalogs), 0, msg="unable to locate schemas for connection {}".format(conn_id))
 
         # found_catalog_names = set(map(lambda c: c['stream_name'], found_catalogs))
