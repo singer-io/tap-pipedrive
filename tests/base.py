@@ -1,0 +1,265 @@
+import unittest
+import os
+from datetime import timedelta
+from datetime import datetime as dt
+import time
+
+from tap_tester import connections, menagerie, runner
+
+class PipeDriveBaseTest(unittest.TestCase):
+
+    START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
+    DATETIME_FMT = "%Y-%m-%dT%H:%M:%SZ"
+    start_date = ""
+    REPLICATION_METHOD = "forced-replication-method"
+
+    def known_replication_keys(self):
+        return {
+            'persons': ['update_time'],
+            'stages': ['update_time'],
+            'files': ['update_time'],
+            'activity_types': ['update_time'],
+            'deal_products': ['add_time'],
+            'pipelines': ['update_time'],
+            'dealflow': ['log_time'],
+            'users': ['created'],
+            'activities': ['update_time'],
+            # 'delete_log': [],
+            'currency': [],
+            'products': ['update_time'],
+            'filters': ['update_time'],
+            'notes': ['update_time'],
+            'organizations': ['update_time'],
+            'deals': ['update_time']}
+
+    def full_table_streams(self):
+        return ['stages','activity_types','currency','filters','pipelines']
+
+    def expected_streams(self):
+        return {
+            'files',
+            'activities',
+            'dealflow',
+            'deal_products',
+            'activity_types',
+            'persons',
+            'currency',
+            'pipelines',
+            'notes',
+            'stages',
+            'products',
+            'organizations',
+            'users',
+            # 'delete_log',
+            'filters',
+            'deals'
+        }
+
+    def expected_pks(self):
+        return {
+            'activities': {'id'},
+            'activity_types': {'id'},
+            'currency': {'id'},
+            'deal_products': {'id'},
+            'dealflow': {'id'},
+            'deals': {'id'},
+            # 'delete_log': {'id'},
+            'files': {'id'},
+            'filters': {'id'},
+            'notes': {'id'},
+            'organizations': {'id'},
+            'persons': {'id'},
+            'pipelines': {'id'},
+            'products': {'id'},
+            'stages': {'id'},
+            'users': {'id'}}
+
+    def environment_variables(self):
+        return {"TAP_PIPEDRIVE_API_TOKEN"}
+
+    def organizations_static_fields(self):
+        return ['active_flag', 'activities_count', 'add_time', 'address', 'address_admin_area_level_1',
+                'address_admin_area_level_2', 'address_country', 'address_formatted_address', 'address_locality',
+                'address_postal_code', 'address_route', 'address_street_number', 'address_sublocality',
+                'address_subpremise', 'category_id', 'cc_email', 'closed_deals_count', 'company_id',
+                'country_code', 'done_activities_count', 'email_messages_count', 'files_count', 'first_char',
+                'followers_count', 'id', 'last_activity_date', 'last_activity_id', 'lost_deals_count', 'name',
+                'next_activity_date', 'next_activity_id', 'next_activity_time', 'notes_count', 'open_deals_count',
+                'owner_id', 'owner_name', 'people_count', 'picture_id', 'reference_activities_count',
+                'related_closed_deals_count', 'related_lost_deals_count', 'related_open_deals_count',
+                'related_won_deals_count', 'timeline_last_activity_time', 'timeline_last_activity_time_by_owner',
+                'undone_activities_count', 'update_time', 'visible_to', 'won_deals_count']
+
+    def setUp(self):
+        missing_envs = [x for x in self.environment_variables() if os.getenv(x) is None]
+        if missing_envs:
+            raise Exception("Missing test-required environment variables: {}".format(missing_envs))
+
+    def tap_name(self):
+        return "tap-pipedrive"
+
+    def get_type(self):
+        return "platform.pipedrive"
+
+    def get_credentials(self):
+        return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
+
+    def get_properties(self, original: bool = True):
+        """Configuration properties required for the tap."""
+        return_value = {"start_date" : "2021-04-10T00:00:00Z"}
+        if original:
+            return return_value
+
+        return_value["start_date"] = self.start_date
+        return return_value
+
+
+    #########################
+    #   Helper Methods      #
+    #########################
+
+    def run_and_verify_check_mode(self, conn_id):
+        """
+        Run the tap in check mode and verify it succeeds.
+        This should be ran prior to field selection and initial sync.
+        Return the connection id and found catalogs from menagerie.
+        """
+        # run in check mode
+        check_job_name = runner.run_check_mode(self, conn_id)
+
+        # verify check exit codes
+        exit_status = menagerie.get_exit_status(conn_id, check_job_name)
+        menagerie.verify_check_exit_status(self, exit_status, check_job_name)
+
+        found_catalogs = menagerie.get_catalogs(conn_id)
+        self.assertGreater(len(found_catalogs), 0, msg="unable to locate schemas for connection {}".format(conn_id))
+
+        # found_catalog_names = set(map(lambda c: c['stream_name'], found_catalogs))
+        found_catalog_names = set(f['stream_name'] for f in found_catalogs if f['tap_stream_id']!='delete_log')
+        print(found_catalog_names)
+        self.assertSetEqual(self.expected_streams(), found_catalog_names, msg="discovered schemas do not match")
+        print("discovered schemas are OK")
+
+        return found_catalogs
+
+    def run_and_verify_sync(self, conn_id):
+        """
+        Run a sync job and make sure it exited properly.
+        Return a dictionary with keys of streams synced
+        and values of records synced for each stream
+        """
+        # Run a sync job using orchestrator
+        sync_job_name = runner.run_sync_mode(self, conn_id)
+
+        # Verify tap and target exit codes
+        exit_status = menagerie.get_exit_status(conn_id, sync_job_name)
+        menagerie.verify_sync_exit_status(self, exit_status, sync_job_name)
+
+        # Verify actual rows were synced
+        sync_record_count = runner.examine_target_output_file(
+            self, conn_id, self.expected_streams(), self.expected_pks())
+        self.assertGreater(
+            sum(sync_record_count.values()), 0,
+            msg="failed to replicate any data: {}".format(sync_record_count)
+        )
+        print("total replicated row count: {}".format(sum(sync_record_count.values())))
+
+        return sync_record_count
+
+    def perform_and_verify_table_and_field_selection(self,
+                                                     conn_id,
+                                                     test_catalogs,
+                                                     select_all_fields=True):
+        """
+        Perform table and field selection based off of the streams to select
+        set and field selection parameters.
+        Verify this results in the expected streams selected and all or no
+        fields selected for those streams.
+        """
+
+        # Select all available fields or select no fields from all testable streams
+        self.select_all_streams_and_fields(
+            conn_id=conn_id, catalogs=test_catalogs, select_all_fields=select_all_fields
+        )
+
+        catalogs = menagerie.get_catalogs(conn_id)
+
+        # Ensure our selection affects the catalog
+        expected_selected = [tc.get('stream_name') for tc in test_catalogs]
+        for cat in catalogs:
+            ## Remove this ##
+            if cat['tap_stream_id']=='delete_log':
+                continue
+            catalog_entry = menagerie.get_annotated_schema(conn_id, cat['stream_id'])
+
+            # Verify all testable streams are selected
+            selected = catalog_entry.get('annotated-schema').get('selected')
+            print("Validating selection on {}: {}".format(cat['stream_name'], selected))
+            if cat['stream_name'] not in expected_selected:
+                self.assertFalse(selected, msg="Stream selected, but not testable.")
+                continue # Skip remaining assertions if we aren't selecting this stream
+            self.assertTrue(selected, msg="Stream not selected.")
+
+            if select_all_fields:
+                # Verify all fields within each selected stream are selected
+                for field, field_props in catalog_entry.get('annotated-schema').get('properties').items():
+                    field_selected = field_props.get('selected')
+                    print("\tValidating selection on {}.{}: {}".format(
+                        cat['stream_name'], field, field_selected))
+                    self.assertTrue(field_selected, msg="Field not selected.")
+            else:
+                # Verify only automatic fields are selected
+                expected_automatic_fields = self.expected_automatic_fields().get(cat['stream_name'])
+                selected_fields = self.get_selected_fields_from_metadata(catalog_entry['metadata'])
+                self.assertEqual(expected_automatic_fields, selected_fields)
+
+    @staticmethod
+    def get_selected_fields_from_metadata(metadata):
+        selected_fields = set()
+        for field in metadata:
+            is_field_metadata = len(field['breadcrumb']) > 1
+            inclusion_automatic_or_selected = (
+                field['metadata']['selected'] is True or \
+                field['metadata']['inclusion'] == 'automatic'
+            )
+            if is_field_metadata and inclusion_automatic_or_selected:
+                selected_fields.add(field['breadcrumb'][1])
+        return selected_fields
+
+
+    @staticmethod
+    def select_all_streams_and_fields(conn_id, catalogs, select_all_fields: bool = True):
+        """Select all streams and all fields within streams"""
+        for catalog in catalogs:
+            ## Remove this ##
+            if catalog['tap_stream_id']=='delete_log':
+                continue
+            schema = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+
+            non_selected_properties = []
+            if not select_all_fields:
+                # get a list of all properties so that none are selected
+                non_selected_properties = schema.get('annotated-schema', {}).get(
+                    'properties', {}).keys()
+
+            connections.select_catalog_and_fields_via_metadata(
+                conn_id, catalog, schema, [], non_selected_properties)
+
+    def timedelta_formatted(self, dtime, days=0):
+        date_stripped = dt.strptime(dtime, self.START_DATE_FORMAT)
+        return_date = date_stripped + timedelta(days=days)
+
+        return dt.strftime(return_date, self.START_DATE_FORMAT)
+
+    ##########################################################################
+    ### Tap Specific Methods
+    ##########################################################################
+
+    def is_incremental(self, stream):
+        if stream in self.full_table_streams():
+            return False 
+        return True
+
+    def dt_to_ts(self, dtime):
+        return int(time.mktime(dt.strptime(
+            dtime, self.DATETIME_FMT).timetuple()))
