@@ -50,7 +50,7 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     },
     415: {
         "raise_exception": PipedriveUnsupportedMediaError,
-        "message": "The feature is not available."
+        "message": "The feature is not enabled."
     },
     422: {
         "raise_exception": PipedriveUnprocessableEntityError,
@@ -66,11 +66,11 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     },
     501: {
         "raise_exception": PipedriveNotImplementedError,
-        "message": "Functionality is not exist."
+        "message": "Functionality doesn't exist."
     },
     503: {
         "raise_exception": PipedriveServiceUnavailableError,
-        "message": "Schedule maintainance on Pipedrive's end."
+        "message": "Schedule maintenance on Pipedrive's end."
     },
 }
 

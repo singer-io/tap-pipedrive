@@ -190,7 +190,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         try:
             pipedrive_tap.execute_request(endpoint)
         except _tap.PipedriveUnsupportedMediaError as e:
-            expected_error_message = "HTTP-error-code: 415, Error: The feature is not available."
+            expected_error_message = "HTTP-error-code: 415, Error: The feature is not enabled."
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
@@ -287,7 +287,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         try:
             pipedrive_tap.execute_request(endpoint)
         except _tap.PipedriveNotImplementedError as e:
-            expected_error_message = "HTTP-error-code: 501, Error: Functionality is not exist."
+            expected_error_message = "HTTP-error-code: 501, Error: Functionality doesn't exist."
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
@@ -306,7 +306,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         try:
             pipedrive_tap.execute_request(endpoint)
         except _tap.PipedriveServiceUnavailableError as e:
-            expected_error_message = "HTTP-error-code: 503, Error: Schedule maintainance on Pipedrive's end."
+            expected_error_message = "HTTP-error-code: 503, Error: Schedule maintenance on Pipedrive's end."
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
