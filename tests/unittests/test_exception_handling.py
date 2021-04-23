@@ -152,7 +152,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         try:
             pipedrive_tap.execute_request(endpoint)
         except _tap.PipedriveNotFoundError as e:
-            expected_error_message = "HTTP-error-code: 404, Error: The requested resource doesn't exist."
+            expected_error_message = "HTTP-error-code: 404, Error: The requested resource does not exist."
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
@@ -287,7 +287,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         try:
             pipedrive_tap.execute_request(endpoint)
         except _tap.PipedriveNotImplementedError as e:
-            expected_error_message = "HTTP-error-code: 501, Error: Functionality doesn't exist."
+            expected_error_message = "HTTP-error-code: 501, Error: Functionality does not exist."
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)

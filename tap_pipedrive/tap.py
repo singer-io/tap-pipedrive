@@ -42,7 +42,7 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     },
     404: {
         "raise_exception": PipedriveNotFoundError,
-        "message": "The requested resource doesn't exist."
+        "message": "The requested resource does not exist."
     },
     410: {
         "raise_exception": PipedriveGoneError,
@@ -66,7 +66,7 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     },
     501: {
         "raise_exception": PipedriveNotImplementedError,
-        "message": "Functionality doesn't exist."
+        "message": "Functionality does not exist."
     },
     503: {
         "raise_exception": PipedriveServiceUnavailableError,
