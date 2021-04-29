@@ -13,12 +13,6 @@ jobs:
             pip install -U 'pip<19.2' 'setuptools<51.0.0'
             pip install .[dev]
       - run:
-          name: 'JSON Validator'
-          command: |
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json tap-pipedrive/schemas/*.json
-            stitch-validate-json tap-pipedrive/schemas/*.json
-      - run:
           name: 'Unit Tests'
           command: |
             source ~/.virtualenvs/tap-pipedrive/bin/activate
