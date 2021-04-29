@@ -1,6 +1,7 @@
 import os
 import singer
 import pendulum
+from requests.exceptions import RequestException
 
 logger = singer.get_logger()
 
