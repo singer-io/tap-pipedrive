@@ -61,8 +61,11 @@ class PipedriveDiscovery(unittest.TestCase):
     def name(self):
         return "tap_tester_pipedrive_discovery"
 
+    def get_credentials(self):
+        return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
 
-
+    def get_properties(self):
+        return {'start_date' : "2019-09-21T00:00:00Z"}
 
     def test_run(self):
         conn_id = connections.ensure_connection(self)
@@ -77,10 +80,10 @@ class PipedriveDiscovery(unittest.TestCase):
         # verify the tap discovered the right streams
 
         # To run in local ( latest tap-tester )
-        catalog = menagerie.get_catalogs(conn_id)
+        # catalog = menagerie.get_catalogs(conn_id)
 
         # To run in CCI
-        # catalog = menagerie.get_catalog(conn_id)['streams']
+        catalog = menagerie.get_catalog(conn_id)['streams']
 
         # assert we find the correct streams
         self.assertEqual(self.expected_check_streams(),
