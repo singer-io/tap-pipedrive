@@ -83,9 +83,9 @@ class PipedriveDiscovery(unittest.TestCase):
         # catalog = menagerie.get_catalogs(conn_id)
 
         # To run in CCI
-        catalog = menagerie.get_catalog(conn_id)['stream_name']
+        catalog = menagerie.get_catalog(conn_id)['stream']
 
-        print(catalog)
+        print(catalog['stream_name'])
         # assert we find the correct streams
         self.assertEqual(self.expected_check_streams(),
                          {c['tap_stream_id'] for c in catalog})
