@@ -49,14 +49,17 @@ class PipedriveDiscovery(unittest.TestCase):
                 'stages': {'id'},
                 'users': {'id'}}
 
-    def name(self):
-        return "tap_tester_pipedrive_discovery"
-
-    def tap_name(self):
+    @staticmethod
+    def tap_name():
+        """The name of the tap"""
         return "tap-pipedrive"
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return "platform.pipedrive"
+
+    def name(self):
+        return "tap_tester_pipedrive_discovery"
 
     def get_credentials(self):
         return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
