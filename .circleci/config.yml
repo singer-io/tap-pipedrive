@@ -15,7 +15,7 @@ jobs:
       - run:
           name: 'Unit Tests'
           command: |
-            source ~/.virtualenvs/tap-pipedrive/bin/activate
+            source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
             python -m unittest
       - add_ssh_keys
       - run:
