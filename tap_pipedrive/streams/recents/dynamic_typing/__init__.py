@@ -10,56 +10,76 @@ class DynamicTypingRecentsStream(RecentsStream):
     schema_path = 'schemas/recents/dynamic_typing/{}.json'
     static_fields = []
     fields_endpoint = ''
+    fields_more_items_in_collection = True
+    fields_start = 0
+    fields_limit = 100
+
 
     def get_schema(self):
         if not self.schema_cache:
             schema = self.load_schema()
 
-            try:
-                fields_response = self.tap.execute_request(endpoint=self.fields_endpoint)
-            except (ConnectionError, RequestException) as e:
-                raise e
+            while self.fields_more_items_in_collection:
 
-            try:
-                payload = fields_response.json() # Verifying response in execute_request
+                fields_params = {"limit" : self.fields_limit, "start" : self.fields_start} 
 
-                for property in payload['data']:
-                    if property['key'] not in self.static_fields:
-                        logger.debug(property['key'], property['field_type'], property['mandatory_flag'])
+                try:
+                    fields_response = self.tap.execute_request(endpoint=self.fields_endpoint, params=fields_params)
+                except (ConnectionError, RequestException) as e:
+                    raise e
 
-                        if property['key'] in schema['properties']:
-                            logger.warn('Dynamic property "{}" overrides with type {} existing entry in ' \
-                                        'static JSON schema of {} stream.'.format(
-                                            property['key'],
-                                            property['field_type'],
-                                            self.schema
-                                        )
-                            )
+                try:
+                    payload = fields_response.json() # Verifying response in execute_request
 
-                        property_content = {
-                            'type': []
-                        }
+                    for property in payload['data']:
+                        if property['key'] not in self.static_fields:
+                            logger.debug(property['key'], property['field_type'], property['mandatory_flag'])
 
-                        if property['field_type'] in ['int']:
-                            property_content['type'].append('integer')
+                            if property['key'] in schema['properties']:
+                                logger.warn('Dynamic property "{}" overrides with type {} existing entry in ' \
+                                            'static JSON schema of {} stream.'.format(
+                                                property['key'],
+                                                property['field_type'],
+                                                self.schema
+                                            )
+                                )
 
-                        elif property['field_type'] in ['timestamp']:
-                            property_content['type'].append('string')
-                            property_content['format'] = 'date-time'
+                            property_content = {
+                                'type': []
+                            }
 
-                        else:
-                            property_content['type'].append('string')
+                            if property['field_type'] in ['int']:
+                                property_content['type'].append('integer')
 
-                        # allow all dynamic properties to be null since this 
-                        # happens in practice probably because a property could
-                        # be marked mandatory for some amount of time and not
-                        # mandatory for another amount of time
-                        property_content['type'].append('null')
+                            elif property['field_type'] in ['timestamp']:
+                                property_content['type'].append('string')
+                                property_content['format'] = 'date-time'
 
-                        schema['properties'][property['key']] = property_content
+                            else:
+                                property_content['type'].append('string')
 
-            except Exception as e:
-                raise e
+                            # allow all dynamic properties to be null since this 
+                            # happens in practice probably because a property could
+                            # be marked mandatory for some amount of time and not
+                            # mandatory for another amount of time
+                            property_content['type'].append('null')
+
+                            schema['properties'][property['key']] = property_content
+
+                    # Check for more data is available in next page
+                    if 'additional_data' in payload and 'pagination' in payload['additional_data']:
+                        pagination = payload['additional_data']['pagination']
+                        if 'more_items_in_collection' in pagination:
+                            self.fields_more_items_in_collection = pagination['more_items_in_collection']
+
+                            if 'next_start' in pagination:
+                                self.fields_start = pagination['next_start']
+
+                    else:
+                        self.fields_more_items_in_collection = False
+
+                except Exception as e:
+                    raise e
 
             self.schema_cache = schema
         return self.schema_cache
