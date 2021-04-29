@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -12,6 +12,17 @@ jobs:
             source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
             pip install -U 'pip<19.2' 'setuptools<51.0.0'
             pip install .[dev]
+      - run:
+          name: 'JSON Validator'
+          command: |
+            source /usr/local/share/virtualenvs/tap-tester/bin/activate
+            stitch-validate-json tap-pipedrive/schemas/*.json
+            stitch-validate-json tap-pipedrive/schemas/*.json
+      - run:
+          name: 'Unit Tests'
+          command: |
+            source ~/.virtualenvs/tap-pipedrive/bin/activate
+            python -m unittest
       - add_ssh_keys
       - run:
           name: 'Integration Tests'
