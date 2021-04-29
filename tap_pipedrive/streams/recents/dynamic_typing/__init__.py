@@ -29,9 +29,7 @@ class DynamicTypingRecentsStream(RecentsStream):
                     raise e
 
                 try:
-                    assert fields_response.status_code == 200, 'Invalid response from API, ' \
-                                                            'status code is {}'.format(fields_response.status_code)
-                    payload = fields_response.json()
+                    payload = fields_response.json() # Verifying response in execute_request
 
                     for property in payload['data']:
                         if property['key'] not in self.static_fields:
