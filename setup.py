@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from setuptools import setup
 
 
@@ -12,7 +14,7 @@ setup(name="tap-pipedrive",
       install_requires=[
           "pendulum==2.0.4",
           "requests==2.21.0",
-          "singer-python==5.4.1",
+          "singer-python==5.8.1",
       ],
       entry_points="""
           [console_scripts]
