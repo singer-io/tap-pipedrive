@@ -83,8 +83,7 @@ class PipedriveDiscovery(unittest.TestCase):
         # catalog = menagerie.get_catalogs(conn_id)
 
         # To run in CCI
-        catalog = menagerie.get_catalog(conn_id)
-        catalog = catalog['stream']
+        catalog = menagerie.get_catalog(conn_id)['streams']
 
         print(catalog)
 
