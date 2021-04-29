@@ -26,7 +26,6 @@ class PipedriveDiscovery(unittest.TestCase):
             'products',
             'organizations',
             'users',
-            'delete_log',
             'filters',
             'deals'
         }
@@ -38,7 +37,6 @@ class PipedriveDiscovery(unittest.TestCase):
                 'deal_products': {'id'},
                 'dealflow': {'id'},
                 'deals': {'id'},
-                'delete_log': {'id'},
                 'files': {'id'},
                 'filters': {'id'},
                 'notes': {'id'},
@@ -99,7 +97,6 @@ class PipedriveDiscovery(unittest.TestCase):
             'dealflow': ['log_time'],
             'users': [],
             'activities': ['update_time'],
-            'delete_log': [],
             'currency': [],
             'products': ['update_time'],
             'filters': ['update_time'],
