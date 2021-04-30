@@ -130,24 +130,25 @@ class PipedriveTap(object):
             schema = Schema.from_dict(stream.get_schema())
             key_properties = stream.key_properties
 
-            metadata = []
-            for prop, json_schema in schema.properties.items():
-                inclusion = 'available'
-                if prop in key_properties or (stream.state_field and prop == stream.state_field):
-                    inclusion = 'automatic'
-                metadata.append({
-                    'breadcrumb': ['properties', prop],
-                    'metadata': {
-                        'inclusion': inclusion
-                    }
-                })
+            meta = metadata.get_standard_metadata(
+                schema=schema.to_dict(),
+                key_properties=key_properties,
+                valid_replication_keys=[stream.state_field] if stream.state_field else None,
+                replication_method="INCREMENTAL"
+            )
+
+            # If the stream has a state_field, it needs to mark that property with automatic metadata
+            if stream.state_field:
+                meta = metadata.to_map(meta)
+                meta[('properties', stream.state_field)]['inclusion'] = 'automatic'
+                meta = metadata.to_list(meta)
 
             catalog.streams.append(CatalogEntry(
                 stream=stream.schema,
                 tap_stream_id=stream.schema,
                 key_properties=key_properties,
                 schema=schema,
-                metadata=metadata
+                metadata=meta
             ))
 
         return catalog
