@@ -99,27 +99,27 @@ class PipedriveBaseTest(unittest.TestCase):
             'pipelines': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'notes': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'organizations': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
@@ -132,12 +132,12 @@ class PipedriveBaseTest(unittest.TestCase):
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'deals': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'updated_time'}
+                self.REPLICATION_KEYS: {'update_time'}
             },
         }
 

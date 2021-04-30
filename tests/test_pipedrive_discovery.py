@@ -1,142 +1,117 @@
-from tap_tester import connections, menagerie, runner
-import unittest
-import os
+"""Test tap discovery mode and metadata."""
+import re
 
-class PipedriveDiscovery(unittest.TestCase):
-    def environment_variables(self):
-        return {"TAP_PIPEDRIVE_API_TOKEN"}
+from tap_tester import menagerie, connections
 
-    def setUp(self):
-        missing_envs = [x for x in self.environment_variables() if os.getenv(x) is None]
-        if missing_envs:
-            raise Exception("Missing test-required environment variables: {}".format(missing_envs))
+from base import PipedriveBaseTest
 
-    def expected_check_streams(self):
-        return {
-            'files',
-            'activities',
-            'dealflow',
-            'deal_products',
-            'activity_types',
-            'persons',
-            'currency',
-            'pipelines',
-            'notes',
-            'stages',
-            'products',
-            'organizations',
-            'users',
-            'delete_log',
-            'filters',
-            'deals'
-        }
-
-    def expected_pks(self):
-        return {'activities': {'id'},
-                'activity_types': {'id'},
-                'currency': {'id'},
-                'deal_products': {'id'},
-                'dealflow': {'id'},
-                'deals': {'id'},
-                'delete_log': {'id'},
-                'files': {'id'},
-                'filters': {'id'},
-                'notes': {'id'},
-                'organizations': {'id'},
-                'persons': {'id'},
-                'pipelines': {'id'},
-                'products': {'id'},
-                'stages': {'id'},
-                'users': {'id'}}
-
-    @staticmethod
-    def tap_name():
-        """The name of the tap"""
-        return "tap-pipedrive"
-
-    @staticmethod
-    def get_type():
-        return "platform.pipedrive"
+class PipedriveDiscovery(PipedriveBaseTest):
 
     def name(self):
-        return "tap_tester_pipedrive_discovery"
-
-    def get_credentials(self):
-        return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
-
-    def get_properties(self):
-        return {'start_date' : "2019-09-21T00:00:00Z"}
+        return "tap_tester_pipedrive_discovery_qa"
 
     def test_run(self):
+        """
+        Testing that discovery creates the appropriate catalog with valid metadata.
+
+        • Verify number of actual streams discovered match expected
+        • Verify the stream names discovered were what we expect
+        • Verify stream names follow naming convention
+          streams sh4ould only have lowercase alphas and underscores
+        • verify there is only 1 top level breadcrumb
+        • verify replication key(s)
+        • verify primary key(s)
+        • verify that if there is a replication key we are doing INCREMENTAL otherwise FULL
+        • verify the actual replication matches our expected replication method
+        • verify that primary, replication and foreign keys
+          are given the inclusion of automatic.
+        • verify that all other fields have inclusion of available metadata.
+        """
+        streams_to_test = self.expected_streams()
+
         conn_id = connections.ensure_connection(self)
 
-        # run in check mode
-        check_job_name = runner.run_check_mode(self, conn_id)
+        found_catalogs = self.run_and_verify_check_mode(conn_id)
+        # Verify stream names follow naming convention
+        # streams should only have lowercase alphas and underscores
+        found_catalog_names = {c['tap_stream_id'] for c in found_catalogs}
+        self.assertTrue(all([re.fullmatch(r"[a-z_]+",  name) for name in found_catalog_names]),
+                        msg="One or more streams don't follow standard naming")
 
-        # verify check  exit codes
-        exit_status = menagerie.get_exit_status(conn_id, check_job_name)
-        menagerie.verify_check_exit_status(self, exit_status, check_job_name)
+        for stream in streams_to_test:
+            with self.subTest(stream=stream):
 
-        # verify the tap discovered the right streams
+                # Verify ensure the caatalog is found for a given stream
+                catalog = next(iter([catalog for catalog in found_catalogs
+                                     if catalog["stream_name"] == stream]))
+                self.assertIsNotNone(catalog)
 
-        # To run in local ( latest tap-tester )
-        # catalog = menagerie.get_catalogs(conn_id)
+                # collecting expected values
+                expected_primary_keys = self.expected_primary_keys()[stream]
+                expected_replication_keys = self.expected_replication_keys()[stream]
+                expected_automatic_fields = expected_primary_keys | expected_replication_keys
+                expected_replication_method = self.expected_replication_method()[stream]
 
-        # To run in CCI
-        catalog = menagerie.get_catalog(conn_id)['streams']
+                # collecting actual values...
+                schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+                metadata = schema_and_metadata["metadata"]
+                stream_properties = [item for item in metadata if item.get("breadcrumb") == []]
+                actual_primary_keys = set(
+                    stream_properties[0].get(
+                        "metadata", {self.PRIMARY_KEYS: []}).get(self.PRIMARY_KEYS, [])
+                )
+                actual_replication_keys = set(
+                    stream_properties[0].get(
+                        "metadata", {self.REPLICATION_KEYS: []}).get(self.REPLICATION_KEYS, [])
+                )
 
-        # assert we find the correct streams
-        self.assertEqual(self.expected_check_streams(),
-                         {c['tap_stream_id'] for c in catalog})
+                actual_replication_method = stream_properties[0].get(
+                    "metadata", {self.REPLICATION_METHOD: None}).get(self.REPLICATION_METHOD)
+                actual_automatic_fields = set(
+                    item.get("breadcrumb", ["properties", None])[1] for item in metadata
+                    if item.get("metadata").get("inclusion") == "automatic"
+                )
 
-        known_replication_keys = {
-            'persons': ['update_time'],
-            'stages': ['update_time'],
-            'files': ['update_time'],
-            'activity_types': ['update_time'],
-            'deal_products': [],
-            'pipelines': ['update_time'],
-            'dealflow': ['log_time'],
-            'users': [],
-            'activities': ['update_time'],
-            'delete_log': [],
-            'currency': [],
-            'products': ['update_time'],
-            'filters': ['update_time'],
-            'notes': ['update_time'],
-            'organizations': ['update_time'],
-            'deals': ['update_time']}
+                ##########################################################################
+                ### metadata assertions
+                ##########################################################################
 
-        for tap_stream_id in self.expected_check_streams():
-            found_stream = [c for c in catalog if c['tap_stream_id'] == tap_stream_id][0]
-            print(found_stream)
-            found_key_properties = set(found_stream['key_properties'])
-            stream_metadata = found_stream['metadata']
+                # verify there is only 1 top level breadcrumb in metadata
+                self.assertTrue(len(stream_properties) == 1,
+                                msg="There is NOT only one top level breadcrumb for {}".format(stream) + \
+                                "\nstream_properties | {}".format(stream_properties))
 
-            # assert that the pks are correct
-            self.assertEqual(self.expected_pks()[tap_stream_id],
-                             found_key_properties)
+                # verify replication key(s) match expectations
+                self.assertSetEqual(
+                    expected_replication_keys, actual_replication_keys
+                )
 
-            # Check that key properties have inclusion automatic
-            for prop in found_key_properties:
-                metadata_entries = [m['metadata'] for m in stream_metadata if m['breadcrumb'] == ['properties', prop]]
-                self.assertEqual(len(metadata_entries), 1,
-                                 msg="Found more or less than one metadata entry for key property {} in stream {}".format(
-                                     prop, tap_stream_id))
-                self.assertEqual(metadata_entries[0]['inclusion'], 'automatic',
-                                 msg="Inclusion for key property {} in stream {} is not automatic".format(
-                                     prop, tap_stream_id))
+                # verify primary key(s) match expectations
+                self.assertSetEqual(
+                    expected_primary_keys, actual_primary_keys,
+                )
 
-            # Check that all else have inclusion available
-            non_key_property_metadata = [m for m in stream_metadata if m['breadcrumb'][1] not in (self.expected_pks()[tap_stream_id].union(known_replication_keys[tap_stream_id]))]
-            for metadata_entry in non_key_property_metadata:
-                inclusion = metadata_entry['metadata']['inclusion']
-                self.assertEqual(inclusion, 'available',
-                                 msg="Inclusion for property {} in stream {} is not available, was: {}".format(
-                                     metadata_entry['breadcrumb'][1],
-                                     tap_stream_id,
-                                     inclusion))
+                # verify the replication method matches our expectations
+                self.assertEqual(
+                    expected_replication_method, actual_replication_method
+                )
 
-            # Verify after discovery that selected is None for all fields
-            for metadata_entry in stream_metadata:
-                self.assertNotIn('selected', metadata_entry['metadata'].keys())
+                # verify that if there is a replication key we are doing INCREMENTAL otherwise FULL
+                if actual_replication_keys:
+                    self.assertEqual(self.INCREMENTAL, actual_replication_method)
+                else:
+                    self.assertEqual(self.FULL_TABLE, actual_replication_method)
+
+                # verify that primary keys and replication keys
+                # are given the inclusion of automatic in metadata.
+                self.assertSetEqual(expected_automatic_fields, actual_automatic_fields)
+
+                # verify that all other fields have inclusion of available
+                # This assumes there are no unsupported fields for SaaS sources
+                self.assertTrue(
+                    all({item.get("metadata").get("inclusion") == "available"
+                         for item in metadata
+                         if item.get("breadcrumb", []) != []
+                         and item.get("breadcrumb", ["properties", None])[1]
+                         not in actual_automatic_fields}),
+                    msg="Not all non key properties are set to available in metadata")
