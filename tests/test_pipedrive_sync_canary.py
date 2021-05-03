@@ -1,7 +1,7 @@
 from tap_tester import connections
-from base import PipeDriveBaseTest
+from base import PipedriveBaseTest
 
-class PipeDriveSyncTest(PipeDriveBaseTest):
+class PipeDriveSyncTest(PipedriveBaseTest):
     """Test tap sync mode and metadata conforms to standards."""
 
     @staticmethod

@@ -1,7 +1,7 @@
 from tap_tester import connections, runner
-from base import PipeDriveBaseTest
+from base import PipedriveBaseTest
 
-class PipedriveStartDateTest(PipeDriveBaseTest):
+class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
     start_date_2 = ""

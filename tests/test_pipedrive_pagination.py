@@ -1,8 +1,8 @@
 from tap_tester import runner, connections
 
-from base import PipeDriveBaseTest
+from base import PipedriveBaseTest
 
-class PaginationTest(PipeDriveBaseTest):
+class PaginationTest(PipedriveBaseTest):
 
     @staticmethod
     def name():
