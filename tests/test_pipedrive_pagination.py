@@ -30,7 +30,7 @@ class PaginationTest(PipedriveBaseTest):
         for stream in expected_streams:
             with self.subTest(stream=stream):
                 # expected values
-                expected_primary_keys = self.expected_pks()
+                expected_primary_keys = self.expected_primary_keys()
 
                 # collect information for assertions from syncs 1 & 2 base on expected values
                 record_count_sync = record_count_by_stream.get(stream, 0)

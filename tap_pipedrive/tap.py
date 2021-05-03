@@ -108,7 +108,7 @@ class PipedriveTap(object):
         RecentOrganizationsStream(),
         RecentPersonsStream(),
         RecentProductsStream(),
-        RecentDeleteLogsStream(),
+        # RecentDeleteLogsStream(), ## Remove this properly as part of delete_log remove ticket.
         DealStageChangeStream(),
         DealsProductsStream()
     ]

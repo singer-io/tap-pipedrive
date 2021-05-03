@@ -14,7 +14,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         """Instantiate start date according to the desired data set and run the test"""
 
         self.start_date_1 = self.get_properties().get('start_date')
-        self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=7)
+        self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=2)
 
         start_date_1_epoch = self.start_date_1
         start_date_2_epoch = self.start_date_2
@@ -76,8 +76,8 @@ class PipedriveStartDateTest(PipedriveBaseTest):
             with self.subTest(stream=stream):
 
                 # expected values
-                expected_primary_keys = self.expected_pks()[stream]
-                expected_bookmark_keys = self.known_replication_keys()[stream]
+                expected_primary_keys = self.expected_primary_keys()[stream]
+                expected_bookmark_keys = self.expected_replication_keys()[stream]
 
                 # collect information for assertions from syncs 1 & 2 base on expected values
                 record_count_sync_1 = record_count_by_stream_1.get(stream, 0)

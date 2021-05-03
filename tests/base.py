@@ -49,7 +49,7 @@ class PipedriveBaseTest(unittest.TestCase):
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
         return_value = {
-            'start_date' : "2019-09-21T00:00:00Z"
+            'start_date' : "2021-04-28T00:00:00Z"
         }
         if original:
             return return_value
@@ -81,11 +81,11 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.REPLICATION_METHOD: self.INCREMENTAL,
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_METHOD: self.FULL_TABLE,
                 self.REPLICATION_KEYS: {'update_time'}
             },
             'persons': {
@@ -99,7 +99,7 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'pipelines': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_METHOD: self.FULL_TABLE,
                 self.REPLICATION_KEYS: {'update_time'}
             },
             'notes': {
@@ -109,7 +109,7 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_METHOD: self.FULL_TABLE,
                 self.REPLICATION_KEYS: {'update_time'}
             },
             'products': {
@@ -124,12 +124,12 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.REPLICATION_METHOD: self.INCREMENTAL,
             },
-            'delete_log': {
-                self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-            },
+            # 'delete_log': {
+            #     self.PRIMARY_KEYS: {'id'},
+            #     self.REPLICATION_METHOD: self.FULL_TABLE,
+            # },
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
@@ -224,7 +224,7 @@ class PipedriveBaseTest(unittest.TestCase):
         found_catalogs = menagerie.get_catalogs(conn_id)
         self.assertGreater(len(found_catalogs), 0, msg="unable to locate schemas for connection {}".format(conn_id))
 
-        found_catalog_names = set(map(lambda c: c['stream_name'], found_catalogs))
+        found_catalog_names = set(map(lambda c: c['stream_name'] , found_catalogs))
 
         self.assertSetEqual(self.expected_streams(), found_catalog_names, msg="discovered schemas do not match")
         print("discovered schemas are OK")
@@ -371,7 +371,7 @@ class PipedriveBaseTest(unittest.TestCase):
     ##########################################################################
 
     def is_incremental(self, stream):
-        if stream in self.full_table_streams():
+        if self.expected_metadata().get(stream).get(self.REPLICATION_METHOD) == "FULL_TABLE":
             return False 
         return True
 
