@@ -19,7 +19,7 @@ class PaginationTest(PipedriveBaseTest):
 
         # table and field selection
         test_catalogs = [catalog for catalog in found_catalogs
-                                      if catalog.get('stream') in expected_streams]
+                                      if catalog.get('stream_name') in expected_streams]
 
         self.perform_and_verify_table_and_field_selection(conn_id, test_catalogs)
 
