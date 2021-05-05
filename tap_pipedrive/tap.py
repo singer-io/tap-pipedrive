@@ -304,7 +304,7 @@ class PipedriveTap(object):
             _params.update(params)
 
         url = "{}/{}".format(BASE_URL, endpoint)
-        logger.info('Firing request at {} with params: {}'.format(url, _params))
+        logger.debug('Firing request at {} with params: {}'.format(url, _params))
         response = requests.get(url, headers=headers, params=_params)
 
         if response.status_code == 200 and isinstance(response, requests.Response) :
