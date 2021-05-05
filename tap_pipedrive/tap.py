@@ -124,9 +124,6 @@ class PipedriveTap(object):
 
         catalog = Catalog([])
 
-        # TODO: Each stream object should advertise its replication_method
-        full_table_streams=['stages','activity_types','currency','filters','pipelines']
-
         for stream in self.streams:
             stream.tap = self
 
@@ -137,8 +134,7 @@ class PipedriveTap(object):
                 schema=schema.to_dict(),
                 key_properties=key_properties,
                 valid_replication_keys=[stream.state_field] if stream.state_field else None,
-                # TODO: Each stream object should advertise its replication_method
-                replication_method="INCREMENTAL" if stream.state_field else "FULL_TABLE"
+                replication_method=stream.replication_method
             )
 
             # If the stream has a state_field, it needs to mark that property with automatic metadata
@@ -308,7 +304,7 @@ class PipedriveTap(object):
             _params.update(params)
 
         url = "{}/{}".format(BASE_URL, endpoint)
-        logger.debug('Firing request at {} with params: {}'.format(url, _params))
+        logger.info('Firing request at {} with params: {}'.format(url, _params))
         response = requests.get(url, headers=headers, params=_params)
 
         if response.status_code == 200 and isinstance(response, requests.Response) :

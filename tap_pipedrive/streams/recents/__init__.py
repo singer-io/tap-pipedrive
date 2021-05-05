@@ -10,6 +10,7 @@ class RecentsStream(PipedriveStream):
     items = None
     schema = None
     schema_path = 'schemas/recents/{}.json'
+    replication_method = 'INCREMENTAL'
 
     def update_request_params(self, params):
         """
