@@ -31,6 +31,7 @@ class PipedriveBaseTest(unittest.TestCase):
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
     LOGGER = singer.get_logger()
+    STARTDATE_KEYS = "start_date"
 
     start_date = ""
 
@@ -67,22 +68,25 @@ class PipedriveBaseTest(unittest.TestCase):
             'files': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'activities': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'dealflow': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'log_time'}
+                self.REPLICATION_KEYS: {'log_time'},
+                self.STARTDATE_KEYS: {'log_time'}
             },
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
-                ## As State is not working but start date is working for this stream
-                self.REPLICATION_KEYS: {'update_time'}
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
@@ -91,7 +95,8 @@ class PipedriveBaseTest(unittest.TestCase):
             'persons': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'currency': {
                 self.PRIMARY_KEYS: {'id'},
@@ -104,7 +109,8 @@ class PipedriveBaseTest(unittest.TestCase):
             'notes': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
@@ -113,18 +119,19 @@ class PipedriveBaseTest(unittest.TestCase):
             'products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'organizations': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                ## As State is not working but start date is working for this stream
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.STARTDATE_KEYS: {'update_time'}
             },
             # 'delete_log': {
             #     self.PRIMARY_KEYS: {'id'},
@@ -132,13 +139,13 @@ class PipedriveBaseTest(unittest.TestCase):
             # },
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'deals': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
         }
 
@@ -371,7 +378,7 @@ class PipedriveBaseTest(unittest.TestCase):
     ##########################################################################
 
     def is_start_date_appling(self, stream):
-        if self.expected_metadata().get(stream).get(self.REPLICATION_KEYS,None) is None:
+        if self.expected_metadata().get(stream).get(self.STARTDATE_KEYS,None) is None:
             return False 
         return True
 
