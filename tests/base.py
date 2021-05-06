@@ -180,6 +180,15 @@ class PipedriveBaseTest(unittest.TestCase):
                 for table, properties
                 in self.expected_metadata().items()}
 
+    def expected_start_date_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of start_date key fields
+        """
+        return {table: properties.get(self.STARTDATE_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
     def expected_foreign_keys(self):
         """
         return a dictionary with key of table name

@@ -77,7 +77,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
                 # expected values
                 expected_primary_keys = self.expected_primary_keys()[stream]
-                expected_bookmark_keys = self.expected_replication_keys()[stream]
+                expected_start_date_keys = self.expected_start_date_keys()[stream]
 
                 # collect information for assertions from syncs 1 & 2 base on expected values
                 record_count_sync_1 = record_count_by_stream_1.get(stream, 0)
@@ -93,22 +93,22 @@ class PipedriveStartDateTest(PipedriveBaseTest):
                 primary_keys_sync_2 = set(primary_keys_list_2)
 
                 if self.is_start_date_appling(stream):
-                    # Expected bookmark key is one element in set so directly access it
-                    bookmark_keys_list_1 = [message.get('data').get(next(iter(expected_bookmark_keys))) for message in synced_records_1.get(stream).get('messages')
+                    # Expected start_date key is one element in set so directly access it
+                    start_date_keys_list_1 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_1.get(stream).get('messages')
                                             if message.get('action') == 'upsert']
-                    bookmark_keys_list_2 = [message.get('data').get(next(iter(expected_bookmark_keys))) for message in synced_records_2.get(stream).get('messages')
+                    start_date_keys_list_2 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_2.get(stream).get('messages')
                                             if message.get('action') == 'upsert']
 
-                    bookmark_key_sync_1 = set(bookmark_keys_list_1)
-                    bookmark_key_sync_2 = set(bookmark_keys_list_2)
+                    start_date_key_sync_1 = set(start_date_keys_list_1)
+                    start_date_key_sync_2 = set(start_date_keys_list_2)
 
-                    # Verify bookmark key values are greater than or equal to start date of sync 1
-                    for bookmark_key_value in bookmark_key_sync_1:
-                        self.assertGreaterEqual(bookmark_key_value, start_date_1_epoch)
+                    # Verify start_date key values are greater than or equal to start date of sync 1
+                    for start_date_key_value in start_date_key_sync_1:
+                        self.assertGreaterEqual(start_date_key_value, start_date_1_epoch)
 
-                    # Verify bookmark key values are greater than or equal to start date of sync 2
-                    for bookmark_key_value in bookmark_key_sync_2:
-                        self.assertGreaterEqual(bookmark_key_value, start_date_2_epoch)
+                    # Verify start_date key values are greater than or equal to start date of sync 2
+                    for start_date_key_value in start_date_key_sync_2:
+                        self.assertGreaterEqual(start_date_key_value, start_date_2_epoch)
 
                     # Verify the number of records replicated in sync 1 is greater than the number
                     # of records replicated in sync 2 for stream
