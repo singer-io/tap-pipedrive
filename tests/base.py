@@ -86,7 +86,7 @@ class PipedriveBaseTest(unittest.TestCase):
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.STARTDATE_KEYS: {'update_time'}
+                self.STARTDATE_KEYS: {'add_time'}
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
@@ -131,7 +131,7 @@ class PipedriveBaseTest(unittest.TestCase):
             'users': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.STARTDATE_KEYS: {'update_time'}
+                self.STARTDATE_KEYS: {'modified'}
             },
             # 'delete_log': {
             #     self.PRIMARY_KEYS: {'id'},
