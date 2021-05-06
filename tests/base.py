@@ -32,6 +32,8 @@ class PipedriveBaseTest(unittest.TestCase):
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
     LOGGER = singer.get_logger()
     STARTDATE_KEYS = "start_date"
+    DATETIME_FMT = "%Y-%m-%dT%H:%M:%SZ"
+    DATETIME_FMT1 = "%Y-%m-%d %H:%M:%S"
 
     start_date = ""
 
@@ -392,5 +394,8 @@ class PipedriveBaseTest(unittest.TestCase):
         return True
 
     def dt_to_ts(self, dtime):
-        return int(time.mktime(dt.strptime(
-            dtime, self.DATETIME_FMT).timetuple()))
+        try:
+            value = int(time.mktime(dt.strptime(dtime, self.DATETIME_FMT).timetuple()))
+        except:
+            value = int(time.mktime(dt.strptime(dtime, self.DATETIME_FMT1).timetuple()))
+        return value
