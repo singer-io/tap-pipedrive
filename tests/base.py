@@ -81,6 +81,7 @@ class PipedriveBaseTest(unittest.TestCase):
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
+                ## As State is not working but start date is working for this stream
                 self.REPLICATION_KEYS: {'update_time'}
             },
             'activity_types': {
@@ -122,6 +123,7 @@ class PipedriveBaseTest(unittest.TestCase):
             'users': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
+                ## As State is not working but start date is working for this stream
                 self.REPLICATION_KEYS: {'update_time'}
             },
             # 'delete_log': {
@@ -369,7 +371,7 @@ class PipedriveBaseTest(unittest.TestCase):
     ##########################################################################
 
     def is_start_date_appling(self, stream):
-        if self.expected_metadata().get(stream).get(self.REPLICATION_KEYS) is None:
+        if self.expected_metadata().get(stream).get(self.REPLICATION_KEYS,None) is None:
             return False 
         return True
 
