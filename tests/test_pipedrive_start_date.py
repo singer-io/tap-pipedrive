@@ -14,7 +14,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         """Instantiate start date according to the desired data set and run the test"""
 
         self.start_date_1 = self.get_properties().get('start_date')
-        self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=7)
+        self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=8)
 
         start_date_1_epoch = self.start_date_1
         start_date_2_epoch = self.start_date_2
