@@ -67,6 +67,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
 
                 actual_replication_method = stream_properties[0].get(
                     "metadata", {self.REPLICATION_METHOD: None}).get(self.REPLICATION_METHOD)
+
                 actual_automatic_fields = set(
                     item.get("breadcrumb", ["properties", None])[1] for item in metadata
                     if item.get("metadata").get("inclusion") == "automatic"
@@ -95,12 +96,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
                 self.assertEqual(
                     expected_replication_method, actual_replication_method
                 )
-
-                # verify that if there is a replication key we are doing INCREMENTAL otherwise FULL
-                if actual_replication_keys:
-                    self.assertEqual(self.INCREMENTAL, actual_replication_method)
-                else:
-                    self.assertEqual(self.FULL_TABLE, actual_replication_method)
+                
 
                 # verify that primary keys and replication keys
                 # are given the inclusion of automatic in metadata.
