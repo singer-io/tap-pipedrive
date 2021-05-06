@@ -92,7 +92,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
                 primary_keys_sync_1 = set(primary_keys_list_1)
                 primary_keys_sync_2 = set(primary_keys_list_2)
 
-                if self.is_incremental(stream):
+                if self.is_start_date_appling(stream):
                     # Expected bookmark key is one element in set so directly access it
                     bookmark_keys_list_1 = [message.get('data').get(next(iter(expected_bookmark_keys))) for message in synced_records_1.get(stream).get('messages')
                                             if message.get('action') == 'upsert']

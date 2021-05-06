@@ -5,4 +5,5 @@ class ActivityTypesStream(PipedriveStream):
     endpoint = 'activityTypes'
     schema = 'activity_types'
     key_properties = ['id', ]
-    state_field = 'update_time'
+    # As it has no meaning to have
+    # state_field = 'update_time'

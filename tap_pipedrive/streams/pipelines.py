@@ -5,4 +5,5 @@ class PipelinesStream(PipedriveStream):
     endpoint = 'pipelines'
     schema = 'pipelines'
     key_properties = ['id', ]
-    state_field = 'update_time'
+    # As it has no meaning to have
+    # state_field = 'update_time'

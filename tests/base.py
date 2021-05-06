@@ -71,8 +71,7 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'activities': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.INCREMENTAL
             },
             'dealflow': {
                 self.PRIMARY_KEYS: {'id'},
@@ -81,12 +80,12 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.REPLICATION_KEYS: {'update_time'}
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'persons': {
                 self.PRIMARY_KEYS: {'id'},
@@ -99,8 +98,7 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'pipelines': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'notes': {
                 self.PRIMARY_KEYS: {'id'},
@@ -109,8 +107,7 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'products': {
                 self.PRIMARY_KEYS: {'id'},
@@ -125,6 +122,7 @@ class PipedriveBaseTest(unittest.TestCase):
             'users': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'}
             },
             # 'delete_log': {
             #     self.PRIMARY_KEYS: {'id'},
@@ -370,8 +368,8 @@ class PipedriveBaseTest(unittest.TestCase):
     ### Tap Specific Methods
     ##########################################################################
 
-    def is_incremental(self, stream):
-        if self.expected_metadata().get(stream).get(self.REPLICATION_METHOD) == "FULL_TABLE":
+    def is_start_date_appling(self, stream):
+        if self.expected_metadata().get(stream).get(self.REPLICATION_KEYS) is None:
             return False 
         return True
 

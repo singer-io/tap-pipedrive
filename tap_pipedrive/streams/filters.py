@@ -5,4 +5,5 @@ class FiltersStream(PipedriveStream):
     endpoint = 'filters'
     schema = 'filters'
     key_properties = ['id', ]
-    state_field = 'update_time'
+    # As it has no meaning to have
+    # state_field = 'update_time'

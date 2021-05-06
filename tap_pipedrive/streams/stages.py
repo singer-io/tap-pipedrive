@@ -5,4 +5,5 @@ class StagesStream(PipedriveStream):
     endpoint = 'stages'
     schema = 'stages'
     key_properties = ['id', ]
-    state_field = 'update_time'
+    # As it has no meaning to have
+    # state_field = 'update_time'
