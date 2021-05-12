@@ -16,6 +16,7 @@ class PipedriveStream(object):
     schema = ''
     schema_path = 'schemas/{}.json'
     schema_cache = None
+    replication_method = 'FULL_TABLE'
 
     start = 0
     limit = 100

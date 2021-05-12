@@ -7,6 +7,7 @@ class RecentUsersStream(RecentsStream):
     key_properties = ['id', ]
     # temporary disabled due current Pipedrive API limitations
     # state_field = 'modified'
+    replication_method = 'FULL_TABLE'
 
     def process_row(self, row):
         return row['data'][0]

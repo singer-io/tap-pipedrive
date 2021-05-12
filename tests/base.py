@@ -4,6 +4,7 @@ Run discovery for as a prerequisite for most tests
 """
 import unittest
 import os
+import time
 from datetime import timedelta
 from datetime import datetime as dt
 
@@ -30,8 +31,12 @@ class PipedriveBaseTest(unittest.TestCase):
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
     LOGGER = singer.get_logger()
-
-    start_date = ""
+    STARTDATE_KEYS = "start_date"
+    DATETIME_FMT = {
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S.000000Z"
+    }
 
     @staticmethod
     def tap_name():
@@ -48,7 +53,7 @@ class PipedriveBaseTest(unittest.TestCase):
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
         return_value = {
-            'start_date' : "2019-09-21T00:00:00Z"
+            'start_date' : "2021-04-28T00:00:00Z"
         }
         if original:
             return return_value
@@ -66,31 +71,35 @@ class PipedriveBaseTest(unittest.TestCase):
             'files': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'activities': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'dealflow': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'log_time'}
+                self.REPLICATION_KEYS: {'log_time'},
+                self.STARTDATE_KEYS: {'log_time'}
             },
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.STARTDATE_KEYS: {'add_time'}
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'persons': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'currency': {
                 self.PRIMARY_KEYS: {'id'},
@@ -98,46 +107,48 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'pipelines': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'notes': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'organizations': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.STARTDATE_KEYS: {'modified'}
             },
-            'delete_log': {
-                self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
-            },
+            # 'delete_log': {
+            #     self.PRIMARY_KEYS: {'id'},
+            #     self.REPLICATION_METHOD: self.FULL_TABLE,
+            # },
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_METHOD: self.FULL_TABLE
             },
             'deals': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {'update_time'}
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
         }
 
@@ -169,6 +180,15 @@ class PipedriveBaseTest(unittest.TestCase):
         and value as a set of replication key fields
         """
         return {table: properties.get(self.REPLICATION_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
+    def expected_start_date_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of start_date key fields
+        """
+        return {table: properties.get(self.STARTDATE_KEYS, set())
                 for table, properties
                 in self.expected_metadata().items()}
 
@@ -211,7 +231,6 @@ class PipedriveBaseTest(unittest.TestCase):
         """
         Run the tap in check mode and verify it succeeds.
         This should be ran prior to field selection and initial sync.
-
         Return the connection id and found catalogs from menagerie.
         """
         # run in check mode
@@ -224,7 +243,7 @@ class PipedriveBaseTest(unittest.TestCase):
         found_catalogs = menagerie.get_catalogs(conn_id)
         self.assertGreater(len(found_catalogs), 0, msg="unable to locate schemas for connection {}".format(conn_id))
 
-        found_catalog_names = set(map(lambda c: c['stream_name'], found_catalogs))
+        found_catalog_names = set(map(lambda c: c['stream_name'] , found_catalogs))
 
         self.assertSetEqual(self.expected_streams(), found_catalog_names, msg="discovered schemas do not match")
         print("discovered schemas are OK")
@@ -262,7 +281,6 @@ class PipedriveBaseTest(unittest.TestCase):
         """
         Perform table and field selection based off of the streams to select
         set and field selection parameters.
-
         Verify this results in the expected streams selected and all or no
         fields selected for those streams.
         """
@@ -371,3 +389,15 @@ class PipedriveBaseTest(unittest.TestCase):
     ### Tap Specific Methods
     ##########################################################################
 
+    def is_start_date_appling(self, stream):
+        if self.expected_metadata().get(stream).get(self.STARTDATE_KEYS,None) is None:
+            return False 
+        return True
+
+    def dt_to_ts(self, dtime):
+        for date_format in self.DATETIME_FMT:
+            try:
+                date_stripped = int(time.mktime(dt.strptime(dtime, date_format).timetuple()))
+                return date_stripped
+            except ValueError:
+                continue
