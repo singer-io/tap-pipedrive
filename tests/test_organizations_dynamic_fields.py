@@ -36,8 +36,8 @@ class PipedriveDiscovery(PipedriveBaseTest):
                 organization_fields_page_limit = 100
 
                 schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
-                metadata = schema_and_metadata["metadata"]
-                organizations_dynamic_fields = [m for m in metadata if m['breadcrumb'][1] not in self.organizations_static_fields()]
+                schema_fields = schema_and_metadata['schema']['properties'].keys()
+                organizations_dynamic_fields = [field for field in schema_fields if field not in self.organizations_static_fields()]
 
                 #Verify count of dynamic fields is more than page limit for organization fields(Pagination)
                 self.assertGreater(len(organizations_dynamic_fields), organization_fields_page_limit)
