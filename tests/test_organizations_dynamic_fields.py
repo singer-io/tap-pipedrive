@@ -1,7 +1,7 @@
-from tap_tester import connections
-from base import PipeDriveBaseTest
+from tap_tester import menagerie, connections
+from base import PipedriveBaseTest
 
-class PipedriveDiscovery(PipeDriveBaseTest):
+class PipedriveDiscovery(PipedriveBaseTest):
 
     @staticmethod
     def name():
@@ -32,11 +32,12 @@ class PipedriveDiscovery(PipeDriveBaseTest):
         # Verify number of dynamic fields in organizations stream metadata
         # (Need enough dynamic fields for organizations)
         for catalog in found_catalog:
-            if catalog['stream'] == "organizations":
+            if catalog['stream_name'] == "organizations":
                 organization_fields_page_limit = 100
 
-                stream_metadata = catalog['metadata']
-                organizations_dynamic_fields = [m for m in stream_metadata if m['breadcrumb'][1] not in self.organizations_static_fields()]
+                schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+                metadata = schema_and_metadata["metadata"]
+                organizations_dynamic_fields = [m for m in metadata if m['breadcrumb'][1] not in self.organizations_static_fields()]
 
                 #Verify count of dynamic fields is more than page limit for organization fields(Pagination)
                 self.assertGreater(len(organizations_dynamic_fields), organization_fields_page_limit)
