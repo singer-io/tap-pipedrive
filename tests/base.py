@@ -136,10 +136,6 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.REPLICATION_METHOD: self.FULL_TABLE,
                 self.STARTDATE_KEYS: {'modified'}
             },
-            # 'delete_log': {
-            #     self.PRIMARY_KEYS: {'id'},
-            #     self.REPLICATION_METHOD: self.FULL_TABLE,
-            # },
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE
