@@ -133,8 +133,7 @@ class PipedriveTap(object):
                 schema=schema.to_dict(),
                 key_properties=key_properties,
                 valid_replication_keys=[stream.state_field] if stream.state_field else None,
-                # TODO: Each stream object should advertise its replication_method
-                replication_method="INCREMENTAL" if stream.state_field else "FULL_TABLE"
+                replication_method=stream.replication_method
             )
 
             # If the stream has a state_field, it needs to mark that property with automatic metadata
