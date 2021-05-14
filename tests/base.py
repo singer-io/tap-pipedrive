@@ -1,117 +1,226 @@
+"""
+Setup expectations for test sub classes
+Run discovery for as a prerequisite for most tests
+"""
 import unittest
 import os
+import time
 from datetime import timedelta
 from datetime import datetime as dt
-import time
 
+import singer
 from tap_tester import connections, menagerie, runner
 
-class PipeDriveBaseTest(unittest.TestCase):
 
-    START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
-    DATETIME_FMT = "%Y-%m-%dT%H:%M:%SZ"
-    start_date = ""
+class PipedriveBaseTest(unittest.TestCase):
+    """
+    Setup expectations for test sub classes.
+    Metadata describing streams.
+
+    A bunch of shared methods that are used in tap-tester tests.
+    Shared tap-specific methods (as needed).
+    """
+    AUTOMATIC_FIELDS = "automatic"
+    REPLICATION_KEYS = "valid-replication-keys"
+    PRIMARY_KEYS = "table-key-properties"
+    FOREIGN_KEYS = "table-foreign-key-properties"
     REPLICATION_METHOD = "forced-replication-method"
+    API_LIMIT = "max-row-limit"
+    INCREMENTAL = "INCREMENTAL"
+    FULL_TABLE = "FULL_TABLE"
+    START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
+    BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
+    LOGGER = singer.get_logger()
+    STARTDATE_KEYS = "start_date"
+    DATETIME_FMT = {
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S.000000Z"
+    }
 
-    def known_replication_keys(self):
-        return {
-            'persons': ['update_time'],
-            'stages': ['update_time'],
-            'files': ['update_time'],
-            'activity_types': ['update_time'],
-            'deal_products': ['add_time'],
-            'pipelines': ['update_time'],
-            'dealflow': ['log_time'],
-            'users': ['created'],
-            'activities': ['update_time'],
-            # 'delete_log': [],
-            'currency': [],
-            'products': ['update_time'],
-            'filters': ['update_time'],
-            'notes': ['update_time'],
-            'organizations': ['update_time'],
-            'deals': ['update_time']}
-
-    def full_table_streams(self):
-        return ['stages','activity_types','currency','filters','pipelines']
-
-    def expected_streams(self):
-        return {
-            'files',
-            'activities',
-            'dealflow',
-            'deal_products',
-            'activity_types',
-            'persons',
-            'currency',
-            'pipelines',
-            'notes',
-            'stages',
-            'products',
-            'organizations',
-            'users',
-            # 'delete_log',
-            'filters',
-            'deals'
-        }
-
-    def expected_pks(self):
-        return {
-            'activities': {'id'},
-            'activity_types': {'id'},
-            'currency': {'id'},
-            'deal_products': {'id'},
-            'dealflow': {'id'},
-            'deals': {'id'},
-            # 'delete_log': {'id'},
-            'files': {'id'},
-            'filters': {'id'},
-            'notes': {'id'},
-            'organizations': {'id'},
-            'persons': {'id'},
-            'pipelines': {'id'},
-            'products': {'id'},
-            'stages': {'id'},
-            'users': {'id'}}
-
-    def environment_variables(self):
-        return {"TAP_PIPEDRIVE_API_TOKEN"}
-
-    def organizations_static_fields(self):
-        return ['active_flag', 'activities_count', 'add_time', 'address', 'address_admin_area_level_1',
-                'address_admin_area_level_2', 'address_country', 'address_formatted_address', 'address_locality',
-                'address_postal_code', 'address_route', 'address_street_number', 'address_sublocality',
-                'address_subpremise', 'category_id', 'cc_email', 'closed_deals_count', 'company_id',
-                'country_code', 'done_activities_count', 'email_messages_count', 'files_count', 'first_char',
-                'followers_count', 'id', 'last_activity_date', 'last_activity_id', 'lost_deals_count', 'name',
-                'next_activity_date', 'next_activity_id', 'next_activity_time', 'notes_count', 'open_deals_count',
-                'owner_id', 'owner_name', 'people_count', 'picture_id', 'reference_activities_count',
-                'related_closed_deals_count', 'related_lost_deals_count', 'related_open_deals_count',
-                'related_won_deals_count', 'timeline_last_activity_time', 'timeline_last_activity_time_by_owner',
-                'undone_activities_count', 'update_time', 'visible_to', 'won_deals_count']
-
-    def setUp(self):
-        missing_envs = [x for x in self.environment_variables() if os.getenv(x) is None]
-        if missing_envs:
-            raise Exception("Missing test-required environment variables: {}".format(missing_envs))
-
-    def tap_name(self):
+    @staticmethod
+    def tap_name():
+        """The name of the tap"""
         return "tap-pipedrive"
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
+        """the expected url route ending"""
         return "platform.pipedrive"
 
-    def get_credentials(self):
-        return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
+
 
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
-        return_value = {"start_date" : "2021-04-10T00:00:00Z"}
+        return_value = {
+            'start_date' : "2021-04-28T00:00:00Z"
+        }
         if original:
             return return_value
 
         return_value["start_date"] = self.start_date
         return return_value
+
+    @staticmethod
+    def get_credentials():
+        return {'api_token': os.getenv('TAP_PIPEDRIVE_API_TOKEN')}
+
+    def expected_metadata(self):
+        """The expected streams and metadata about the streams"""
+        return {
+            'files': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'activities': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'dealflow': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'log_time'},
+                self.STARTDATE_KEYS: {'log_time'}
+            },
+            'deal_products': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.STARTDATE_KEYS: {'add_time'}
+            },
+            'activity_types': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE
+            },
+            'persons': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'currency': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+            },
+            'pipelines': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE
+            },
+            'notes': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'stages': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE
+            },
+            'products': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'organizations': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+            'users': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.STARTDATE_KEYS: {'modified'}
+            },
+            # 'delete_log': {
+            #     self.PRIMARY_KEYS: {'id'},
+            #     self.REPLICATION_METHOD: self.FULL_TABLE,
+            # },
+            'filters': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE
+            },
+            'deals': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            },
+        }
+
+
+    def expected_streams(self):
+        """A set of expected stream names"""
+        return set(self.expected_metadata().keys())
+
+    def child_streams(self):
+        """
+        Return a set of streams that are child streams
+        based on having foreign key metadata
+        """
+        return {stream for stream, metadata in self.expected_metadata().items()
+                if metadata.get(self.FOREIGN_KEYS)}
+
+    def expected_primary_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of primary key fields
+        """
+        return {table: properties.get(self.PRIMARY_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
+    def expected_replication_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of replication key fields
+        """
+        return {table: properties.get(self.REPLICATION_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
+    def expected_start_date_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of start_date key fields
+        """
+        return {table: properties.get(self.STARTDATE_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
+    def expected_foreign_keys(self):
+        """
+        return a dictionary with key of table name
+        and value as a set of foreign key fields
+        """
+        return {table: properties.get(self.FOREIGN_KEYS, set())
+                for table, properties
+                in self.expected_metadata().items()}
+
+
+    def expected_automatic_fields(self):
+        auto_fields = {}
+        for k, v in self.expected_metadata().items():
+            auto_fields[k] = v.get(self.PRIMARY_KEYS, set()) | v.get(self.REPLICATION_KEYS, set())
+        return auto_fields
+
+    def expected_replication_method(self):
+        """return a dictionary with key of table name nd value of replication method"""
+        return {table: properties.get(self.REPLICATION_METHOD, None)
+                for table, properties
+                in self.expected_metadata().items()}
+
+    def environment_variables(self):
+        return {"TAP_PIPEDRIVE_API_TOKEN"}
+
+    def setUp(self):
+        missing_envs = [x for x in self.environment_variables() if os.getenv(x) is None]
+        if missing_envs:
+            raise Exception("Missing test-required environment variables: {}".format(missing_envs))
 
 
     #########################
@@ -134,9 +243,8 @@ class PipeDriveBaseTest(unittest.TestCase):
         found_catalogs = menagerie.get_catalogs(conn_id)
         self.assertGreater(len(found_catalogs), 0, msg="unable to locate schemas for connection {}".format(conn_id))
 
-        # found_catalog_names = set(map(lambda c: c['stream_name'], found_catalogs))
-        found_catalog_names = set(f['stream_name'] for f in found_catalogs if f['tap_stream_id']!='delete_log')
-        print(found_catalog_names)
+        found_catalog_names = set(map(lambda c: c['stream_name'] , found_catalogs))
+
         self.assertSetEqual(self.expected_streams(), found_catalog_names, msg="discovered schemas do not match")
         print("discovered schemas are OK")
 
@@ -157,7 +265,7 @@ class PipeDriveBaseTest(unittest.TestCase):
 
         # Verify actual rows were synced
         sync_record_count = runner.examine_target_output_file(
-            self, conn_id, self.expected_streams(), self.expected_pks())
+            self, conn_id, self.expected_streams(), self.expected_primary_keys())
         self.assertGreater(
             sum(sync_record_count.values()), 0,
             msg="failed to replicate any data: {}".format(sync_record_count)
@@ -187,9 +295,6 @@ class PipeDriveBaseTest(unittest.TestCase):
         # Ensure our selection affects the catalog
         expected_selected = [tc.get('stream_name') for tc in test_catalogs]
         for cat in catalogs:
-            ## Remove this ##
-            if cat['tap_stream_id']=='delete_log':
-                continue
             catalog_entry = menagerie.get_annotated_schema(conn_id, cat['stream_id'])
 
             # Verify all testable streams are selected
@@ -231,9 +336,6 @@ class PipeDriveBaseTest(unittest.TestCase):
     def select_all_streams_and_fields(conn_id, catalogs, select_all_fields: bool = True):
         """Select all streams and all fields within streams"""
         for catalog in catalogs:
-            ## Remove this ##
-            if catalog['tap_stream_id']=='delete_log':
-                continue
             schema = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
 
             non_selected_properties = []
@@ -245,21 +347,57 @@ class PipeDriveBaseTest(unittest.TestCase):
             connections.select_catalog_and_fields_via_metadata(
                 conn_id, catalog, schema, [], non_selected_properties)
 
-    def timedelta_formatted(self, dtime, days=0):
-        date_stripped = dt.strptime(dtime, self.START_DATE_FORMAT)
-        return_date = date_stripped + timedelta(days=days)
+    @staticmethod
+    def parse_date(date_value):
+        """
+        Pass in string-formatted-datetime, parse the value, and return it as an unformatted datetime object.
+        """
+        date_formats = {
+            "%Y-%m-%dT%H:%M:%S.%fZ",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "%Y-%m-%dT%H:%M:%S.%f+00:00",
+            "%Y-%m-%dT%H:%M:%S+00:00",
+            "%Y-%m-%d"
+        }
+        for date_format in date_formats:
+            try:
+                date_stripped = dt.strptime(date_value, date_format)
+                return date_stripped
+            except ValueError:
+                continue
 
-        return dt.strftime(return_date, self.START_DATE_FORMAT)
+        raise NotImplementedError("Tests do not account for dates of this format: {}".format(date_value))
+
+    def timedelta_formatted(self, dtime, days=0):
+        try:
+            date_stripped = dt.strptime(dtime, self.START_DATE_FORMAT)
+            return_date = date_stripped + timedelta(days=days)
+
+            return dt.strftime(return_date, self.START_DATE_FORMAT)
+
+        except ValueError:
+            try:
+                date_stripped = dt.strptime(dtime, self.BOOKMARK_COMPARISON_FORMAT)
+                return_date = date_stripped + timedelta(days=days)
+
+                return dt.strftime(return_date, self.BOOKMARK_COMPARISON_FORMAT)
+
+            except ValueError:
+                return Exception("Datetime object is not of the format: {}".format(self.START_DATE_FORMAT))
 
     ##########################################################################
     ### Tap Specific Methods
     ##########################################################################
 
-    def is_incremental(self, stream):
-        if stream in self.full_table_streams():
+    def is_start_date_appling(self, stream):
+        if self.expected_metadata().get(stream).get(self.STARTDATE_KEYS,None) is None:
             return False 
         return True
 
     def dt_to_ts(self, dtime):
-        return int(time.mktime(dt.strptime(
-            dtime, self.DATETIME_FMT).timetuple()))
+        for date_format in self.DATETIME_FMT:
+            try:
+                date_stripped = int(time.mktime(dt.strptime(dtime, date_format).timetuple()))
+                return date_stripped
+            except ValueError:
+                continue
