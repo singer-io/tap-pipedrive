@@ -36,6 +36,8 @@ class PipedriveDiscovery(PipedriveBaseTest):
                 organization_fields_page_limit = 100
 
                 schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+                print(">>>>>>>>")
+                print(schema_and_metadata)
                 schema_fields = schema_and_metadata['schema']['properties'].keys()
                 organizations_dynamic_fields = [field for field in schema_fields if field not in self.organizations_static_fields()]
 
