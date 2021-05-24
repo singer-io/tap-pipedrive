@@ -19,7 +19,6 @@ This tap:
   - [Recent Organizations](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Persons](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
   - [Recent Products](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
-  - [Recent DeleteLogs](https://developers.pipedrive.com/docs/api/v1/#!/Recents)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 
