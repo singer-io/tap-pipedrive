@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0
+  * Added retry mechanism for http error codes [#93](https://github.com/singer-io/tap-pipedrive/pull/93)
+  * Removed support for delete_logs stream [#97](https://github.com/singer-io/tap-pipedrive/pull/97)
+  * Fixed organizations missing fields [#94](https://github.com/singer-io/tap-pipedrive/pull/94)
+
 ## 1.0.6
   * Use anyOf schema for a date-time field in the deals schema [#71](https://github.com/singer-io/tap-pipedrive/pull/71)
 
