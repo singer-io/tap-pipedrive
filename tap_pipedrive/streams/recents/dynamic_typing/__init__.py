@@ -1,19 +1,18 @@
 import singer
 from requests import RequestException
+from slugify import slugify
 from tap_pipedrive.streams.recents import RecentsStream
-
 
 logger = singer.get_logger()
 
 
 class DynamicTypingRecentsStream(RecentsStream):
-    schema_path = 'schemas/recents/dynamic_typing/{}.json'
+    schema_path = "schemas/recents/dynamic_typing/{}.json"
     static_fields = []
-    fields_endpoint = ''
+    fields_endpoint = ""
     fields_more_items_in_collection = True
     fields_start = 0
     fields_limit = 100
-
 
     def get_schema(self):
         if not self.schema_cache:
@@ -21,59 +20,73 @@ class DynamicTypingRecentsStream(RecentsStream):
 
             while self.fields_more_items_in_collection:
 
-                fields_params = {"limit" : self.fields_limit, "start" : self.fields_start} 
+                fields_params = {"limit": self.fields_limit, "start": self.fields_start}
 
                 try:
-                    fields_response = self.tap.execute_request(endpoint=self.fields_endpoint, params=fields_params)
+                    fields_response = self.tap.execute_request(
+                        endpoint=self.fields_endpoint, params=fields_params
+                    )
                 except (ConnectionError, RequestException) as e:
                     raise e
 
                 try:
-                    payload = fields_response.json() # Verifying response in execute_request
+                    payload = (
+                        fields_response.json()
+                    )  # Verifying response in execute_request
 
-                    for property in payload['data']:
-                        if property['key'] not in self.static_fields:
-                            logger.debug(property['key'], property['field_type'], property['mandatory_flag'])
+                    for property in payload["data"]:
+                        if property["key"] not in self.static_fields:
+                            logger.debug(
+                                property["key"],
+                                property["field_type"],
+                                property["mandatory_flag"],
+                            )
 
-                            if property['key'] in schema['properties']:
-                                logger.warn('Dynamic property "{}" overrides with type {} existing entry in ' \
-                                            'static JSON schema of {} stream.'.format(
-                                                property['key'],
-                                                property['field_type'],
-                                                self.schema
-                                            )
+                            if property["key"] in schema["properties"]:
+                                logger.warn(
+                                    'Dynamic property "{}" overrides with type {} existing entry in '
+                                    "static JSON schema of {} stream.".format(
+                                        property["key"],
+                                        property["field_type"],
+                                        self.schema,
+                                    )
                                 )
 
-                            property_content = {
-                                'type': []
-                            }
+                            property_content = {"type": []}
 
-                            if property['field_type'] in ['int']:
-                                property_content['type'].append('integer')
+                            if property["field_type"] in ["int"]:
+                                property_content["type"].append("integer")
 
-                            elif property['field_type'] in ['timestamp']:
-                                property_content['type'].append('string')
-                                property_content['format'] = 'date-time'
+                            elif property["field_type"] in ["timestamp"]:
+                                property_content["type"].append("string")
+                                property_content["format"] = "date-time"
 
                             else:
-                                property_content['type'].append('string')
+                                property_content["type"].append("string")
 
-                            # allow all dynamic properties to be null since this 
+                            # allow all dynamic properties to be null since this
                             # happens in practice probably because a property could
                             # be marked mandatory for some amount of time and not
                             # mandatory for another amount of time
-                            property_content['type'].append('null')
-
-                            schema['properties'][property['key']] = property_content
+                            property_content["type"].append("null")
+                            key = property["key"]
+                            if not key.isalpha():
+                                key = slugify(property["name"]).replace("-", "_")
+                            schema["properties"][key] = property_content
 
                     # Check for more data is available in next page
-                    if 'additional_data' in payload and 'pagination' in payload['additional_data']:
-                        pagination = payload['additional_data']['pagination']
-                        if 'more_items_in_collection' in pagination:
-                            self.fields_more_items_in_collection = pagination['more_items_in_collection']
+                    if (
+                        "additional_data" in payload
+                        and "pagination" in payload["additional_data"]
+                    ):
+                        pagination = payload["additional_data"]["pagination"]
+                        if "more_items_in_collection" in pagination:
+                            self.fields_more_items_in_collection = pagination[
+                                "more_items_in_collection"
+                            ]
 
-                            if 'next_start' in pagination:
-                                self.fields_start = pagination['next_start']
+                            if "next_start" in pagination:
+                                self.fields_start = pagination["next_start"]
 
                     else:
                         self.fields_more_items_in_collection = False

@@ -1,24 +1,51 @@
-import time
-import sys
 import math
+import sys
+import time
+from json import JSONDecodeError
+
+import backoff
 import pendulum
 import requests
-import singer
 import simplejson
-import backoff
+import singer
 from requests.exceptions import ConnectionError, RequestException
-from json import JSONDecodeError
-from singer import set_currently_syncing, metadata
+from singer import metadata, set_currently_syncing
 from singer.catalog import Catalog, CatalogEntry, Schema
-from .config import BASE_URL, CONFIG_DEFAULTS
-from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadRequestError, PipedriveUnauthorizedError, PipedrivePaymentRequiredError, 
-                        PipedriveForbiddenError, PipedriveGoneError, PipedriveUnsupportedMediaError, PipedriveUnprocessableEntityError, PipedriveTooManyRequestsError, 
-                        PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError)
-from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
-                      RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
-                      RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
-                      DealStageChangeStream, DealsProductsStream)
 
+from .config import BASE_URL, CONFIG_DEFAULTS
+from .exceptions import (
+    PipedriveBadRequestError,
+    PipedriveError,
+    PipedriveForbiddenError,
+    PipedriveGoneError,
+    PipedriveInternalServiceError,
+    PipedriveNotFoundError,
+    PipedriveNotImplementedError,
+    PipedrivePaymentRequiredError,
+    PipedriveServiceUnavailableError,
+    PipedriveTooManyRequestsError,
+    PipedriveTooManyRequestsInSecondError,
+    PipedriveUnauthorizedError,
+    PipedriveUnprocessableEntityError,
+    PipedriveUnsupportedMediaError,
+)
+from .streams import (
+    ActivityTypesStream,
+    CurrenciesStream,
+    DealsProductsStream,
+    DealStageChangeStream,
+    FiltersStream,
+    PipelinesStream,
+    RecentActivitiesStream,
+    RecentDealsStream,
+    RecentFilesStream,
+    RecentNotesStream,
+    RecentOrganizationsStream,
+    RecentPersonsStream,
+    RecentProductsStream,
+    RecentUsersStream,
+    StagesStream,
+)
 
 logger = singer.get_logger()
 
@@ -26,61 +53,68 @@ logger = singer.get_logger()
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: {
         "raise_exception": PipedriveBadRequestError,
-        "message": "Request is missing or has a bad parameter."
+        "message": "Request is missing or has a bad parameter.",
     },
     401: {
         "raise_exception": PipedriveUnauthorizedError,
-        "message": "Invalid authorization credentials."
+        "message": "Invalid authorization credentials.",
     },
     402: {
         "raise_exception": PipedrivePaymentRequiredError,
-        "message": "Company account is not open (possible reason: trial expired, payment details not entered)."
+        "message": "Company account is not open (possible reason: trial expired, payment details not entered).",
     },
     403: {
         "raise_exception": PipedriveForbiddenError,
-        "message": "Invalid authorization credentials or permissions."
+        "message": "Invalid authorization credentials or permissions.",
     },
     404: {
         "raise_exception": PipedriveNotFoundError,
-        "message": "The requested resource does not exist."
+        "message": "The requested resource does not exist.",
     },
     410: {
         "raise_exception": PipedriveGoneError,
-        "message": "The old resource is permanently unavailable."
+        "message": "The old resource is permanently unavailable.",
     },
     415: {
         "raise_exception": PipedriveUnsupportedMediaError,
-        "message": "The feature is not enabled."
+        "message": "The feature is not enabled.",
     },
     422: {
         "raise_exception": PipedriveUnprocessableEntityError,
-        "message": "Webhook limit reached."
+        "message": "Webhook limit reached.",
     },
     429: {
         "raise_exception": PipedriveTooManyRequestsError,
-        "message": "Rate limit has been exceeded."
+        "message": "Rate limit has been exceeded.",
     },
     500: {
         "raise_exception": PipedriveInternalServiceError,
-        "message": "Internal Service Error from PipeDrive."
+        "message": "Internal Service Error from PipeDrive.",
     },
     501: {
         "raise_exception": PipedriveNotImplementedError,
-        "message": "Functionality does not exist."
+        "message": "Functionality does not exist.",
     },
     503: {
         "raise_exception": PipedriveServiceUnavailableError,
-        "message": "Schedule maintenance on Pipedrive's end."
+        "message": "Schedule maintenance on Pipedrive's end.",
     },
 }
 
+
 def is_not_status_code_fn(status_code):
     def gen_fn(exc):
-        if getattr(exc, 'response', None) and getattr(exc.response, 'status_code', None) and exc.response.status_code not in status_code:
+        if (
+            getattr(exc, "response", None)
+            and getattr(exc.response, "status_code", None)
+            and exc.response.status_code not in status_code
+        ):
             return True
         # Retry other errors up to the max
         return False
+
     return gen_fn
+
 
 def retry_after_wait_gen():
     while True:
@@ -88,8 +122,10 @@ def retry_after_wait_gen():
         # and check it.
         exc_info = sys.exc_info()
         resp = exc_info[1].response
-        sleep_time_str = resp.headers.get('X-RateLimit-Reset')
-        logger.info("API rate limit exceeded -- sleeping for %s seconds", sleep_time_str)
+        sleep_time_str = resp.headers.get("X-RateLimit-Reset")
+        logger.info(
+            "API rate limit exceeded -- sleeping for %s seconds", sleep_time_str
+        )
         yield math.floor(float(sleep_time_str))
 
 
@@ -109,17 +145,17 @@ class PipedriveTap(object):
         RecentPersonsStream(),
         RecentProductsStream(),
         DealStageChangeStream(),
-        DealsProductsStream()
+        DealsProductsStream(),
     ]
 
     def __init__(self, config, state):
         self.config = self.get_default_config()
         self.config.update(config)
-        self.config['start_date'] = pendulum.parse(self.config['start_date'])
+        self.config["start_date"] = pendulum.parse(self.config["start_date"])
         self.state = state
 
     def do_discover(self):
-        logger.info('Starting discover')
+        logger.info("Starting discover")
 
         catalog = Catalog([])
 
@@ -132,39 +168,46 @@ class PipedriveTap(object):
             meta = metadata.get_standard_metadata(
                 schema=schema.to_dict(),
                 key_properties=key_properties,
-                valid_replication_keys=[stream.state_field] if stream.state_field else None,
-                replication_method=stream.replication_method
+                valid_replication_keys=[stream.state_field]
+                if stream.state_field
+                else None,
+                replication_method=stream.replication_method,
             )
 
             # If the stream has a state_field, it needs to mark that property with automatic metadata
             if stream.state_field:
                 meta = metadata.to_map(meta)
-                meta[('properties', stream.state_field)]['inclusion'] = 'automatic'
+                meta[("properties", stream.state_field)]["inclusion"] = "automatic"
                 meta = metadata.to_list(meta)
 
-            catalog.streams.append(CatalogEntry(
-                stream=stream.schema,
-                tap_stream_id=stream.schema,
-                key_properties=key_properties,
-                schema=schema,
-                metadata=meta
-            ))
+            catalog.streams.append(
+                CatalogEntry(
+                    stream=stream.schema,
+                    tap_stream_id=stream.schema,
+                    key_properties=key_properties,
+                    schema=schema,
+                    metadata=meta,
+                )
+            )
 
         return catalog
 
     def do_sync(self, catalog):
-        logger.debug('Starting sync')
+        logger.debug("Starting sync")
 
         # resuming when currently_syncing within state
         resume_from_stream = False
-        if self.state and 'currently_syncing' in self.state:
-            resume_from_stream = self.state['currently_syncing']
+        if self.state and "currently_syncing" in self.state:
+            resume_from_stream = self.state["currently_syncing"]
 
         selected_streams = self.get_selected_streams(catalog)
 
-        if 'currently_syncing' in self.state and resume_from_stream not in selected_streams:
+        if (
+            "currently_syncing" in self.state
+            and resume_from_stream not in selected_streams
+        ):
             resume_from_stream = False
-            del self.state['currently_syncing']
+            del self.state["currently_syncing"]
 
         for stream in self.streams:
             if stream.schema not in selected_streams:
@@ -174,19 +217,28 @@ class PipedriveTap(object):
 
             if resume_from_stream:
                 if stream.schema == resume_from_stream:
-                    logger.info('Resuming from {}'.format(resume_from_stream))
+                    logger.info("Resuming from {}".format(resume_from_stream))
                     resume_from_stream = False
                 else:
-                    logger.info('Skipping stream {} as resuming from {}'.format(stream.schema, resume_from_stream))
+                    logger.info(
+                        "Skipping stream {} as resuming from {}".format(
+                            stream.schema, resume_from_stream
+                        )
+                    )
                     continue
 
             # stream state, from state/bookmark or start_date
-            stream.set_initial_state(self.state, self.config['start_date'])
+            stream.set_initial_state(self.state, self.config["start_date"])
 
             # currently syncing
             if stream.state_field:
                 set_currently_syncing(self.state, stream.schema)
-                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field, str(stream.initial_state))
+                self.state = singer.write_bookmark(
+                    self.state,
+                    stream.schema,
+                    stream.state_field,
+                    str(stream.initial_state),
+                )
                 singer.write_state(self.state)
 
             # schema
@@ -195,12 +247,14 @@ class PipedriveTap(object):
             catalog_stream = catalog.get_stream(stream.schema)
             stream_metadata = metadata.to_map(catalog_stream.metadata)
 
-            if stream.id_list: # see if we want to iterate over a list of deal_ids
+            if stream.id_list:  # see if we want to iterate over a list of deal_ids
 
                 for deal_id in stream.get_deal_ids(self):
                     is_last_id = False
 
-                    if deal_id == stream.these_deals[-1]: #find out if this is last deal_id in the current set
+                    if (
+                        deal_id == stream.these_deals[-1]
+                    ):  # find out if this is last deal_id in the current set
                         is_last_id = True
 
                     # if last page of deals, more_items in collection will be False
@@ -209,12 +263,14 @@ class PipedriveTap(object):
                         stream.more_items_in_collection = True
 
                     stream.update_endpoint(deal_id)
-                    stream.start = 0   # set back to zero for each new deal_id
+                    stream.start = 0  # set back to zero for each new deal_id
                     self.do_paginate(stream, stream_metadata)
 
                     if not is_last_id:
-                        stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
-                    elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of deal_ids
+                        stream.more_items_in_collection = True  # set back to True for pagination of next deal_id request
+                    elif (
+                        is_last_id and stream.more_ids_to_get
+                    ):  # need to get the next batch of deal_ids
                         stream.more_items_in_collection = True
                         stream.start = stream.next_start
                     else:
@@ -228,13 +284,17 @@ class PipedriveTap(object):
 
             # update state / bookmarking only when supported by stream
             if stream.state_field:
-                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
-                                                   str(stream.earliest_state))
+                self.state = singer.write_bookmark(
+                    self.state,
+                    stream.schema,
+                    stream.state_field,
+                    str(stream.earliest_state),
+                )
             singer.write_state(self.state)
 
         # clear currently_syncing
         try:
-            del self.state['currently_syncing']
+            del self.state["currently_syncing"]
         except KeyError as e:
             pass
         singer.write_state(self.state)
@@ -244,7 +304,7 @@ class PipedriveTap(object):
         for stream in catalog.streams:
             mdata = metadata.to_map(stream.metadata)
             root_metadata = mdata.get(())
-            if root_metadata and root_metadata.get('selected') is True:
+            if root_metadata and root_metadata.get("selected") is True:
                 selected_streams.add(stream.tap_stream_id)
         return list(selected_streams)
 
@@ -264,13 +324,19 @@ class PipedriveTap(object):
 
             # records with metrics
             with singer.metrics.record_counter(stream.schema) as counter:
-                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
+                with singer.Transformer(
+                    singer.NO_INTEGER_DATETIME_PARSING
+                ) as optimus_prime:
                     for row in self.iterate_response(response):
                         row = stream.process_row(row)
 
-                        if not row: # in case of a non-empty response with an empty element
+                        if (
+                            not row
+                        ):  # in case of a non-empty response with an empty element
                             continue
-                        row = optimus_prime.transform(row, stream.get_schema(), stream_metadata)
+                        row = optimus_prime.transform(
+                            row, stream.get_schema(), stream_metadata
+                        )
                         if stream.write_record(row):
                             counter.increment()
                         stream.update_state(row)
@@ -280,33 +346,38 @@ class PipedriveTap(object):
 
     def iterate_response(self, response):
         payload = response.json()
-        return [] if payload['data'] is None else payload['data']
+        return [] if payload["data"] is None else payload["data"]
 
     def execute_stream_request(self, stream):
-        params = {
-            'start': stream.start,
-            'limit': stream.limit
-        }
+        params = {"start": stream.start, "limit": stream.limit}
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
-    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
-    @backoff.on_exception(retry_after_wait_gen, PipedriveTooManyRequestsInSecondError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    @backoff.on_exception(
+        backoff.expo,
+        (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError),
+        max_tries=3,
+    )
+    @backoff.on_exception(
+        retry_after_wait_gen,
+        PipedriveTooManyRequestsInSecondError,
+        giveup=is_not_status_code_fn([429]),
+        jitter=None,
+        max_tries=3,
+    )
     def execute_request(self, endpoint, params=None):
-        headers = {
-            'User-Agent': self.config['user-agent']
-        }
+        headers = {"User-Agent": self.config["user-agent"]}
         _params = {
-            'api_token': self.config['api_token'],
+            "api_token": self.config["api_token"],
         }
         if params:
             _params.update(params)
 
         url = "{}/{}".format(BASE_URL, endpoint)
-        logger.debug('Firing request at {} with params: {}'.format(url, _params))
+        logger.debug("Firing request at {} with params: {}".format(url, _params))
         response = requests.get(url, headers=headers, params=_params)
 
-        if response.status_code == 200 and isinstance(response, requests.Response) :
+        if response.status_code == 200 and isinstance(response, requests.Response):
             try:
                 # Verifying json is valid or not
                 response.json()
@@ -319,23 +390,34 @@ class PipedriveTap(object):
     def validate_response(self, response):
         try:
             payload = response.json()
-            if payload['success'] and 'data' in payload:
+            if payload["success"] and "data" in payload:
                 return True
-        except (AttributeError, simplejson.scanner.JSONDecodeError): # Verifying response in execute_request
+        except (
+            AttributeError,
+            simplejson.scanner.JSONDecodeError,
+        ):  # Verifying response in execute_request
             pass
 
     def rate_throttling(self, response):
-        if all(x in response.headers for x in ['X-RateLimit-Remaining', 'X-RateLimit-Reset']):
-            if int(response.headers['X-RateLimit-Remaining']) < 1:
-                seconds_to_sleep = int(response.headers['X-RateLimit-Reset'])
-                logger.debug('Hit API rate limits, no remaining requests per 10 seconds, will sleep '
-                             'for {} seconds now.'.format(seconds_to_sleep))
+        if all(
+            x in response.headers
+            for x in ["X-RateLimit-Remaining", "X-RateLimit-Reset"]
+        ):
+            if int(response.headers["X-RateLimit-Remaining"]) < 1:
+                seconds_to_sleep = int(response.headers["X-RateLimit-Reset"])
+                logger.debug(
+                    "Hit API rate limits, no remaining requests per 10 seconds, will sleep "
+                    "for {} seconds now.".format(seconds_to_sleep)
+                )
                 time.sleep(seconds_to_sleep)
         else:
-            logger.debug('Required headers for rate throttling are not present in response header, '
-                         'unable to throttle ..')
+            logger.debug(
+                "Required headers for rate throttling are not present in response header, "
+                "unable to throttle .."
+            )
 
-def raise_for_error(response):   
+
+def raise_for_error(response):
     try:
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
@@ -347,12 +429,18 @@ def raise_for_error(response):
                 resp_headers = response.headers
                 api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
 
-                #Raise PipedriveTooManyRequestsInSecondError exception if 2 seconds limit is reached
+                # Raise PipedriveTooManyRequestsInSecondError exception if 2 seconds limit is reached
                 if int(resp_headers.get("X-RateLimit-Remaining")) < 1:
-                    message = "HTTP-error-code: 429, Error: {} Please retry after {} seconds.".format(api_rate_limit_message, resp_headers.get("X-RateLimit-Reset"))
-                    raise PipedriveTooManyRequestsInSecondError(message, response) from None
+                    message = "HTTP-error-code: 429, Error: {} Please retry after {} seconds.".format(
+                        api_rate_limit_message, resp_headers.get("X-RateLimit-Reset")
+                    )
+                    raise PipedriveTooManyRequestsInSecondError(
+                        message, response
+                    ) from None
 
-                message = "HTTP-error-code: 429, Error: Daily {} Please retry after {} seconds.".format(api_rate_limit_message, resp_headers.get("X-RateLimit-Reset"))
+                message = "HTTP-error-code: 429, Error: Daily {} Please retry after {} seconds.".format(
+                    api_rate_limit_message, resp_headers.get("X-RateLimit-Reset")
+                )
 
             else:
                 # Forming a response message for raising custom exception
@@ -361,10 +449,19 @@ def raise_for_error(response):
                 except Exception:
                     json_resp = {}
 
-                message_text = json_resp.get("error", ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("message", "Unknown Error"))
-                message = "HTTP-error-code: {}, Error: {}".format(error_code, message_text)
+                message_text = json_resp.get(
+                    "error",
+                    ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get(
+                        "message", "Unknown Error"
+                    ),
+                )
+                message = "HTTP-error-code: {}, Error: {}".format(
+                    error_code, message_text
+                )
 
-            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", PipedriveError)
+            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get(
+                "raise_exception", PipedriveError
+            )
             raise exc(message, response) from None
 
         except (ValueError, TypeError):
