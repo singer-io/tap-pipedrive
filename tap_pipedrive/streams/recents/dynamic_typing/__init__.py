@@ -1,3 +1,6 @@
+import json
+from copy import deepcopy
+
 import singer
 from requests import RequestException
 from slugify import slugify
@@ -13,6 +16,7 @@ class DynamicTypingRecentsStream(RecentsStream):
     fields_more_items_in_collection = True
     fields_start = 0
     fields_limit = 100
+    custom_fields_map_key_name = {}
 
     def get_schema(self):
         if not self.schema_cache:
@@ -69,10 +73,11 @@ class DynamicTypingRecentsStream(RecentsStream):
                             # be marked mandatory for some amount of time and not
                             # mandatory for another amount of time
                             property_content["type"].append("null")
-                            key = property["key"]
-                            if not key.isalpha():
+                            if property["edit_flag"]:
                                 key = slugify(property["name"]).replace("-", "_")
-                            schema["properties"][key] = property_content
+                                self.custom_fields_map_key_name[property["key"]] = key
+                                schema["properties"][key] = property_content
+                            schema["properties"][property["key"]] = property_content
 
                     # Check for more data is available in next page
                     if (
@@ -93,6 +98,24 @@ class DynamicTypingRecentsStream(RecentsStream):
 
                 except Exception as e:
                     raise e
-
+            schema["custom_fields_map"] = self.custom_fields_map_key_name
             self.schema_cache = schema
         return self.schema_cache
+
+    def post_process_row(self, row):
+        row_custom_keys_solved = deepcopy(row)
+        custom_fields_map = self.schema_cache["custom_fields_map"]
+        for key in row.keys():
+            if custom_fields_map.get(key, False):
+                custom_key = custom_fields_map[key]
+                row_custom_keys_solved[custom_key] = row[key]
+                del row_custom_keys_solved[key]
+        return row_custom_keys_solved
+
+    def post_process_schema(self):
+        schema = deepcopy(self.get_schema())
+        custom_fields_map = schema.get("custom_fields_map", {})
+        for key in custom_fields_map.keys():
+            del schema["properties"][key]
+        del schema["custom_fields_map"]
+        return schema

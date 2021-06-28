@@ -337,6 +337,7 @@ class PipedriveTap(object):
                         row = optimus_prime.transform(
                             row, stream.get_schema(), stream_metadata
                         )
+                        row = stream.post_process_row(row)
                         if stream.write_record(row):
                             counter.increment()
                         stream.update_state(row)

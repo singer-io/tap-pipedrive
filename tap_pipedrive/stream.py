@@ -1,6 +1,7 @@
 import os
-import singer
+
 import pendulum
+import singer
 from requests.exceptions import RequestException
 
 logger = singer.get_logger()
@@ -8,15 +9,15 @@ logger = singer.get_logger()
 
 class PipedriveStream(object):
     tap = None
-    endpoint = ''
+    endpoint = ""
     key_properties = []
     state_field = None
     initial_state = None
     earliest_state = None
-    schema = ''
-    schema_path = 'schemas/{}.json'
+    schema = ""
+    schema_path = "schemas/{}.json"
     schema_cache = None
-    replication_method = 'FULL_TABLE'
+    replication_method = "FULL_TABLE"
 
     start = 0
     limit = 100
@@ -31,13 +32,17 @@ class PipedriveStream(object):
         return self.schema_cache
 
     def load_schema(self):
-        schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                   self.schema_path.format(self.schema))
+        schema_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            self.schema_path.format(self.schema),
+        )
         schema = singer.utils.load_json(schema_path)
         return schema
 
     def write_schema(self):
-        singer.write_schema(self.schema, self.get_schema(), key_properties=self.key_properties)
+        singer.write_schema(
+            self.schema, schema_to_write, key_properties=self.key_properties
+        )
 
     def get_name(self):
         return self.endpoint
@@ -53,7 +58,7 @@ class PipedriveStream(object):
 
     def set_initial_state(self, state, start_date):
         try:
-            dt = state['bookmarks'][self.schema][self.state_field]
+            dt = state["bookmarks"][self.schema][self.state_field]
             if dt is not None:
                 self.initial_state = pendulum.parse(dt)
                 self.earliest_state = self.initial_state
@@ -71,22 +76,24 @@ class PipedriveStream(object):
     def paginate(self, response):
         payload = response.json()
 
-        if 'additional_data' in payload and 'pagination' in payload['additional_data']:
-            logger.debug('Paginate: valid response')
-            pagination = payload['additional_data']['pagination']
-            if 'more_items_in_collection' in pagination:
-                self.more_items_in_collection = pagination['more_items_in_collection']
+        if "additional_data" in payload and "pagination" in payload["additional_data"]:
+            logger.debug("Paginate: valid response")
+            pagination = payload["additional_data"]["pagination"]
+            if "more_items_in_collection" in pagination:
+                self.more_items_in_collection = pagination["more_items_in_collection"]
 
-                if 'next_start' in pagination:
-                    self.start = pagination['next_start']
+                if "next_start" in pagination:
+                    self.start = pagination["next_start"]
 
         else:
             self.more_items_in_collection = False
 
         if self.more_items_in_collection:
-            logger.debug('Stream {} has more data starting at {}'.format(self.schema, self.start))
+            logger.debug(
+                "Stream {} has more data starting at {}".format(self.schema, self.start)
+            )
         else:
-            logger.debug('Stream {} has no more data'.format(self.schema))
+            logger.debug("Stream {} has no more data".format(self.schema))
 
     def update_request_params(self, params):
         """
@@ -133,14 +140,17 @@ class PipedriveStream(object):
     def process_row(self, row):
         return row
 
+    def post_process_row(self, row):
+        return row
+
 
 class PipedriveIterStream(PipedriveStream):
     id_list = True
-    
+
     def get_deal_ids(self, tap):
 
         # note when the stream starts syncing
-        self.stream_start = pendulum.now('UTC') # explicitly set timezone to UTC
+        self.stream_start = pendulum.now("UTC")  # explicitly set timezone to UTC
 
         # create checkpoint at inital_state to only find stage changes more recent than initial_state (bookmark)
         checkpoint = self.initial_state
@@ -159,31 +169,44 @@ class PipedriveIterStream(PipedriveStream):
             tap.rate_throttling(response)
             self.paginate(response)
 
-            self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
+            self.more_ids_to_get = (
+                self.more_items_in_collection
+            )  # note if there are more pages of ids to get
             self.next_start = self.start  # note pagination for next loop
 
             # find all deals ids for deals added or with stage changes after start and before stop
-            this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
+            this_page_ids = self.find_deal_ids(
+                response.json()["data"], start=checkpoint, stop=self.stream_start
+            )
 
-            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            self.these_deals = (
+                this_page_ids  # need the list of deals to check for last id in the tap
+            )
             for deal_id in this_page_ids:
                 yield deal_id
-
 
     def find_deal_ids(self, data, start, stop):
 
         # find all deals that were *added* after the start time and before the stop time
-        added_ids = [data[i]['id']
-                     for i in range(len(data))
-                     if (data[i]['add_time'] is not None
-                         and start <= pendulum.parse(data[i]['add_time']) < stop)]
+        added_ids = [
+            data[i]["id"]
+            for i in range(len(data))
+            if (
+                data[i]["add_time"] is not None
+                and start <= pendulum.parse(data[i]["add_time"]) < stop
+            )
+        ]
 
         # find all deals that a) had a stage change at any time (i.e., the stage_change_time is not None),
         #                     b) had a stage change after the start time and before the stop time, and
         #                     c) are not in added_ids
-        changed_ids = [data[i]['id']
-                       for i in range(len(data))
-                       if (data[i]['id'] not in added_ids)
-                       and (data[i]['stage_change_time'] is not None
-                            and start <= pendulum.parse(data[i]['stage_change_time']) < stop)]
+        changed_ids = [
+            data[i]["id"]
+            for i in range(len(data))
+            if (data[i]["id"] not in added_ids)
+            and (
+                data[i]["stage_change_time"] is not None
+                and start <= pendulum.parse(data[i]["stage_change_time"]) < stop
+            )
+        ]
         return added_ids + changed_ids
