@@ -17,6 +17,7 @@ class DynamicTypingRecentsStream(RecentsStream):
     fields_start = 0
     fields_limit = 100
     custom_fields_map_key_name = {}
+    enums = {}
 
     def get_schema(self):
         if not self.schema_cache:
@@ -65,6 +66,12 @@ class DynamicTypingRecentsStream(RecentsStream):
                                 property_content["type"].append("string")
                                 property_content["format"] = "date-time"
 
+                            elif property["field_type"] == "enum":
+                                self.enums[property["key"]] = {
+                                    str(option["id"]): option["label"]
+                                    for option in property["options"]
+                                }
+                                property_content["type"].append("string")
                             else:
                                 property_content["type"].append("string")
 
@@ -99,16 +106,21 @@ class DynamicTypingRecentsStream(RecentsStream):
                 except Exception as e:
                     raise e
             schema["custom_fields_map"] = self.custom_fields_map_key_name
+            schema["enums"] = self.enums
             self.schema_cache = schema
         return self.schema_cache
 
     def post_process_row(self, row):
         row_custom_keys_solved = deepcopy(row)
         custom_fields_map = self.schema_cache["custom_fields_map"]
+        enums = self.schema_cache["enums"]
         for key in row.keys():
             if custom_fields_map.get(key, False):
                 custom_key = custom_fields_map[key]
-                row_custom_keys_solved[custom_key] = row[key]
+                value = row[key]
+                if enums.get(key, False):
+                    value = enums[key].get(row[key], None)
+                row_custom_keys_solved[custom_key] = value
                 del row_custom_keys_solved[key]
         return row_custom_keys_solved
 
@@ -118,4 +130,5 @@ class DynamicTypingRecentsStream(RecentsStream):
         for key in custom_fields_map.keys():
             del schema["properties"][key]
         del schema["custom_fields_map"]
+        del schema["enums"]
         return schema
