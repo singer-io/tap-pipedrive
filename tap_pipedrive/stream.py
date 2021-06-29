@@ -41,7 +41,7 @@ class PipedriveStream(object):
 
     def write_schema(self):
         singer.write_schema(
-            self.schema, schema_to_write, key_properties=self.key_properties
+            self.schema, self.get_schema(), key_properties=self.key_properties
         )
 
     def get_name(self):
