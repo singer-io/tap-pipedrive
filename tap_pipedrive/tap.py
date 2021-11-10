@@ -6,7 +6,7 @@ import requests
 import singer
 import simplejson
 import backoff
-from requests.exceptions import ConnectionError, RequestException
+from requests.exceptions import ConnectionError, RequestException, Timeout
 from json import JSONDecodeError
 from singer import set_currently_syncing, metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
@@ -22,6 +22,8 @@ from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, Stag
 
 logger = singer.get_logger()
 
+# timeout request after 300 seconds
+REQUEST_TIMEOUT = 300
 
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: {
@@ -290,7 +292,7 @@ class PipedriveTap(object):
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
-    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
+    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError, Timeout), max_tries = 3)
     @backoff.on_exception(retry_after_wait_gen, PipedriveTooManyRequestsInSecondError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
@@ -304,8 +306,15 @@ class PipedriveTap(object):
 
         url = "{}/{}".format(BASE_URL, endpoint)
         logger.debug('Firing request at {} with params: {}'.format(url, _params))
-        response = requests.get(url, headers=headers, params=_params)
 
+        # Set request timeout to config param `request_timeout` value.
+        config_request_timeout = self.config.get('request_timeout')
+        if config_request_timeout and float(config_request_timeout):
+            request_timeout = float(config_request_timeout)
+        else:
+            request_timeout = REQUEST_TIMEOUT # If value is 0,"0","" or not passed then set default to 300 seconds.
+
+        response = requests.get(url, headers=headers, params=_params, timeout=request_timeout)
         if response.status_code == 200 and isinstance(response, requests.Response) :
             try:
                 # Verifying json is valid or not
