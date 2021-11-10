@@ -15,6 +15,7 @@ jobs:
       - run:
           name: 'Unit Tests'
           command: |
+            source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
             pip install nose coverage
             nosetests --with-coverage --cover-erase --cover-package=tap_pipedrive --cover-html-dir=htmlcov tests/unittests
             coverage html
