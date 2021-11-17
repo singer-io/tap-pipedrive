@@ -161,3 +161,25 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
 
         # Verify that requests.get is called 3 times
         self.assertEqual(mocked_request.call_count, 3)
+
+@mock.patch("time.sleep")
+class TestConnectionErrorBackoff(unittest.TestCase):
+
+    @mock.patch("requests.get", side_effect = requests.exceptions.ConnectionError)
+    def test_request_timeout_backoff_execute_request(self, mocked_request, mocked_sleep):
+        """
+            Verify execute_request function is backoff for 3 times on ConnectionError exceeption
+        """
+        config = {"start_date":"2017-01-01T00:00:00Z","api_token":"abc"}
+        state = {}
+        endpoint = 'xyz'
+
+        # Initialize PipedriveTap object
+        pipedrive_tap = _tap.PipedriveTap(config, state)
+        try:
+            pipedrive_tap.execute_request(endpoint)
+        except requests.exceptions.ConnectionError:
+            pass
+
+        # Verify that requests.get is called 3 times
+        self.assertEqual(mocked_request.call_count, 3)
