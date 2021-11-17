@@ -146,7 +146,7 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
     @mock.patch("requests.get", side_effect = requests.exceptions.Timeout)
     def test_request_timeout_backoff_execute_request(self, mocked_request, mocked_sleep):
         """
-            Verify execute_request function is backoff for 3 times on Timeout exceeption
+            Verify execute_request function is backoff for 5 times on Timeout exceeption
         """
         config = {"start_date":"2017-01-01T00:00:00Z","api_token":"abc"}
         state = {}
@@ -159,8 +159,8 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
         except requests.exceptions.Timeout:
             pass
 
-        # Verify that requests.get is called 3 times
-        self.assertEqual(mocked_request.call_count, 3)
+        # Verify that requests.get is called 5 times
+        self.assertEqual(mocked_request.call_count, 5)
 
 @mock.patch("time.sleep")
 class TestConnectionErrorBackoff(unittest.TestCase):
@@ -168,7 +168,7 @@ class TestConnectionErrorBackoff(unittest.TestCase):
     @mock.patch("requests.get", side_effect = requests.exceptions.ConnectionError)
     def test_request_timeout_backoff_execute_request(self, mocked_request, mocked_sleep):
         """
-            Verify execute_request function is backoff for 3 times on ConnectionError exceeption
+            Verify execute_request function is backoff for 5 times on ConnectionError exceeption
         """
         config = {"start_date":"2017-01-01T00:00:00Z","api_token":"abc"}
         state = {}
@@ -181,5 +181,5 @@ class TestConnectionErrorBackoff(unittest.TestCase):
         except requests.exceptions.ConnectionError:
             pass
 
-        # Verify that requests.get is called 3 times
-        self.assertEqual(mocked_request.call_count, 3)
+        # Verify that requests.get is called 5 times
+        self.assertEqual(mocked_request.call_count, 5)
