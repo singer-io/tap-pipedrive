@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.1.1
+  * Request timeout implemented [#105](https://github.com/singer-io/tap-pipedrive/pull/105)
 ## 1.1.0
   * Added retry mechanism for http error codes [#93](https://github.com/singer-io/tap-pipedrive/pull/93)
   * Removed support for delete_logs stream [#97](https://github.com/singer-io/tap-pipedrive/pull/97)
