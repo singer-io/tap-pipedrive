@@ -183,6 +183,18 @@
     },
     "person_hidden": {
       "type": ["null", "boolean"]
+    },
+    "stay_in_pipeline_stages": {
+      "type": ["null", "object"],
+      "properties": {
+        "times_in_stages": {
+          "type": ["null", "object"]
+        },
+        "order_of_stages": {
+          "type": ["null", "array"],
+          "items": { "type": "number" }
+        }
+      }
     }
   }
 }
