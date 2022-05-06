@@ -35,7 +35,9 @@ class PipedriveBaseTest(unittest.TestCase):
     DATETIME_FMT = {
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%d %H:%M:%S",
-        "%Y-%m-%dT%H:%M:%S.000000Z"
+        "%Y-%m-%dT%H:%M:%S.000000Z",
+        "%Y-%m-%dT%H:%M:%S%z",
+        "%Y-%m-%dT%H:%M:%S.%f%z"
     }
 
     @staticmethod
@@ -53,7 +55,7 @@ class PipedriveBaseTest(unittest.TestCase):
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
         return_value = {
-            'start_date' : "2021-04-29T00:00:00Z"
+            'start_date' : "2021-05-03T09:44:26Z"
         }
         if original:
             return return_value

@@ -17,7 +17,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
         • Verify number of actual streams discovered match expected
         • Verify the stream names discovered were what we expect
         • Verify stream names follow naming convention
-          streams sh4ould only have lowercase alphas and underscores
+          streams should only have lowercase alphas and underscores
         • verify there is only 1 top level breadcrumb
         • verify replication key(s)
         • verify primary key(s)
