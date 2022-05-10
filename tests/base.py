@@ -55,7 +55,7 @@ class PipedriveBaseTest(unittest.TestCase):
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
         return_value = {
-            'start_date' : "2021-05-03T09:44:26Z"
+            'start_date' : "2021-05-03T00:00:00Z"
         }
         if original:
             return return_value
