@@ -107,8 +107,10 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
 
                     # Verify the second sync bookmark is Equal to the first sync bookmark
                     # assumes no changes to data during test
-                    self.assertEqual(second_bookmark_value,
-                                     first_bookmark_value)
+                    # The dealflow stream is writing bookmark as a 'current_time-3_hours' so 1st and 2nd bookmark will be different
+                    if stream != "dealflow":
+                        self.assertEqual(second_bookmark_value,
+                                         first_bookmark_value)
                     
                     for record in first_sync_messages:
 
