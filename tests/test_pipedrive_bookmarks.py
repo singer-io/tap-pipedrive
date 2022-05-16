@@ -88,17 +88,13 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     # collect information specific to incremental streams from syncs 1 & 2
                     replication_key = list(expected_replication_keys[stream])[0] #Key in which state has been saved in state file
                     record_replication_key = list(expected_replication_keys[stream])[0]
-                    print(f'>>>>>>>>>>> {replication_key} {record_replication_key}')
-                    print(f'>>>>>>>>>>>1 {first_bookmark_key_value} {second_bookmark_key_value}')
 
                     first_bookmark_value = first_bookmark_key_value.get(replication_key)
                     second_bookmark_value = second_bookmark_key_value.get(replication_key)
-                    print(f'>>>>>>>>>>>2 {first_bookmark_value} {second_bookmark_value}')
                     
                     first_bookmark_value_ts = self.dt_to_ts(first_bookmark_value)
                     
                     second_bookmark_value_ts = self.dt_to_ts(second_bookmark_value)
-                    print(f'>>>>>>>>>>>3 {first_bookmark_value_ts} {second_bookmark_value_ts}')
                     
                     simulated_bookmark_value = self.dt_to_ts(new_state['bookmarks'][stream][replication_key])
 
@@ -109,10 +105,10 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     self.assertIsNotNone(second_bookmark_key_value)
                     self.assertIsNotNone(second_bookmark_value)
 
-                    # # Verify the second sync bookmark is Equal to the first sync bookmark
-                    # # assumes no changes to data during test
-                    # self.assertEqual(second_bookmark_value,
-                    #                  first_bookmark_value)
+                    # Verify the second sync bookmark is Equal to the first sync bookmark
+                    # assumes no changes to data during test
+                    self.assertEqual(second_bookmark_value,
+                                     first_bookmark_value)
                     
                     for record in first_sync_messages:
 
