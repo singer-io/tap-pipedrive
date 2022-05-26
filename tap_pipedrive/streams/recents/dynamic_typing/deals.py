@@ -17,4 +17,4 @@ class RecentDealsStream(DynamicTypingRecentsStream):
                      'person_hidden', 'person_id', 'person_name', 'pipeline_id', 'products_count', 'probability',
                      'reference_activities_count', 'rotten_time', 'stage_change_time', 'stage_id', 'stage_order_nr',
                      'status', 'title', 'undone_activities_count', 'update_time', 'user_id', 'value', 'visible_to',
-                     'weighted_value', 'won_time']
+                     'weighted_value', 'won_time', 'group_id', 'group_name', 'renewal_type']
