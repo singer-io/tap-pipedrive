@@ -30,6 +30,7 @@ class PipedriveBaseTest(unittest.TestCase):
     FULL_TABLE = "FULL_TABLE"
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
+    REPLICATION_KEY_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
     LOGGER = singer.get_logger()
     STARTDATE_KEYS = "start_date"
     DATETIME_FMT = {
@@ -392,10 +393,6 @@ class PipedriveBaseTest(unittest.TestCase):
             return False 
         return True
 
-    def dt_to_ts(self, dtime):
-        for date_format in self.DATETIME_FMT:
-            try:
-                date_stripped = int(time.mktime(dt.strptime(dtime, date_format).timetuple()))
-                return date_stripped
-            except ValueError:
-                continue
+    def dt_to_ts(self, dtime, format):
+        date_stripped = int(time.mktime(dt.strptime(dtime, format).timetuple()))
+        return date_stripped

@@ -52,7 +52,7 @@ class PipedriveAllFields(PipedriveBaseTest):
 
         # table and field selection
         test_catalogs_all_fields = [catalog for catalog in found_catalogs
-                            if catalog.get("tap_stream_id") in expected_streams]
+                                    if catalog.get("tap_stream_id") in expected_streams]
 
         # perform table and field selections
         self.perform_and_verify_table_and_field_selection(conn_id, test_catalogs_all_fields)
@@ -63,9 +63,8 @@ class PipedriveAllFields(PipedriveBaseTest):
         for catalog in test_catalogs_all_fields:
             stream_id, stream_name = catalog['stream_id'], catalog['stream_name']
             catalog_entry = menagerie.get_annotated_schema(conn_id, stream_id)
-            fields_from_field_level_md = [metadata["breadcrumb"][1]
-                                        for metadata in catalog_entry["metadata"]
-                                        if metadata["breadcrumb"] != []]
+            fields_from_field_level_md = [metadata["breadcrumb"][1] for metadata in catalog_entry["metadata"]
+                                          if metadata["breadcrumb"] != []]
             stream_to_catalog_fields[stream_name] = set(fields_from_field_level_md)
 
         # run sync mode
@@ -99,7 +98,7 @@ class PipedriveAllFields(PipedriveBaseTest):
 
                 # verify all fields for each stream are replicated
                 # remove some fields as data cannot be generated / retrieved
-                fields = self.fields_to_remove.get(stream) or []
+                fields = self.fields_to_remove.get(stream, [])
                 for field in fields:
                     expected_all_keys.remove(field)
 
