@@ -75,14 +75,14 @@
         "null",
         "string"
       ],
-      "formt": "date-time"
+      "format": "date-time"
     },
     "last_edit": {
       "type": [
         "null",
         "string"
       ],
-      "formt": "date-time"
+      "format": "date-time"
     },
     "comments": {
       "type": [
