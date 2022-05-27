@@ -31,6 +31,7 @@ class PipedriveBaseTest(unittest.TestCase):
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
     REPLICATION_KEY_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+    BOOKMARK_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
     LOGGER = singer.get_logger()
     STARTDATE_KEYS = "start_date"
     DATETIME_FMT = {
