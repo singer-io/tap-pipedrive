@@ -223,7 +223,8 @@ class PipedriveTap(object):
                         stream.more_items_in_collection = False
 
                 # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
-                stream.earliest_state = stream.stream_start.subtract(hours=3)
+                # set the bookmark as minimum of attribution window and replication key
+                stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3))
             else:
                 # paginate
                 self.do_paginate(stream, stream_metadata)
