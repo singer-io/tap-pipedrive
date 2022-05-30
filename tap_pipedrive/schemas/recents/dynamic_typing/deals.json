@@ -183,6 +183,15 @@
     },
     "person_hidden": {
       "type": ["null", "boolean"]
+    },
+    "group_id": {
+      "type": ["null", "integer"]
+    },
+    "group_name": {
+      "type": ["null", "string"]
+    },
+    "renewal_type": {
+      "type": ["null", "string"]
     }
   }
 }

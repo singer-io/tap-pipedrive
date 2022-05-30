@@ -16,8 +16,8 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         self.start_date_1 = self.get_properties().get('start_date')
         self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=8)
 
-        start_date_1_epoch = self.dt_to_ts(self.start_date_1)
-        start_date_2_epoch = self.dt_to_ts(self.start_date_2)
+        start_date_1_epoch = self.dt_to_ts(self.start_date_1, self.START_DATE_FORMAT)
+        start_date_2_epoch = self.dt_to_ts(self.start_date_2, self.START_DATE_FORMAT)
 
         self.start_date = self.start_date_1
 
@@ -104,11 +104,11 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
                     # Verify start_date key values are greater than or equal to start date of sync 1
                     for start_date_key_value in start_date_key_sync_1:
-                        self.assertGreaterEqual(self.dt_to_ts(start_date_key_value), start_date_1_epoch)
+                        self.assertGreaterEqual(self.dt_to_ts(start_date_key_value, self.REPLICATION_KEY_FORMAT), start_date_1_epoch)
 
                     # Verify start_date key values are greater than or equal to start date of sync 2
                     for start_date_key_value in start_date_key_sync_2:
-                        self.assertGreaterEqual(self.dt_to_ts(start_date_key_value), start_date_2_epoch)
+                        self.assertGreaterEqual(self.dt_to_ts(start_date_key_value, self.REPLICATION_KEY_FORMAT), start_date_2_epoch)
 
                     # Verify the number of records replicated in sync 1 is greater than the number
                     # of records replicated in sync 2 for stream
