@@ -224,7 +224,9 @@ class PipedriveTap(object):
 
                 # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
                 # set the bookmark as minimum of attribution window and replication key
-                stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3))
+                # The "stream start date" is in the form of: "%Y-%m-%dT%H:%M:%S.%f+00:00", whereas the "earliest_state" is in the
+                # format of: "%Y-%m-%dT%H:%M:%S+00:00", thus replaced "microsecond" part to keep consistency in bookmark format
+                stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3)).replace(microsecond=0)
             else:
                 # paginate
                 self.do_paginate(stream, stream_metadata)

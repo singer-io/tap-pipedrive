@@ -53,7 +53,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
             "organizations": {"update_time": "2021-05-06T09:51:40+00:00"},
             "persons": {"update_time": "2021-05-07T10:40:33+00:00"},
             "products": {"update_time": "2021-05-05T06:17:18+00:00"},
-            "dealflow": {"log_time": "2021-05-07T10:40:33.000000+00:00"}
+            "dealflow": {"log_time": "2021-05-07T10:40:33+00:00"}
         }
         # setting 'second_start_date' as bookmark for running 2nd sync
         for stream, updated_state in simulated_states.items():
@@ -104,11 +104,11 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     first_bookmark_value = first_bookmark_key_value.get(replication_key)
                     second_bookmark_value = second_bookmark_key_value.get(replication_key)
                     
-                    first_bookmark_value_ts = self.dt_to_ts(first_bookmark_value, bookmark_format)
+                    first_bookmark_value_ts = self.dt_to_ts(first_bookmark_value, self.BOOKMARK_FORMAT)
                     
-                    second_bookmark_value_ts = self.dt_to_ts(second_bookmark_value, bookmark_format)
+                    second_bookmark_value_ts = self.dt_to_ts(second_bookmark_value, self.BOOKMARK_FORMAT)
                     
-                    simulated_bookmark_value = self.dt_to_ts(new_state['bookmarks'][stream][replication_key], bookmark_format)
+                    simulated_bookmark_value = self.dt_to_ts(new_state['bookmarks'][stream][replication_key], self.BOOKMARK_FORMAT)
 
                     # Verify the first sync sets a bookmark of the expected form
                     self.assertIsNotNone(first_bookmark_key_value)
