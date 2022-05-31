@@ -54,10 +54,10 @@ class Catalog:
 def mock_transform(*args, **kwargs):
     return args[0] # return 1 arg, that is record itself
 
-@mock.patch("singer.Transformer.transform")
-@mock.patch("tap_pipedrive.stream.PipedriveIterStream.get_deal_ids")
+@mock.patch("singer.Transformer.transform", side_effect = mock_transform)
+@mock.patch("tap_pipedrive.stream.PipedriveIterStream.get_deal_ids", return_value = [1])
 @mock.patch("tap_pipedrive.tap.PipedriveTap.execute_stream_request")
-@mock.patch("tap_pipedrive.tap.PipedriveTap.get_selected_streams")
+@mock.patch("tap_pipedrive.tap.PipedriveTap.get_selected_streams", return_value = ["dealflow"])
 class TestDealflowBookmarking(unittest.TestCase):
     """
         Test cases to verify we set bookmark minimum 3 hours back for "dealflow" stream
@@ -82,11 +82,8 @@ class TestDealflowBookmarking(unittest.TestCase):
     # set sync start date to desired date
     dealflow_obj.stream_start = pendulum.DateTime(2022, 5, 1, 5, tzinfo=Timezone("UTC")) # now = "2022-05-01 05:00:00"
 
-    def test_1(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
-        mocked_get_selected_streams.return_value = ["dealflow"]
-        mocked_transform.side_effect = mock_transform
+    def test_now_minus_3_hrs_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
         mocked_execute_stream_request.return_value = get_response("2022-05-01 04:00:00") # date with max bookmark value
-        mocked_get_deal_ids.return_value = [1]
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
         tap = PipedriveTap(self.mock_config, {})
@@ -95,11 +92,8 @@ class TestDealflowBookmarking(unittest.TestCase):
         tap.do_sync(Catalog("dealflow"))
         self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-05-01T02:00:00+00:00")
 
-    def test_2(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
-        mocked_get_selected_streams.return_value = ["dealflow"]
-        mocked_transform.side_effect = mock_transform
+    def test_max_replication_value_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
         mocked_execute_stream_request.return_value = get_response("2022-04-25 00:00:00") # date with max bookmark value
-        mocked_get_deal_ids.return_value = [1]
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
         tap = PipedriveTap(self.mock_config, {})
