@@ -223,7 +223,6 @@ class PipedriveTap(object):
                         stream.more_items_in_collection = False
 
                 # Set the bookmark with a minimum from the `now - attribution_window` and maximum replication key
-                # set the bookmark as minimum of attribution window and replication key
                 # The "stream start date" is in the form of "%Y-%m-%dT%H:%M:%S.%f+00:00", whereas the "earliest_state" is in the
                 # format of "%Y-%m-%dT%H:%M:%S+00:00", thus replacing the "microsecond" part to keep consistency in bookmark format
                 stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3)).replace(microsecond=0)
