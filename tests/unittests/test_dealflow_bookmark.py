@@ -61,12 +61,6 @@ def mock_transform(*args, **kwargs):
 class TestDealflowBookmarking(unittest.TestCase):
     """
         Test cases to verify we set bookmark minimum 3 hours back for "dealflow" stream
-        Case 1:
-            scenario: max bookmark is greater than (now - 3 hrs)
-            assertion: state file contains bookmark of (now - 3 hrs)
-        Case 2:
-            scenario: max bookmark is lesser than (now - 3 hrs)
-            assertion: state file contains bookmark of max bookmark
     """
 
     mock_config = {
@@ -83,6 +77,11 @@ class TestDealflowBookmarking(unittest.TestCase):
     dealflow_obj.stream_start = pendulum.DateTime(2022, 5, 1, 5, tzinfo=Timezone("UTC")) # now = "2022-05-01 05:00:00"
 
     def test_now_minus_3_hrs_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
+        """
+            Test case to verify we set (now - 3 hours) date as bookmark for 'dealflow' stream as the max bookmark is greater than (now - 3 hrs)
+            scenario: max bookmark is greater than (now - 3 hrs)
+            assertion: state file contains bookmark of (now - 3 hrs)
+        """
         mocked_execute_stream_request.return_value = get_response("2022-05-01 04:00:00") # date with max bookmark value
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
@@ -93,6 +92,11 @@ class TestDealflowBookmarking(unittest.TestCase):
         self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-05-01T02:00:00+00:00")
 
     def test_max_replication_value_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
+        """
+            Test case to verify we set max replication date as bookmark for 'dealflow' stream as the max bookmark is lesser than (now - 3 hrs)
+            scenario: max bookmark is lesser than (now - 3 hrs)
+            assertion: state file contains bookmark of max bookmark
+        """
         mocked_execute_stream_request.return_value = get_response("2022-04-25 00:00:00") # date with max bookmark value
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
