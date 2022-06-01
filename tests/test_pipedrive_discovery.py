@@ -17,7 +17,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
         • Verify number of actual streams discovered match expected
         • Verify the stream names discovered were what we expect
         • Verify stream names follow naming convention
-          streams sh4ould only have lowercase alphas and underscores
+          streams should only have lowercase alphas and underscores
         • verify there is only 1 top level breadcrumb
         • verify replication key(s)
         • verify primary key(s)
@@ -26,6 +26,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
         • verify that primary, replication and foreign keys
           are given the inclusion of automatic.
         • verify that all other fields have inclusion of available metadata.
+        • Verify there are no duplicate/conflicting metadata entries.
         """
         streams_to_test = self.expected_streams()
 
@@ -111,3 +112,11 @@ class PipedriveDiscovery(PipedriveBaseTest):
                          and item.get("breadcrumb", ["properties", None])[1]
                          not in actual_automatic_fields}),
                     msg="Not all non key properties are set to available in metadata")
+
+                actual_fields = []
+                for md_entry in metadata:
+                    if md_entry['breadcrumb'] != []:
+                        actual_fields.append(md_entry['breadcrumb'][1])
+
+                # Verify there are no duplicate metadata entries
+                self.assertEqual(len(actual_fields), len(set(actual_fields)), msg = "duplicates in the metadata entries retrieved")
