@@ -331,7 +331,7 @@ class PipedriveTap(object):
     def validate_response(self, response):
         try:
             payload = response.json()
-            if payload['success'] and 'data' in payload:
+            if payload and payload['success'] and 'data' in payload:
                 return True
         except (AttributeError, simplejson.scanner.JSONDecodeError): # Verifying response in execute_request
             pass
