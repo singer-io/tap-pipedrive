@@ -102,8 +102,8 @@ class PipedriveAllFields(PipedriveBaseTest):
                 for field in fields:
                     expected_all_keys.remove(field)
 
-                self.assertSetEqual(
+                self.assertGreaterEqual(
                     expected_all_keys,
                     actual_all_keys,
-                    msg=f"Expected keys and actual keys set does not match for the {stream} stream",
+                    msg=f"Some expected keys are not there in the set of actual keys for the {stream} stream",
                 )
