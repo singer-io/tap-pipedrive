@@ -48,15 +48,9 @@ class DynamicTypingRecentsStream(RecentsStream):
                                 'type': []
                             }
 
-                            if property['field_type'] in ['int']:
-                                property_content['type'].append('integer')
-
-                            elif property['field_type'] in ['timestamp']:
-                                property_content['type'].append('string')
+                            property_content['type'].append('string')
+                            if property['field_type'] in ['timestamp']:
                                 property_content['format'] = 'date-time'
-
-                            else:
-                                property_content['type'].append('string')
 
                             # allow all dynamic properties to be null since this 
                             # happens in practice probably because a property could
