@@ -296,7 +296,7 @@ class PipedriveTap(object):
 
     @backoff.on_exception(backoff.expo, (Timeout, ConnectionError), max_tries = 5, factor = 2)
     @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
-    @backoff.on_exception(retry_after_wait_gen, PipedriveTooManyRequestsInSecondError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    @backoff.on_exception(retry_after_wait_gen, (PipedriveTooManyRequestsInSecondError, PipedriveBadRequestError), giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
             'User-Agent': self.config['user-agent']
@@ -331,7 +331,7 @@ class PipedriveTap(object):
     def validate_response(self, response):
         try:
             payload = response.json()
-            if payload and payload['success'] and 'data' in payload:
+            if payload and 'data' in payload and payload['success']:
                 return True
         except (AttributeError, simplejson.scanner.JSONDecodeError): # Verifying response in execute_request
             pass
