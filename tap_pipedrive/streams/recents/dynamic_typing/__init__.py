@@ -52,17 +52,16 @@ class DynamicTypingRecentsStream(RecentsStream):
                                 property_content['type'].append('integer')
 
                             elif property['field_type'] in ['timestamp']:
-                                property_content['type'].append('string')
                                 property_content['format'] = 'date-time'
-
-                            else:
-                                property_content['type'].append('string')
 
                             # allow all dynamic properties to be null since this 
                             # happens in practice probably because a property could
                             # be marked mandatory for some amount of time and not
                             # mandatory for another amount of time
                             property_content['type'].append('null')
+
+                            # Default type should be string for all fields
+                            property_content['type'].append('string')
 
                             schema['properties'][property['key']] = property_content
 

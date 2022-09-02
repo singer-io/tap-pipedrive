@@ -162,6 +162,9 @@ class PipedriveIterStream(PipedriveStream):
             self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
             self.next_start = self.start  # note pagination for next loop
 
+            if not response.json().get('data'):
+                continue
+
             # find all deals ids for deals added or with stage changes after start and before stop
             this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
 
