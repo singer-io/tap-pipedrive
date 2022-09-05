@@ -1,9 +1,12 @@
 # Changelog
 
-## 1 1.3
+## 1.1.4
+  * Fixed `NoneType` and Transformstion issues for Anamolous Failed Jobs [#120](https://github.com/singer-io/tap-pipedrive/pull/120)
+
+## 1.1.3
   * Access `users` data using new structure, rather than indexing into a single `list` [#119](https://github.com/singer-io/tap-pipedrive/pull/119)
 
-## 1 1.2
+## 1.1.2
   * Adding missing fields [#111](https://github.com/singer-io/tap-pipedrive/pull/111)
   * Add missing tap-tester cases [#113](https://github.com/singer-io/tap-pipedrive/pull/113)
   * Fix bookmark strategy [#117](https://github.com/singer-io/tap-pipedrive/pull/117)
