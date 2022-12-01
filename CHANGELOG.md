@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.5
+
+  * Performance improvement, increased default `page_size` limit to 500 as per [api docs](https://pipedrive.readme.io/docs/core-api-concepts-pagination)
+  * Added support for page_size in config
+
 ## 1.1.4
   * Fixed `NoneType` and Transformstion issues for Anamolous Failed Jobs [#120](https://github.com/singer-io/tap-pipedrive/pull/120)
 
