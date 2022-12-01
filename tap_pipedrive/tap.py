@@ -121,7 +121,7 @@ class PipedriveTap(object):
         self.state = state
 
         # page size configured from config, overrides the default value set in stream.py
-        page_size = self.config.get('page_size',500)
+        page_size = int(self.config.get('page_size',500))
         for stream in self.streams:
             stream.limit = stream.next_start = page_size
 
