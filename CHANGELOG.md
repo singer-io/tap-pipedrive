@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.5
+  * Allows a deal_products record to contain a null `product_id` value per Pipedrive's [hard-deletion policy](https://developers.pipedrive.com/changelog/post/permanent-deletion-logic-for-6-core-entities) [#126](https://github.com/singer-io/tap-pipedrive/pull/126)
+
 ## 1.1.4
   * Fixed `NoneType` and Transformstion issues for Anamolous Failed Jobs [#120](https://github.com/singer-io/tap-pipedrive/pull/120)
 

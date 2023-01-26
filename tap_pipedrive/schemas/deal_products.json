@@ -13,6 +13,7 @@
     },
     "product_id": {
       "type": [
+        "null",
         "integer"
       ]
     },
