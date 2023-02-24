@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.6
+  * Makes several fields in `notes` nullable
+  * Writes state during pagination for more efficient extraction
+  * [#128](https://github.com/singer-io/tap-pipedrive/pull/128)
+
 ## 1.1.5
   * Allows a deal_products record to contain a null `product_id` value per Pipedrive's [hard-deletion policy](https://developers.pipedrive.com/changelog/post/permanent-deletion-logic-for-6-core-entities) [#126](https://github.com/singer-io/tap-pipedrive/pull/126)
 
