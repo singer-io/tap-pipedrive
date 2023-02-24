@@ -268,16 +268,17 @@ class PipedriveTap(object):
 
             # records with metrics
             with singer.metrics.record_counter(stream.schema) as counter:
-                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
+                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as transformer:
                     for row in self.iterate_response(response):
                         row = stream.process_row(row)
 
                         if not row: # in case of a non-empty response with an empty element
                             continue
-                        row = optimus_prime.transform(row, stream.get_schema(), stream_metadata)
+                        row = transformer.transform(row, stream.get_schema(), stream_metadata)
                         if stream.write_record(row):
                             counter.increment()
-                        stream.update_state(row)
+                            stream.update_state(row)
+                    singer.write_state(self.state)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS
