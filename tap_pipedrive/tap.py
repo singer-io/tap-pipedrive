@@ -278,7 +278,6 @@ class PipedriveTap(object):
                         if stream.write_record(row):
                             counter.increment()
                             stream.update_state(row)
-                    singer.write_state(self.state)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS
