@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.1.7
+  * Reverts state change from 1.1.6 due to child streams using parent stream pagination [#130](https://github.com/singer-io/tap-pipedrive/pull/130)
+
 ## 1.1.6
   * Makes several fields in `notes` nullable
   * Writes state during pagination for more efficient extraction
