@@ -328,15 +328,13 @@ class PipedriveTap(object):
             try:
                 # Verifying json is valid or not
                 response.json()
-                #return response
             except simplejson.scanner.JSONDecodeError as e:
                 raise e
             # Retry requests with null bodys and 200 status for dealsflow stream
             if response.json() is None and "flow" in response.url:
                 logger.info("Received null body with 200 status for url: %s, retrying", url)
                 raise PipedriveNull200Error
-            else:
-                return response
+            return response
         else:
             raise_for_error(response)
 
