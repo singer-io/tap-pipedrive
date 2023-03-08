@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.1.8
+  * Retries requests with 200 status and null bodies for dealsflow stream [#131](https://github.com/singer-io/tap-pipedrive/pull/131)
+
 # 1.1.7
   * Reverts state change from 1.1.6 due to child streams using parent stream pagination [#130](https://github.com/singer-io/tap-pipedrive/pull/130)
 
