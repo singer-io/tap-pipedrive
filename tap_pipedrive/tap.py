@@ -95,6 +95,11 @@ def retry_after_wait_gen():
         yield math.floor(float(sleep_time_str))
 
 
+class PipedriveNull200Error(Exception):
+    "Raised when pipedrive api returns a 200 with null body"
+    pass
+
+
 class PipedriveTap(object):
     streams = [
         CurrenciesStream(),
@@ -294,12 +299,13 @@ class PipedriveTap(object):
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
-    @backoff.on_exception(backoff.expo, (Timeout, ConnectionError), max_tries = 5, factor = 2)
+    @backoff.on_exception(backoff.expo, (Timeout, ConnectionError, PipedriveNull200Error), max_tries = 5, factor = 2)
     @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
     @backoff.on_exception(retry_after_wait_gen, (PipedriveTooManyRequestsInSecondError, PipedriveBadRequestError), giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
-            'User-Agent': self.config['user-agent']
+            'User-Agent': self.config['user-agent'],
+            'Accept-Encoding': 'application/json'
         }
         _params = {
             'api_token': self.config['api_token'],
@@ -322,9 +328,13 @@ class PipedriveTap(object):
             try:
                 # Verifying json is valid or not
                 response.json()
-                return response
             except simplejson.scanner.JSONDecodeError as e:
                 raise e
+            # Retry requests with null bodys and 200 status for dealsflow stream
+            if response.json() is None and "flow" in response.url:
+                logger.info("Received null body with 200 status for url: %s, retrying", url)
+                raise PipedriveNull200Error
+            return response
         else:
             raise_for_error(response)
 

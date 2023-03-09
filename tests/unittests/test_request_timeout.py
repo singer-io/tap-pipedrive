@@ -22,7 +22,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=300) # Expected timeout
 
@@ -41,7 +42,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=100.0) # Expected timeout
 
@@ -60,7 +62,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=100.5) # Expected timeout
 
@@ -79,7 +82,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=100.0) # Expected timeout
 
@@ -98,7 +102,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=300.0) # Expected timeout
 
@@ -117,7 +122,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=300.0) # Expected timeout
 
@@ -136,7 +142,8 @@ class TestRequestTimeoutValue(unittest.TestCase):
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
-                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)'},
+                                          headers={'User-Agent': 'tap-pipedrive (+support@stitchdata.com)',
+                                                   'Accept-Encoding': 'application/json'},
                                           params={'api_token': 'abc'},
                                           timeout=300.0) # Expected timeout
 
