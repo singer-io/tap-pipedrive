@@ -12,6 +12,6 @@ class DealFields(PipedriveStream):
         return self.schema
 
     def process_row(self, row):
-        # Ignore child fields since don't have id(PK) and update_time(replication_key)
+        # Ignore child fields as they don't have id(PK) and update_time(replication_key)
         return None if 'parent_id' in row else row
 
