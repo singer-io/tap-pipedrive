@@ -147,7 +147,7 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
                 self.REPLICATION_KEYS: {'update_time'},
-                self.STARTDATE_KEYS: {'update_time'}
+                self.STARTDATE_KEYS: {'add_time'}
             }
         }
 
