@@ -54,7 +54,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
             "persons": {"update_time": "2021-05-07T10:40:33+00:00"},
             "products": {"update_time": "2021-05-05T06:17:18+00:00"},
             "dealflow": {"log_time": "2021-05-07T10:40:33+00:00"},
-            "deal_fields": {"update_time": "2019-09-24T17:25:16+00:00"}
+            "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
         }
         # setting 'second_start_date' as bookmark for running 2nd sync
         for stream, updated_state in simulated_states.items():
