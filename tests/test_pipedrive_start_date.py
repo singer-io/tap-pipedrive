@@ -21,7 +21,10 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
         self.start_date = self.start_date_1
 
-        expected_streams = self.expected_streams()
+        # excluding `deal_fields` because we don't have any data created between start_date_1_epoch
+        # and start_date_2_epoch. So the assertion of assertGreater b/t sync_1 and sync_2 records
+        # is failing
+        expected_streams = self.expected_streams() - {'deal_fields'}
 
         ##########################################################################
         ### First Sync
@@ -112,7 +115,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
                     # Verify the number of records replicated in sync 1 is greater than the number
                     # of records replicated in sync 2 for stream
-                    self.assertGreaterEqual(record_count_sync_1, record_count_sync_2)
+                    self.assertGreater(record_count_sync_1, record_count_sync_2)
 
                     # Verify the records replicated in sync 2 were also replicated in sync 1
                     self.assertTrue(primary_keys_sync_2.issubset(primary_keys_sync_1))
