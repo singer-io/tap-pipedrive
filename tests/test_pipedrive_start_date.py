@@ -21,7 +21,10 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
         self.start_date = self.start_date_1
 
-        expected_streams = self.expected_streams()
+        # excluding `deal_fields` because we don't have any data created between start_date_1_epoch
+        # and start_date_2_epoch. So the assertion of assertGreater b/t sync_1 and sync_2 records
+        # is failing
+        expected_streams = self.expected_streams() - {'deal_fields'}
 
         ##########################################################################
         ### First Sync

@@ -143,6 +143,12 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.REPLICATION_KEYS: {'update_time'},
                 self.STARTDATE_KEYS: {'update_time'}
             },
+            'deal_fields': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            }
         }
 
 

@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.2.0
+  * Adds `deal_fields` stream [#134](https://github.com/singer-io/tap-pipedrive/pull/134)
+
 # 1.1.8
   * Retries requests with 200 status and null bodies for dealsflow stream [#131](https://github.com/singer-io/tap-pipedrive/pull/131)
 
