@@ -11,7 +11,7 @@ setup(name="tap-pipedrive",
       py_modules=["tap_pipedrive"],
       install_requires=[
           "pendulum==2.1.2",
-          "requests==2.21.0",
+          "requests==2.31.0",
           "singer-python==5.12.1",
       ],
       entry_points="""
