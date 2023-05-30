@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name="tap-pipedrive",
-      version="1.2.0",
+      version="1.2.1",
       description="Singer.io tap for extracting data from the Pipedrive API",
       author="Stitch",
       author_email="dev@stitchdata.com",
@@ -11,7 +11,7 @@ setup(name="tap-pipedrive",
       py_modules=["tap_pipedrive"],
       install_requires=[
           "pendulum==2.1.2",
-          "requests==2.21.0",
+          "requests==2.31.0",
           "singer-python==5.12.1",
       ],
       entry_points="""
