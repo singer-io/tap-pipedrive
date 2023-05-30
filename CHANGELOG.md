@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1
+  * Dependabot update [#135](https://github.com/singer-io/tap-pipedrive/pull/135)
+
 # 1.2.0
   * Adds `deal_fields` stream [#134](https://github.com/singer-io/tap-pipedrive/pull/134)
 
