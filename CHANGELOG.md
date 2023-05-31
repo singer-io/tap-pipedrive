@@ -1,7 +1,36 @@
 # Changelog
 
+# 1.2.0
+  * Adds `deal_fields` stream [#134](https://github.com/singer-io/tap-pipedrive/pull/134)
+
+# 1.1.8
+  * Retries requests with 200 status and null bodies for dealsflow stream [#131](https://github.com/singer-io/tap-pipedrive/pull/131)
+
+# 1.1.7
+  * Reverts state change from 1.1.6 due to child streams using parent stream pagination [#130](https://github.com/singer-io/tap-pipedrive/pull/130)
+
+## 1.1.6
+  * Makes several fields in `notes` nullable
+  * Writes state during pagination for more efficient extraction
+  * [#128](https://github.com/singer-io/tap-pipedrive/pull/128)
+
+## 1.1.5
+  * Allows a deal_products record to contain a null `product_id` value per Pipedrive's [hard-deletion policy](https://developers.pipedrive.com/changelog/post/permanent-deletion-logic-for-6-core-entities) [#126](https://github.com/singer-io/tap-pipedrive/pull/126)
+
+## 1.1.4
+  * Fixed `NoneType` and Transformstion issues for Anamolous Failed Jobs [#120](https://github.com/singer-io/tap-pipedrive/pull/120)
+
+## 1.1.3
+  * Access `users` data using new structure, rather than indexing into a single `list` [#119](https://github.com/singer-io/tap-pipedrive/pull/119)
+
+## 1.1.2
+  * Adding missing fields [#111](https://github.com/singer-io/tap-pipedrive/pull/111)
+  * Add missing tap-tester cases [#113](https://github.com/singer-io/tap-pipedrive/pull/113)
+  * Fix bookmark strategy [#117](https://github.com/singer-io/tap-pipedrive/pull/117)
+
 ## 1.1.1
   * Request timeout implemented [#105](https://github.com/singer-io/tap-pipedrive/pull/105)
+
 ## 1.1.0
   * Added retry mechanism for http error codes [#93](https://github.com/singer-io/tap-pipedrive/pull/93)
   * Removed support for delete_logs stream [#97](https://github.com/singer-io/tap-pipedrive/pull/97)

@@ -17,7 +17,7 @@ from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadReq
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
-                      DealStageChangeStream, DealsProductsStream)
+                      DealStageChangeStream, DealsProductsStream, DealFields)
 
 
 logger = singer.get_logger()
@@ -95,6 +95,11 @@ def retry_after_wait_gen():
         yield math.floor(float(sleep_time_str))
 
 
+class PipedriveNull200Error(Exception):
+    "Raised when pipedrive api returns a 200 with null body"
+    pass
+
+
 class PipedriveTap(object):
     streams = [
         CurrenciesStream(),
@@ -111,7 +116,8 @@ class PipedriveTap(object):
         RecentPersonsStream(),
         RecentProductsStream(),
         DealStageChangeStream(),
-        DealsProductsStream()
+        DealsProductsStream(),
+        DealFields()
     ]
 
     def __init__(self, config, state):
@@ -222,8 +228,10 @@ class PipedriveTap(object):
                     else:
                         stream.more_items_in_collection = False
 
-                # set the attribution window so that the bookmark will reflect the new initial_state for the next sync
-                stream.earliest_state = stream.stream_start.subtract(hours=3)
+                # Set the bookmark with a minimum from the `now - attribution_window` and maximum replication key
+                # The "stream start date" is in the form of "%Y-%m-%dT%H:%M:%S.%f+00:00", whereas the "earliest_state" is in the
+                # format of "%Y-%m-%dT%H:%M:%S+00:00", thus replacing the "microsecond" part to keep consistency in bookmark format
+                stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3)).replace(microsecond=0)
             else:
                 # paginate
                 self.do_paginate(stream, stream_metadata)
@@ -266,16 +274,16 @@ class PipedriveTap(object):
 
             # records with metrics
             with singer.metrics.record_counter(stream.schema) as counter:
-                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as optimus_prime:
+                with singer.Transformer(singer.NO_INTEGER_DATETIME_PARSING) as transformer:
                     for row in self.iterate_response(response):
                         row = stream.process_row(row)
 
                         if not row: # in case of a non-empty response with an empty element
                             continue
-                        row = optimus_prime.transform(row, stream.get_schema(), stream_metadata)
+                        row = transformer.transform(row, stream.get_schema(), stream_metadata)
                         if stream.write_record(row):
                             counter.increment()
-                        stream.update_state(row)
+                            stream.update_state(row)
 
     def get_default_config(self):
         return CONFIG_DEFAULTS
@@ -292,12 +300,13 @@ class PipedriveTap(object):
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
-    @backoff.on_exception(backoff.expo, (Timeout, Pipedrive5xxError, ConnectionError), max_tries = 5, factor = 2)
-    @backoff.on_exception(backoff.expo, (simplejson.scanner.JSONDecodeError), max_tries = 3)
-    @backoff.on_exception(retry_after_wait_gen, PipedriveTooManyRequestsInSecondError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    @backoff.on_exception(backoff.expo, (Timeout, Pipedrive5xxError, ConnectionError, PipedriveNull200Error), max_tries = 5, factor = 2)
+    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
+    @backoff.on_exception(retry_after_wait_gen, (PipedriveTooManyRequestsInSecondError, PipedriveBadRequestError), giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
-            'User-Agent': self.config['user-agent']
+            'User-Agent': self.config['user-agent'],
+            'Accept-Encoding': 'application/json'
         }
         _params = {
             'api_token': self.config['api_token'],
@@ -320,16 +329,20 @@ class PipedriveTap(object):
             try:
                 # Verifying json is valid or not
                 response.json()
-                return response
             except simplejson.scanner.JSONDecodeError as e:
                 raise e
+            # Retry requests with null bodys and 200 status for dealsflow stream
+            if response.json() is None and "flow" in response.url:
+                logger.info("Received null body with 200 status for url: %s, retrying", url)
+                raise PipedriveNull200Error
+            return response
         else:
             raise_for_error(response)
 
     def validate_response(self, response):
         try:
             payload = response.json()
-            if payload['success'] and 'data' in payload:
+            if payload and 'data' in payload and payload['success']:
                 return True
         except (AttributeError, simplejson.scanner.JSONDecodeError): # Verifying response in execute_request
             pass

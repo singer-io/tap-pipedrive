@@ -46,7 +46,7 @@
       "type": ["null", "object"],
       "properties": {
         "name": {
-          "type": "string"
+          "type": ["null", "string"]
         }
       }
     },
@@ -54,7 +54,7 @@
       "type": ["null", "object"],
       "properties": {
         "name": {
-          "type": "string"
+          "type": ["null", "string"]
         }
       },
       "required": [
@@ -65,7 +65,7 @@
       "type": ["null", "object"],
       "properties": {
         "title": {
-          "type": "string"
+          "type": ["null", "string"]
         }
       }
     },

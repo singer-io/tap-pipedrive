@@ -30,13 +30,10 @@ class PipedriveBaseTest(unittest.TestCase):
     FULL_TABLE = "FULL_TABLE"
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
     BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
+    REPLICATION_KEY_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+    BOOKMARK_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
     LOGGER = singer.get_logger()
     STARTDATE_KEYS = "start_date"
-    DATETIME_FMT = {
-        "%Y-%m-%dT%H:%M:%SZ",
-        "%Y-%m-%d %H:%M:%S",
-        "%Y-%m-%dT%H:%M:%S.000000Z"
-    }
 
     @staticmethod
     def tap_name():
@@ -53,7 +50,7 @@ class PipedriveBaseTest(unittest.TestCase):
     def get_properties(self, original: bool = True):
         """Configuration properties required for the tap."""
         return_value = {
-            'start_date' : "2021-04-29T00:00:00Z"
+            'start_date' : "2021-05-03T00:00:00Z"
         }
         if original:
             return return_value
@@ -146,6 +143,12 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.REPLICATION_KEYS: {'update_time'},
                 self.STARTDATE_KEYS: {'update_time'}
             },
+            'deal_fields': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
+            }
         }
 
 
@@ -390,10 +393,6 @@ class PipedriveBaseTest(unittest.TestCase):
             return False 
         return True
 
-    def dt_to_ts(self, dtime):
-        for date_format in self.DATETIME_FMT:
-            try:
-                date_stripped = int(time.mktime(dt.strptime(dtime, date_format).timetuple()))
-                return date_stripped
-            except ValueError:
-                continue
+    def dt_to_ts(self, dtime, format):
+        date_stripped = int(time.mktime(dt.strptime(dtime, format).timetuple()))
+        return date_stripped
