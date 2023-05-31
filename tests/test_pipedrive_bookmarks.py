@@ -125,9 +125,6 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
 
                         # Verify the first sync bookmark value is the max replication key value for a given stream
                         replication_key_value = record.get(replication_key)
-                        if stream == "deal_fields" and not replication_key_value:
-                            # add_time as replication_key_value if update_time is None for deal_fields
-                            replication_key_value = record.get("add_time")
                         replication_key_value_ts = self.dt_to_ts(replication_key_value, self.REPLICATION_KEY_FORMAT)
                         self.assertLessEqual(
                             replication_key_value_ts, first_bookmark_value_ts,
