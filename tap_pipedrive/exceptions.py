@@ -6,6 +6,10 @@ class PipedriveError(Exception):
         self.message = message
         self.response = response
 
+# Reference: https://pipedrive.readme.io/docs/core-api-concepts-http-status-codes
+class Pipedrive5xxError(PipedriveError):
+    pass
+
 class PipedriveNotFoundError(PipedriveError):
     pass
 
@@ -36,11 +40,11 @@ class PipedriveTooManyRequestsError(PipedriveError):
 class PipedriveTooManyRequestsInSecondError(PipedriveError):
     pass
 
-class PipedriveInternalServiceError(PipedriveError):
+class PipedriveInternalServiceError(Pipedrive5xxError): # 500 error
     pass
 
-class PipedriveNotImplementedError(PipedriveError):
+class PipedriveNotImplementedError(Pipedrive5xxError): # 501 error
     pass
 
-class PipedriveServiceUnavailableError(PipedriveError):
+class PipedriveServiceUnavailableError(Pipedrive5xxError): # 503 error
     pass

@@ -13,7 +13,7 @@ from singer.catalog import Catalog, CatalogEntry, Schema
 from .config import BASE_URL, CONFIG_DEFAULTS
 from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadRequestError, PipedriveUnauthorizedError, PipedrivePaymentRequiredError, 
                         PipedriveForbiddenError, PipedriveGoneError, PipedriveUnsupportedMediaError, PipedriveUnprocessableEntityError, PipedriveTooManyRequestsError, 
-                        PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError)
+                        PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError, Pipedrive5xxError)
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
@@ -300,8 +300,8 @@ class PipedriveTap(object):
         params = stream.update_request_params(params)
         return self.execute_request(stream.endpoint, params=params)
 
-    @backoff.on_exception(backoff.expo, (Timeout, ConnectionError, PipedriveNull200Error), max_tries = 5, factor = 2)
-    @backoff.on_exception(backoff.expo, (PipedriveInternalServiceError, simplejson.scanner.JSONDecodeError), max_tries = 3)
+    @backoff.on_exception(backoff.expo, (Timeout, Pipedrive5xxError, ConnectionError, PipedriveNull200Error), max_tries=5, factor=2)
+    @backoff.on_exception(backoff.expo, simplejson.scanner.JSONDecodeError, max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, (PipedriveTooManyRequestsInSecondError, PipedriveBadRequestError), giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def execute_request(self, endpoint, params=None):
         headers = {
@@ -388,6 +388,13 @@ def raise_for_error(response):
                 message = "HTTP-error-code: {}, Error: {}".format(error_code, message_text)
 
             exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", PipedriveError)
+
+            # Pipedrive doc has only mentioned 500, 501 and 503 errors but while executing
+            # we encounter errors apart form the doc like 524 error. So handling the same
+            #   Doc: https://pipedrive.readme.io/docs/core-api-concepts-http-status-codes
+            if error_code > 500 and error_code not in ERROR_CODE_EXCEPTION_MAPPING.keys():
+                exc = Pipedrive5xxError
+
             raise exc(message, response) from None
 
         except (ValueError, TypeError):
