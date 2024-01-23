@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.3.0
+  * Updates for python 3.11 [#136](https://github.com/singer-io/tap-pipedrive/pull/136)
+  * 
 # 1.2.1
   * Adds backoff/retry for Http5xx errors [#115](https://github.com/singer-io/tap-pipedrive/pull/115)
 
