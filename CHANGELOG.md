@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.2.0
+  * Updates for python 3.11 [#136](https://github.com/singer-io/tap-pipedrive/pull/136)
+
 # 1.1.8
   * Retries requests with 200 status and null bodies for dealsflow stream [#131](https://github.com/singer-io/tap-pipedrive/pull/131)
 
