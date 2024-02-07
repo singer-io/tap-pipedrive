@@ -14,6 +14,7 @@ from .recents.dynamic_typing.products import RecentProductsStream
 from .dealflow import DealStageChangeStream
 from .deal_products import DealsProductsStream
 from .deal_fields import DealFields
+from .deals_beta import DealsBetaStream
 
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
