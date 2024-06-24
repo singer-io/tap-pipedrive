@@ -1,8 +1,13 @@
 import copy
 import os
+import unittest
 from dateutil.parser import parse
 from base import PipedriveBaseTest
 from tap_tester import runner, connections, menagerie
+
+# from debugpy import listen, wait_for_client
+# listen(8000)
+# wait_for_client()
 
 class PipedriveBookmarksTest(PipedriveBaseTest):
 
@@ -19,11 +24,12 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         - All data of the 2nd sync is >= the bookmark from the first sync
         - The number of records in the 2nd sync is less then the first
         """
-        
+
         conn_id = connections.ensure_connection(self)
         runner.run_check_mode(self, conn_id)
 
-        expected_streams = self.expected_streams()
+        # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
+        expected_streams = self.expected_streams() - {"deal_fields"}
         expected_replication_keys = self.expected_replication_keys()
         expected_replication_methods = self.expected_replication_method()
 
@@ -54,7 +60,9 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
             "persons": {"update_time": "2021-05-07T10:40:33+00:00"},
             "products": {"update_time": "2021-05-05T06:17:18+00:00"},
             "dealflow": {"log_time": "2021-05-07T10:40:33+00:00"},
-            "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
+
+            # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
+            # "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
         }
         # setting 'second_start_date' as bookmark for running 2nd sync
         for stream, updated_state in simulated_states.items():
@@ -72,7 +80,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         second_sync_records = runner.get_records_from_target_output()
         second_sync_bookmarks = menagerie.get_state(conn_id)
 
-        for stream in expected_streams:            
+        for stream in expected_streams:
             with self.subTest(stream=stream):
 
                 # expected values
@@ -91,7 +99,6 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                                         if record.get('action') == 'upsert']
                 first_bookmark_key_value = first_sync_bookmarks.get('bookmarks', {stream: None}).get(stream)
                 second_bookmark_key_value = second_sync_bookmarks.get('bookmarks', {stream: None}).get(stream)
-                
 
                 if expected_replication_method == self.INCREMENTAL:
                     # dealflow stores bookmark in the format of "2022-05-27T04:16:22.410711+00:00"
@@ -102,25 +109,25 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     # Key in which state has been saved in state file
                     replication_key = list(expected_replication_keys[stream])[0]
 
-                    first_bookmark_value = first_bookmark_key_value.get(replication_key)
+                    first_bookmark_value = first_bookmark_key_value.get(replication_key) if first_bookmark_key_value else None
                     second_bookmark_value = second_bookmark_key_value.get(replication_key)
-                    
+
                     first_bookmark_value_ts = self.dt_to_ts(first_bookmark_value, self.BOOKMARK_FORMAT)
-                    
+
                     second_bookmark_value_ts = self.dt_to_ts(second_bookmark_value, self.BOOKMARK_FORMAT)
-                    
+
                     simulated_bookmark_value = self.dt_to_ts(new_state['bookmarks'][stream][replication_key], self.BOOKMARK_FORMAT)
 
                     # Verify the first sync sets a bookmark of the expected form
                     self.assertIsNotNone(first_bookmark_key_value)
                     self.assertIsNotNone(first_bookmark_value)
-                    
+
                     self.assertIsNotNone(second_bookmark_key_value)
                     self.assertIsNotNone(second_bookmark_value)
 
                     # Verify the second sync bookmark is Equal to the first sync bookmark
                     self.assertEqual(second_bookmark_value, first_bookmark_value) # assumes no changes to data during test
-                    
+
                     for record in first_sync_messages:
 
                         # Verify the first sync bookmark value is the max replication key value for a given stream
