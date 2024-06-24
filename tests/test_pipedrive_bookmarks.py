@@ -1,13 +1,5 @@
-import copy
-import os
-import unittest
-from dateutil.parser import parse
 from base import PipedriveBaseTest
 from tap_tester import runner, connections, menagerie
-
-# from debugpy import listen, wait_for_client
-# listen(8000)
-# wait_for_client()
 
 class PipedriveBookmarksTest(PipedriveBaseTest):
 
@@ -29,6 +21,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         runner.run_check_mode(self, conn_id)
 
         # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
+        # Skipping this stream until we investigate and fix the issue
         expected_streams = self.expected_streams() - {"deal_fields"}
         expected_replication_keys = self.expected_replication_keys()
         expected_replication_methods = self.expected_replication_method()

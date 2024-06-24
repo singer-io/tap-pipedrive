@@ -5,7 +5,6 @@ from requests.exceptions import RequestException
 
 logger = singer.get_logger()
 
-
 class PipedriveStream(object):
     tap = None
     endpoint = ''
@@ -70,7 +69,7 @@ class PipedriveStream(object):
 
     def paginate(self, response):
         payload = response.json()
-        if payload.get('additional_data', {}).get('pagination'):
+        if payload.get('additional_data') and 'pagination' in payload['additional_data']:
             logger.debug('Paginate: valid response')
             pagination = payload['additional_data']['pagination']
             if 'more_items_in_collection' in pagination:
