@@ -52,14 +52,16 @@ class PipedriveStream(object):
 
     def set_initial_state(self, state, start_date):
         try:
-            dt = state['bookmarks'][self.schema][self.state_field]
-            if dt is not None:
-                self.initial_state = pendulum.parse(dt)
-                self.earliest_state = self.initial_state
-                return
+            bookmark_date = state['bookmarks'][self.schema][self.state_field]
+            if self.stream == 'deals':
+                self.initial_state = pendulum.parse(bookmark_date).subtract(minutes=5)
+            else:
+                self.initial_state = pendulum.parse(bookmark_date)
+            self.earliest_state = self.initial_state
+            return
 
         except (TypeError, KeyError) as e:
-            pass
+            logger.warn('Failed to read bookmark, starting sync from start date!')
 
         self.initial_state = start_date
         self.earliest_state = self.initial_state
