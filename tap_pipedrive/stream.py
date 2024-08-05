@@ -60,8 +60,8 @@ class PipedriveStream(object):
             self.earliest_state = self.initial_state
             return
 
-        except (TypeError, KeyError) as e:
-            logger.warn('Failed to read bookmark, starting sync from start date!')
+        except (AttributeError, TypeError, KeyError) as e:
+            logger.warn('Failed to read bookmark for "%s" stream, starting sync from start date!', self.schema)
 
         self.initial_state = start_date
         self.earliest_state = self.initial_state
