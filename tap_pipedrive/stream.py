@@ -53,7 +53,7 @@ class PipedriveStream(object):
     def set_initial_state(self, state, start_date):
         try:
             bookmark_date = state['bookmarks'][self.schema][self.state_field]
-            if self.stream == 'deals':
+            if self.schema == 'deals':
                 self.initial_state = pendulum.parse(bookmark_date).subtract(minutes=30)
             else:
                 self.initial_state = pendulum.parse(bookmark_date)
