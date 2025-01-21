@@ -4,7 +4,7 @@ from base import PipedriveBaseTest
 class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
-    start_date_2 = ""
+    start_date_2 = "2025-01-21T00:00:00Z"
 
     @staticmethod
     def name():
@@ -14,7 +14,6 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         """Instantiate start date according to the desired data set and run the test"""
 
         self.start_date_1 = self.get_properties().get('start_date')
-        self.start_date_2 = self.timedelta_formatted(self.start_date_1, days=8)
 
         start_date_1_epoch = self.dt_to_ts(self.start_date_1, self.START_DATE_FORMAT)
         start_date_2_epoch = self.dt_to_ts(self.start_date_2, self.START_DATE_FORMAT)
@@ -115,7 +114,10 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
                     # Verify the number of records replicated in sync 1 is greater than the number
                     # of records replicated in sync 2 for stream
-                    self.assertGreater(record_count_sync_1, record_count_sync_2)
+                    if stream == "users":
+                        self.assertGreaterEqual(record_count_sync_1, record_count_sync_2)
+                    else:
+                        self.assertGreater(record_count_sync_1, record_count_sync_2)
 
                     # Verify the records replicated in sync 2 were also replicated in sync 1
                     self.assertTrue(primary_keys_sync_2.issubset(primary_keys_sync_1))

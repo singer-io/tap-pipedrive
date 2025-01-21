@@ -10,7 +10,10 @@ from datetime import datetime as dt
 
 import singer
 from tap_tester import connections, menagerie, runner
+from tap_tester.jira_client import JiraClient as jira_client
+from tap_tester.jira_client import CONFIGURATION_ENVIRONMENT as jira_config
 
+JIRA_CLIENT = jira_client({ **jira_config })
 
 class PipedriveBaseTest(unittest.TestCase):
     """

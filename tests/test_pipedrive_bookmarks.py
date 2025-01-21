@@ -45,14 +45,14 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ##########################################################################
         new_state = {'bookmarks': dict()}
         simulated_states = {
-            "notes": {"update_time": "2021-05-06T09:49:19+00:00"},
-            "activities": {"update_time": "2021-05-05T06:15:46+00:00"},
-            "deals": {"update_time": "2021-05-10T07:44:45+00:00"},
-            "files": {"update_time": "2021-05-05T06:14:31+00:00"},
-            "organizations": {"update_time": "2021-05-06T09:51:40+00:00"},
-            "persons": {"update_time": "2021-05-07T10:40:33+00:00"},
-            "products": {"update_time": "2021-05-05T06:17:18+00:00"},
-            "dealflow": {"log_time": "2021-05-07T10:40:33+00:00"},
+            "notes": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "activities": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "deals": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "files": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "organizations": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "persons": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "products": {"update_time": "2025-01-21T00:00:00+00:00"},
+            "dealflow": {"log_time": "2025-01-21T00:00:00+00:00"},
 
             # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
             # "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
