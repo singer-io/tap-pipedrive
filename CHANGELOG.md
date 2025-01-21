@@ -1,7 +1,7 @@
 # Changelog
 
-# 1.2.2
-  * Handles the `None` value for additional_data in payload [#137](https://github.com/singer-io/tap-pipedrive/pull/137)
+# 1.2.3
+  * Bump requests version [#140](https://github.com/singer-io/tap-pipedrive/pull/140)
 
 # 1.2.1
   * Adds backoff/retry for Http5xx errors [#115](https://github.com/singer-io/tap-pipedrive/pull/115)

@@ -9,12 +9,12 @@ class PaginationTest(PipedriveBaseTest):
         return "tap_tester_pipedrive_pagination_test"
 
     def test_run(self):
-        # page size for "deals"
+        # page size for "pipelines"
         page_size = 100
         conn_id = connections.ensure_connection(self)
 
-        # Checking pagination for "deals" stream
-        expected_streams = ["deals"]
+        # Checking pagination for "pipelines" stream
+        expected_streams = ["pipelines"]
         found_catalogs = self.run_and_verify_check_mode(conn_id)
 
         # table and field selection
