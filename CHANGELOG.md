@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.2.4
+  * Fix the organizations schema  [#142](https://github.com/singer-io/tap-pipedrive/pull/142)
+
 # 1.2.3
   * Fix Dependabot issue  [#140](https://github.com/singer-io/tap-pipedrive/pull/140)
 
