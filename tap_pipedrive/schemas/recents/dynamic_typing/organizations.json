@@ -5,7 +5,7 @@
       "type": "integer"
     },
     "company_id": {
-      "type": "integer"
+      "type": ["null", "integer"]
     },
     "owner_id": {
       "type": "integer"

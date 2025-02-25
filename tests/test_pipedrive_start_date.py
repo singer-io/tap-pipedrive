@@ -4,7 +4,7 @@ from base import PipedriveBaseTest
 class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
-    start_date_2 = "2025-01-21T00:00:00Z"
+    start_date_2 = "2025-02-25T00:00:00Z"
 
     @staticmethod
     def name():
