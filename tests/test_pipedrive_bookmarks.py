@@ -45,14 +45,14 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ##########################################################################
         new_state = {'bookmarks': dict()}
         simulated_states = {
-            "notes": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "activities": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "deals": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "files": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "organizations": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "persons": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "products": {"update_time": "2025-01-21T00:00:00+00:00"},
-            "dealflow": {"log_time": "2025-01-21T00:00:00+00:00"},
+            "notes": {"update_time": "2025-02-24T16:42:12+00:00"},
+            "activities": {"update_time": "2025-02-24T16:41:52+00:00"},
+            "deals": {"update_time": "2025-02-24T16:42:12+00:00"},
+            "files": {"update_time": "2025-02-24T16:41:35+00:00"},
+            "organizations": {"update_time": "2025-02-24T16:42:12+00:00"},
+            "persons": {"update_time": "2025-02-24T16:42:12+00:00"},
+            "products": {"update_time": "2025-02-24T16:43:13+00:00"},
+            "dealflow": {"log_time": "2025-02-24T15:55:18+00:00"},
 
             # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
             # "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
@@ -94,10 +94,6 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                 second_bookmark_key_value = second_sync_bookmarks.get('bookmarks', {stream: None}).get(stream)
 
                 if expected_replication_method == self.INCREMENTAL:
-                    # dealflow stores bookmark in the format of "2022-05-27T04:16:22.410711+00:00"
-                    # as, we subtract 3 hours from sync start date in current implementation
-                    bookmark_format = "%Y-%m-%dT%H:%M:%S.%f+00:00" if stream == "dealflow" else self.BOOKMARK_FORMAT
-
                     # collect information specific to incremental streams from syncs 1 & 2
                     # Key in which state has been saved in state file
                     replication_key = list(expected_replication_keys[stream])[0]
@@ -118,8 +114,24 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     self.assertIsNotNone(second_bookmark_key_value)
                     self.assertIsNotNone(second_bookmark_value)
 
-                    # Verify the second sync bookmark is Equal to the first sync bookmark
-                    self.assertEqual(second_bookmark_value, first_bookmark_value) # assumes no changes to data during test
+                    # dealflow stores bookmark in the format of "2022-05-27T04:16:22.410711+00:00"
+                    # as, we subtract 3 hours from sync start date in current implementation
+                    if stream == "dealflow":
+                        # Verify the second sync bookmark is Greater than the first sync bookmark
+                        self.assertGreaterEqual(second_bookmark_value, first_bookmark_value)
+
+                        # Add 3 hours to the first bookmark value
+                        first_bookmark_value_ts = self.dt_to_ts(
+                            self.timedelta_formatted(first_bookmark_value, hours=3, format=self.BOOKMARK_FORMAT),
+                            self.BOOKMARK_FORMAT)
+
+                        # Add 3 hours to the second bookmark value
+                        second_bookmark_value_ts = self.dt_to_ts(
+                            self.timedelta_formatted(second_bookmark_value, hours=3, format=self.BOOKMARK_FORMAT),
+                            self.BOOKMARK_FORMAT)
+                    else:
+                        # Verify the second sync bookmark is Equal to the first sync bookmark
+                        self.assertEqual(second_bookmark_value, first_bookmark_value) # assumes no changes to data during test
 
                     for record in first_sync_messages:
 
