@@ -10,7 +10,10 @@ from datetime import datetime as dt
 
 import singer
 from tap_tester import connections, menagerie, runner
+from tap_tester.jira_client import JiraClient as jira_client
+from tap_tester.jira_client import CONFIGURATION_ENVIRONMENT as jira_config
 
+JIRA_CLIENT = jira_client({ **jira_config })
 
 class PipedriveBaseTest(unittest.TestCase):
     """
@@ -367,17 +370,21 @@ class PipedriveBaseTest(unittest.TestCase):
 
         raise NotImplementedError("Tests do not account for dates of this format: {}".format(date_value))
 
-    def timedelta_formatted(self, dtime, days=0):
+    def timedelta_formatted(self, dtime, days=0, hours=0, format=None):
+        if format:
+            date_time = dt.strptime(dtime, format)
+            return dt.strftime(date_time + timedelta(days=days, hours=hours), format)
+
         try:
             date_stripped = dt.strptime(dtime, self.START_DATE_FORMAT)
-            return_date = date_stripped + timedelta(days=days)
+            return_date = date_stripped + timedelta(days=days, hours=hours)
 
             return dt.strftime(return_date, self.START_DATE_FORMAT)
 
         except ValueError:
             try:
                 date_stripped = dt.strptime(dtime, self.BOOKMARK_COMPARISON_FORMAT)
-                return_date = date_stripped + timedelta(days=days)
+                return_date = date_stripped + timedelta(days=days, hours=hours)
 
                 return dt.strftime(return_date, self.BOOKMARK_COMPARISON_FORMAT)
 
