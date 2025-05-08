@@ -18,7 +18,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -38,7 +38,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -58,7 +58,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -78,7 +78,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -98,7 +98,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -118,7 +118,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -138,7 +138,7 @@ class TestRequestTimeoutValue(unittest.TestCase):
         # Initialize PipedriveTap object with config
         pipedrive_tap = _tap.PipedriveTap(config, state)
         # Call refresh_token method which call requests.get with timeout
-        pipedrive_tap.execute_request(endpoint)
+        pipedrive_tap.execute_request(endpoint, "v1")
 
         # Verify requests.get is called with expected timeout
         mocked_request.assert_called_with('https://api.pipedrive.com/v1/xyz',
@@ -162,7 +162,7 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
         # Initialize PipedriveTap object
         pipedrive_tap = _tap.PipedriveTap(config, state)
         try:
-            pipedrive_tap.execute_request(endpoint)
+            pipedrive_tap.execute_request(endpoint, "v1")
         except requests.exceptions.Timeout:
             pass
 
@@ -184,7 +184,7 @@ class TestConnectionErrorBackoff(unittest.TestCase):
         # Initialize PipedriveTap object
         pipedrive_tap = _tap.PipedriveTap(config, state)
         try:
-            pipedrive_tap.execute_request(endpoint)
+            pipedrive_tap.execute_request(endpoint, "v1")
         except requests.exceptions.ConnectionError:
             pass
 

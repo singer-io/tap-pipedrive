@@ -45,7 +45,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         json_decode_str = '{"success": true, "data" : []}'
         mocked_jsondecode_successful_request.return_value = get_mock_http_response(200, json_decode_str)
 
-        self.pipedrive_tap.execute_request(self.endpoint)
+        self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         self.assertEqual(mocked_jsondecode_successful_request.call_count, 1)
 
@@ -54,7 +54,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_jsondecode_failing_request.return_value = get_mock_http_response(200, json_decode_error_str)
 
         with self.assertRaises(simplejson.scanner.JSONDecodeError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         self.assertEqual(mocked_jsondecode_failing_request.call_count, 3)
 
@@ -62,7 +62,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(400, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveBadRequestError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 400, Error: Request is missing or has a bad parameter."
         # Verifying the message formed for the custom exception
@@ -74,7 +74,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(401, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveUnauthorizedError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
 
@@ -87,7 +87,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(402, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedrivePaymentRequiredError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 402, Error: Company account is not open (possible reason: trial expired, payment details not entered)."
 
@@ -100,7 +100,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(403, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveForbiddenError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 403, Error: Invalid authorization credentials or permissions."
 
@@ -113,7 +113,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(404, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveNotFoundError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 404, Error: The requested resource does not exist."
 
@@ -126,7 +126,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(410, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveGoneError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 410, Error: The old resource is permanently unavailable."
 
@@ -139,7 +139,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(415, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveUnsupportedMediaError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 415, Error: The feature is not enabled."
 
@@ -152,7 +152,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(422, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveUnprocessableEntityError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 422, Error: Webhook limit reached."
 
@@ -166,7 +166,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(429, {}, headers=headers, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveTooManyRequestsInSecondError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 429, Error: Rate limit has been exceeded. Please retry after 2 seconds."
 
@@ -180,7 +180,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(429, {}, headers=headers, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveTooManyRequestsError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 429, Error: Daily Rate limit has been exceeded. Please retry after 200 seconds."
 
@@ -193,7 +193,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(500, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveInternalServiceError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 500, Error: Internal Service Error from PipeDrive."
 
@@ -206,7 +206,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(501, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveNotImplementedError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 501, Error: Functionality does not exist."
 
@@ -219,7 +219,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(503, {}, raise_error=True)
 
         with self.assertRaises(_tap.PipedriveServiceUnavailableError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 503, Error: Schedule maintenance on Pipedrive's end."
 
@@ -232,7 +232,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         mocked_request.return_value = Mockresponse(524, {}, raise_error=True)
 
         with self.assertRaises(_tap.Pipedrive5xxError) as e:
-            self.pipedrive_tap.execute_request(self.endpoint)
+            self.pipedrive_tap.execute_request(self.endpoint, "v1")
 
         expected_error_message = "HTTP-error-code: 524, Error: Unknown Error"
 
