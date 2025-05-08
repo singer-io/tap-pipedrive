@@ -1,4 +1,5 @@
 from tap_pipedrive.stream import PipedriveStream
+from datetime import datetime
 import singer
 
 LOGGER = singer.get_logger()
@@ -30,7 +31,12 @@ class ActivitiesStream(PipedriveStream):
         """
         Override set_initial_state to set bookmark as it is for activities stream
         """
-        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
+        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field)
+        if not self.initial_state:
+            self.initial_state = start_date
+        elif "." in self.initial_state:  # Check if microseconds are present
+            self.initial_state = datetime.strptime(self.initial_state, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+        self.earliest_state = self.initial_state
         self.earliest_state = self.initial_state
 
 
@@ -53,4 +59,4 @@ class ActivitiesStream(PipedriveStream):
         return True
 
     def update_state(self, row):
-        self.earliest_state = row[self.state_field]
+        self.earliest_state = datetime.strptime(row[self.state_field], "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
