@@ -31,12 +31,7 @@ class ActivitiesStream(PipedriveStream):
         """
         Override set_initial_state to set bookmark as it is for activities stream
         """
-        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field)
-        if not self.initial_state:
-            self.initial_state = start_date
-        elif "." in self.initial_state:  # Check if microseconds are present
-            self.initial_state = datetime.strptime(self.initial_state, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
-        self.earliest_state = self.initial_state
+        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
         self.earliest_state = self.initial_state
 
 
