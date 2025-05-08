@@ -16,6 +16,7 @@ class PipedriveStream(object):
     schema_path = 'schemas/{}.json'
     schema_cache = None
     replication_method = 'FULL_TABLE'
+    api_version = 'v1'
 
     start = 0
     limit = 100
@@ -61,7 +62,7 @@ class PipedriveStream(object):
         except (TypeError, KeyError) as e:
             pass
 
-        self.initial_state = start_date
+        self.initial_state = pendulum.parse(start_date)
         self.earliest_state = self.initial_state
 
     def has_data(self):

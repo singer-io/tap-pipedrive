@@ -15,7 +15,7 @@ from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadReq
                         PipedriveForbiddenError, PipedriveGoneError, PipedriveUnsupportedMediaError, PipedriveUnprocessableEntityError, PipedriveTooManyRequestsError, 
                         PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError, Pipedrive5xxError)
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
-                      RecentNotesStream, RecentUsersStream, RecentActivitiesStream, RecentDealsStream,
+                      RecentNotesStream, RecentUsersStream, ActivitiesStream, RecentDealsStream,
                       RecentFilesStream, RecentOrganizationsStream, RecentPersonsStream, RecentProductsStream,
                       DealStageChangeStream, DealsProductsStream, DealFields)
 
@@ -109,7 +109,7 @@ class PipedriveTap(object):
         PipelinesStream(),
         RecentNotesStream(),
         RecentUsersStream(),
-        RecentActivitiesStream(),
+        ActivitiesStream(),
         RecentDealsStream(),
         RecentFilesStream(),
         RecentOrganizationsStream(),
@@ -123,7 +123,6 @@ class PipedriveTap(object):
     def __init__(self, config, state):
         self.config = self.get_default_config()
         self.config.update(config)
-        self.config['start_date'] = pendulum.parse(self.config['start_date'])
         self.state = state
 
     def do_discover(self):
@@ -232,15 +231,15 @@ class PipedriveTap(object):
                 # The "stream start date" is in the form of "%Y-%m-%dT%H:%M:%S.%f+00:00", whereas the "earliest_state" is in the
                 # format of "%Y-%m-%dT%H:%M:%S+00:00", thus replacing the "microsecond" part to keep consistency in bookmark format
                 stream.earliest_state = min(stream.earliest_state, stream.stream_start.subtract(hours=3)).replace(microsecond=0)
+                
+                # update state / bookmarking only when supported by stream
+                if stream.state_field:
+                    self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
+                                                    str(stream.earliest_state))
+                singer.write_state(self.state)
             else:
                 # paginate
                 self.do_paginate(stream, stream_metadata)
-
-            # update state / bookmarking only when supported by stream
-            if stream.state_field:
-                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
-                                                   str(stream.earliest_state))
-            singer.write_state(self.state)
 
         # clear currently_syncing
         try:
@@ -285,6 +284,12 @@ class PipedriveTap(object):
                             counter.increment()
                             stream.update_state(row)
 
+            # update state after each page
+            if stream.state_field:
+                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
+                                                   str(stream.earliest_state))
+            singer.write_state(self.state)
+
     def get_default_config(self):
         return CONFIG_DEFAULTS
 
@@ -298,12 +303,12 @@ class PipedriveTap(object):
             'limit': stream.limit
         }
         params = stream.update_request_params(params)
-        return self.execute_request(stream.endpoint, params=params)
+        return self.execute_request(stream.endpoint, stream.api_version, params=params)
 
     @backoff.on_exception(backoff.expo, (Timeout, Pipedrive5xxError, ConnectionError, PipedriveNull200Error), max_tries=5, factor=2)
     @backoff.on_exception(backoff.expo, simplejson.scanner.JSONDecodeError, max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, (PipedriveTooManyRequestsInSecondError, PipedriveBadRequestError), giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def execute_request(self, endpoint, params=None):
+    def execute_request(self, endpoint, api_version, params=None):
         headers = {
             'User-Agent': self.config['user-agent'],
             'Accept-Encoding': 'application/json'
@@ -314,8 +319,8 @@ class PipedriveTap(object):
         if params:
             _params.update(params)
 
-        url = "{}/{}".format(BASE_URL, endpoint)
-        logger.debug('Firing request at {} with params: {}'.format(url, _params))
+        url = "{}/{}/{}".format(BASE_URL, api_version, endpoint)
+        logger.info('Firing request at {} with params: {}'.format(url, _params))
 
         # Set request timeout to config param `request_timeout` value.
         config_request_timeout = self.config.get('request_timeout')

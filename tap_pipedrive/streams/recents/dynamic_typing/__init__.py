@@ -24,7 +24,7 @@ class DynamicTypingRecentsStream(RecentsStream):
                 fields_params = {"limit" : self.fields_limit, "start" : self.fields_start} 
 
                 try:
-                    fields_response = self.tap.execute_request(endpoint=self.fields_endpoint, params=fields_params)
+                    fields_response = self.tap.execute_request(endpoint=self.fields_endpoint, api_version='v1', params=fields_params)
                 except (ConnectionError, RequestException) as e:
                     raise e
 
