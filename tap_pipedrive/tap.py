@@ -320,7 +320,7 @@ class PipedriveTap(object):
             _params.update(params)
 
         url = "{}/{}/{}".format(BASE_URL, api_version, endpoint)
-        logger.info('Firing request at {} with params: {}'.format(url, _params))
+        logger.debug('Firing request at {} with params: {}'.format(url, _params))
 
         # Set request timeout to config param `request_timeout` value.
         config_request_timeout = self.config.get('request_timeout')
