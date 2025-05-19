@@ -16,6 +16,7 @@ class PipedriveStream(object):
     schema_path = 'schemas/{}.json'
     schema_cache = None
     replication_method = 'FULL_TABLE'
+    api_version = 'api/v2'
 
     start = 0
     limit = 100
@@ -42,91 +43,51 @@ class PipedriveStream(object):
         return self.endpoint
 
     def update_state(self, row):
-        if self.state_field:
-            # nullable update_time breaks bookmarking
-            if self.get_row_state(row) is not None:
-                current_state = pendulum.parse(self.get_row_state(row))
-
-                if self.state_is_newer_or_equal(current_state):
-                    self.earliest_state = current_state
+        self.earliest_state = row[self.state_field]
 
     def set_initial_state(self, state, start_date):
-        try:
-            dt = state['bookmarks'][self.schema][self.state_field]
-            if dt is not None:
-                self.initial_state = pendulum.parse(dt)
-                self.earliest_state = self.initial_state
-                return
-
-        except (TypeError, KeyError) as e:
-            pass
-
-        self.initial_state = start_date
+        """
+        Set the initial state of the stream
+        """
+        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
         self.earliest_state = self.initial_state
 
     def has_data(self):
         return self.more_items_in_collection
 
     def paginate(self, response):
+        """
+        Implement cursor based pagination
+        """
         payload = response.json()
-        if payload.get('additional_data') and 'pagination' in payload['additional_data']:
-            logger.debug('Paginate: valid response')
-            pagination = payload['additional_data']['pagination']
-            if 'more_items_in_collection' in pagination:
-                self.more_items_in_collection = pagination['more_items_in_collection']
-
-                if 'next_start' in pagination:
-                    self.start = pagination['next_start']
-
+        next_cursor = payload.get("additional_data", {}).get("next_cursor")
+        if next_cursor:
+            self.cursor = next_cursor
+            self.more_items_in_collection = True
+            logger.info('Stream {} has more data starting at cursor {}'.format(self.schema, self.cursor))
         else:
             self.more_items_in_collection = False
-
-        if self.more_items_in_collection:
-            logger.debug('Stream {} has more data starting at {}'.format(self.schema, self.start))
-        else:
-            logger.debug('Stream {} has no more data'.format(self.schema))
+            logger.info('Stream {} has no more data'.format(self.schema))
 
     def update_request_params(self, params):
         """
-        Non recent stream doesn't modify request params
+        Update the request parameters for the stream
         """
+        params = {
+            'limit': self.limit,
+            'updated_since': self.initial_state,
+            "sort_by": "update_time"
+        }
+        if self.cursor:
+            params['cursor'] = self.cursor
+
         return params
 
-    def state_is_newer_or_equal(self, current_state):
-        if self.earliest_state is None:
-            # self.state = current_state
-            return True
-
-        if current_state >= self.earliest_state:
-            self.earliest_state = current_state
-            return True
-
-        return False
-
     def write_record(self, row):
-        if self.record_is_newer_equal_null(row):
-            singer.write_record(self.schema, row)
-            return True
-        return False
-
-    def record_is_newer_equal_null(self, row):
-        # no bookmarking in stream or state is null
-        if not self.state_field or self.initial_state is None:
-            return True
-
-        # state field is null
-        if self.get_row_state(row) is None:
-            return True
-
-        # newer or equal
-        current_state = pendulum.parse(self.get_row_state(row))
-        if current_state >= self.initial_state:
-            return True
-
-        return False
-
-    def get_row_state(self, row):
-        return row[self.state_field]
+        """
+        Write the record to the stream
+        """
+        return True
 
     def process_row(self, row):
         return row
@@ -188,3 +149,95 @@ class PipedriveIterStream(PipedriveStream):
                        and (data[i]['stage_change_time'] is not None
                             and start <= pendulum.parse(data[i]['stage_change_time']) < stop)]
         return added_ids + changed_ids
+
+
+class PipedriveV1IncrementalStream(PipedriveStream):
+    api_version = 'v1'
+
+    def write_record(self, row):
+        """
+        Write the record to the stream
+        """
+        current_bookmark = row.get(self.state_field)
+        if not current_bookmark:
+            return True
+
+        if current_bookmark >= self.initial_state:
+            return True
+
+        return False
+
+    def update_state(self, row):
+        """
+        Update the state of the stream
+        """
+        current_bookmark = row.get(self.state_field)
+
+        if current_bookmark and current_bookmark >= self.earliest_state:
+            self.earliest_state = current_bookmark
+
+    def update_request_params(self, params):
+        """
+        Update the request parameters for the stream
+        """
+        return params
+
+    def paginate(self, response):
+        """
+        Implement page based pagination
+        """
+        payload = response.json()
+        if payload.get('additional_data') and 'pagination' in payload['additional_data']:
+            pagination = payload['additional_data']['pagination']
+            if 'more_items_in_collection' in pagination:
+                logger.debug('Stream {} has more data starting at {}'.format(self.schema, self.start))
+                self.more_items_in_collection = pagination['more_items_in_collection']
+
+                if 'next_start' in pagination:
+                    self.start = pagination['next_start']
+
+        else:
+            logger.debug('Stream {} has no more data'.format(self.schema))
+            self.more_items_in_collection = False
+
+class PipedriveIncrementalStreamUsingSort(PipedriveStream):
+
+    sort_by = 'update_time'
+    sort_direction = 'desc'
+
+    def update_request_params(self, params):
+        """
+        Update the request parameters with sorting options
+        """
+        params = {
+            'limit': self.limit,
+            "sort_by": "update_time",
+            "sort_direction": "desc"
+        }
+        if self.cursor:
+            params['cursor'] = self.cursor
+
+        return params
+
+    def write_record(self, row):
+        """
+        Write the record to the stream
+        """
+        current_bookmark = row.get(self.state_field)
+        if not current_bookmark:
+            return True
+
+        if current_bookmark >= self.initial_state:
+            return True
+
+        # Stop fetching if the current replication value is less than the earliest state(bookmark)
+        self.more_items_in_collection = False
+        return False
+
+    def update_state(self, row):
+        """
+        Update the state of the stream
+        """
+        current_bookmark = row.get(self.state_field)
+        if current_bookmark and current_bookmark >= self.earliest_state:
+            self.earliest_state = current_bookmark

@@ -1,9 +1,9 @@
-from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.stream import PipedriveV1IncrementalStream
 
 
-class FiltersStream(PipedriveStream):
+class FiltersStream(PipedriveV1IncrementalStream):
     endpoint = 'filters'
     schema = 'filters'
     key_properties = ['id', ]
-    # Disabling this state_field as this stream is acting as FULL_TABLE now.
-    # state_field = 'update_time'
+    state_field = 'update_time'
+    replication_method = 'INCREMENTAL'

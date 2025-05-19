@@ -1,7 +1,7 @@
-from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.stream import PipedriveV1IncrementalStream
 
 
-class DealFields(PipedriveStream):
+class DealFields(PipedriveV1IncrementalStream):
     endpoint = 'dealFields'
     schema = 'deal_fields'
     state_field = 'update_time'
