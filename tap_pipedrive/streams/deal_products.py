@@ -6,7 +6,6 @@ class DealsProductsStream(PipedriveIterStream):
     schema = 'deal_products'
     state_field = None
     key_properties = ['id']
-    api_version = 'v1'
 
     def get_name(self):
         return self.schema

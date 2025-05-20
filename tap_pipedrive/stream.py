@@ -18,6 +18,7 @@ class PipedriveStream(object):
     schema_cache = None
     replication_method = 'FULL_TABLE'
     api_version = 'api/v2'
+    cursor = None
 
     start = 0
     limit = 100

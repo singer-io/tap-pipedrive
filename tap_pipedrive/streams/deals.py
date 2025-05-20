@@ -6,6 +6,5 @@ class DealsStream(PipedriveStream):
     key_properties = ['id']
     replication_method = 'INCREMENTAL'
     state_field = 'update_time'
-    api_version = 'api/v2'
     cursor = None
 

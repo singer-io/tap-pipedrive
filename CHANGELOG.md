@@ -1,5 +1,10 @@
 # Changelog
 
+# 1.3.0
+  * Upgrade api version to v2 [#144](https://github.com/singer-io/tap-pipedrive/pull/144)
+  * Replace /recent endpoints with respective /list endpoints to sync the historical data
+  * Update replication method to INCREMENTAL for some of the streams
+
 # 1.2.4
   * Fix the organizations schema  [#142](https://github.com/singer-io/tap-pipedrive/pull/142)
 
