@@ -1,6 +1,4 @@
-import singer
 from tap_pipedrive.stream import PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream
-LOGGER = singer.get_logger()
 
 class NotesStream(PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream):
     endpoint = 'notes'

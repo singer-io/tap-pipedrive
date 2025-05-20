@@ -1,6 +1,7 @@
 import os
 import singer
 import pendulum
+from datetime import datetime
 from requests.exceptions import RequestException
 
 logger = singer.get_logger()
@@ -43,7 +44,12 @@ class PipedriveStream(object):
         return self.endpoint
 
     def update_state(self, row):
-        self.earliest_state = row[self.state_field]
+        """
+        Update the state of the stream
+        """
+        current_bookmark = row.get(self.state_field)
+        if current_bookmark and current_bookmark >= self.earliest_state:
+            self.earliest_state = current_bookmark
 
     def set_initial_state(self, state, start_date):
         """
@@ -87,100 +93,32 @@ class PipedriveStream(object):
         """
         Write the record to the stream
         """
-        return True
-
-    def process_row(self, row):
-        return row
-
-
-class PipedriveIterStream(PipedriveStream):
-    id_list = True
-    
-    def get_deal_ids(self, tap):
-
-        # note when the stream starts syncing
-        self.stream_start = pendulum.now('UTC') # explicitly set timezone to UTC
-
-        # create checkpoint at inital_state to only find stage changes more recent than initial_state (bookmark)
-        checkpoint = self.initial_state
-
-        while self.more_items_in_collection:
-            self.endpoint = self.base_endpoint
-
-            with singer.metrics.http_request_timer(self.schema) as timer:
-                try:
-                    response = tap.execute_stream_request(self)
-                except (ConnectionError, RequestException) as e:
-                    raise e
-                timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
-
-            tap.validate_response(response)
-            tap.rate_throttling(response)
-            self.paginate(response)
-
-            self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
-            self.next_start = self.start  # note pagination for next loop
-
-            if not response.json().get('data'):
-                continue
-
-            # find all deals ids for deals added or with stage changes after start and before stop
-            this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
-
-            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
-            for deal_id in this_page_ids:
-                yield deal_id
-
-
-    def find_deal_ids(self, data, start, stop):
-
-        # find all deals that were *added* after the start time and before the stop time
-        added_ids = [data[i]['id']
-                     for i in range(len(data))
-                     if (data[i]['add_time'] is not None
-                         and start <= pendulum.parse(data[i]['add_time']) < stop)]
-
-        # find all deals that a) had a stage change at any time (i.e., the stage_change_time is not None),
-        #                     b) had a stage change after the start time and before the stop time, and
-        #                     c) are not in added_ids
-        changed_ids = [data[i]['id']
-                       for i in range(len(data))
-                       if (data[i]['id'] not in added_ids)
-                       and (data[i]['stage_change_time'] is not None
-                            and start <= pendulum.parse(data[i]['stage_change_time']) < stop)]
-        return added_ids + changed_ids
-
-
-class PipedriveV1IncrementalStream(PipedriveStream):
-    api_version = 'v1'
-
-    def write_record(self, row):
-        """
-        Write the record to the stream
-        """
         current_bookmark = row.get(self.state_field)
-        if not current_bookmark:
-            return True
-
-        if current_bookmark >= self.initial_state:
+        if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
         return False
 
-    def update_state(self, row):
-        """
-        Update the state of the stream
-        """
-        current_bookmark = row.get(self.state_field)
+    def process_row(self, row):
+        return row
 
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark
+class PipedriveV1IncrementalStream(PipedriveStream):
+    api_version = 'v1'
 
     def update_request_params(self, params):
         """
         Update the request parameters for the stream
         """
         return params
+
+    def update_state(self, row):
+        """
+        Update the state of the stream
+        """
+        current_bookmark = row.get(self.state_field)
+        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        if current_bookmark and current_bookmark >= self.earliest_state:
+            self.earliest_state = current_bookmark
 
     def paginate(self, response):
         """
@@ -199,6 +137,76 @@ class PipedriveV1IncrementalStream(PipedriveStream):
         else:
             logger.debug('Stream {} has no more data'.format(self.schema))
             self.more_items_in_collection = False
+
+class PipedriveIterStream(PipedriveV1IncrementalStream):
+    id_list = True
+    api_version = 'v1'
+    cursor = None
+    deal_replication_key = "deal_update_time"
+
+    def get_deal_ids(self, tap):
+
+        # note when the stream starts syncing
+        self.stream_start = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ") # explicitly set timezone to UTC
+
+        # create checkpoint at inital_state to only find stage changes more recent than initial_state (bookmark)
+        checkpoint = self.initial_state
+        deal_bookmark = tap.state.get("bookmarks", {}).get(self.schema, {}).get(self.deal_replication_key) or tap.config['start_date']
+        params = {
+            'limit': self.limit,
+            "updated_since": deal_bookmark,
+            "sort_by": "update_time"
+        }
+
+        while self.more_items_in_collection:
+            self.endpoint = self.base_endpoint
+            if self.cursor:
+                params['cursor'] = self.cursor
+
+            with singer.metrics.http_request_timer(self.schema) as timer:
+                try:
+                    response = tap.execute_request(self.endpoint, api_version="api/v2", params=params)
+                except (ConnectionError, RequestException) as e:
+                    raise e
+                timer.tags[singer.metrics.Tag.http_status_code] = response.status_code
+
+            tap.validate_response(response)
+            tap.rate_throttling(response)
+            PipedriveStream.paginate(self, response)
+
+            self.more_ids_to_get = self.more_items_in_collection  # note if there are more pages of ids to get
+            self.next_start = self.start  # note pagination for next loop
+
+            if not response.json().get('data'):
+                continue
+
+            # find all deals ids for deals added or with stage changes after start and before stop
+            this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
+
+            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            for deal_id in this_page_ids:
+                yield deal_id
+
+            self.state = singer.write_bookmark(tap.state, self.schema, self.deal_replication_key, response.json().get('data')[-1]["update_time"])
+
+
+    def find_deal_ids(self, data, start, stop):
+
+        # find all deals that were *added* after the start time and before the stop time
+        added_ids = [data[i]['id']
+                     for i in range(len(data))
+                     if (data[i]['add_time'] is not None
+                         and start <= data[i]['add_time'] < stop)]
+
+        # find all deals that a) had a stage change at any time (i.e., the stage_change_time is not None),
+        #                     b) had a stage change after the start time and before the stop time, and
+        #                     c) are not in added_ids
+        changed_ids = [data[i]['id']
+                       for i in range(len(data))
+                       if (data[i]['id'] not in added_ids)
+                       and (data[i]['stage_change_time'] is not None
+                            and start <= data[i]['stage_change_time'] < stop)]
+        return added_ids + changed_ids
 
 class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
@@ -224,20 +232,9 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         Write the record to the stream
         """
         current_bookmark = row.get(self.state_field)
-        if not current_bookmark:
-            return True
-
-        if current_bookmark >= self.initial_state:
+        if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
         # Stop fetching if the current replication value is less than the earliest state(bookmark)
         self.more_items_in_collection = False
         return False
-
-    def update_state(self, row):
-        """
-        Update the state of the stream
-        """
-        current_bookmark = row.get(self.state_field)
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark

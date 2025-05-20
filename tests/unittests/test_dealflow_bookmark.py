@@ -74,8 +74,7 @@ class TestDealflowBookmarking(unittest.TestCase):
     dealflow_obj.these_deals = [1] # set deal ids
     dealflow_obj.more_ids_to_get = False # set we have no more records
     # set sync start date to desired date
-    dealflow_obj.stream_start = pendulum.DateTime(2022, 5, 1, 5, tzinfo=Timezone("UTC")) # now = "2022-05-01 05:00:00"
-
+    dealflow_obj.stream_start = "2022-05-01T05:00:00Z"
     def test_now_minus_3_hrs_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
         """
             Test case to verify we set (now - 3 hours) date as bookmark for 'dealflow' stream as the max bookmark is greater than (now - 3 hrs)
@@ -89,7 +88,7 @@ class TestDealflowBookmarking(unittest.TestCase):
         tap.streams = [self.dealflow_obj]
 
         tap.do_sync(Catalog("dealflow"))
-        self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-05-01T02:00:00+00:00")
+        self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-05-01T02:00:00Z")
 
     def test_max_replication_value_bookmark(self, mocked_get_selected_streams, mocked_execute_stream_request, mocked_get_deal_ids, mocked_transform):
         """
@@ -104,4 +103,4 @@ class TestDealflowBookmarking(unittest.TestCase):
         tap.streams = [self.dealflow_obj]
 
         tap.do_sync(Catalog("dealflow"))
-        self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-04-25T00:00:00+00:00")
+        self.assertEqual(tap.state.get("bookmarks").get("dealflow").get("log_time"), "2022-04-25T00:00:00Z")

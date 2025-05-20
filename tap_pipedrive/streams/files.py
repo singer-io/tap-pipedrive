@@ -1,7 +1,4 @@
 from tap_pipedrive.stream import PipedriveV1IncrementalStream
-import singer
-
-LOGGER = singer.get_logger()
 
 class FilesStream(PipedriveV1IncrementalStream):
     endpoint = 'files'

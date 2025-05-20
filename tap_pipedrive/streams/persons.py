@@ -1,8 +1,4 @@
 from tap_pipedrive.stream import PipedriveStream
-from datetime import datetime
-import singer
-
-LOGGER = singer.get_logger()
 
 class PersonsStream(PipedriveStream):
     endpoint = 'persons'
