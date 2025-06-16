@@ -19,8 +19,6 @@ setup(name="tap-pipedrive",
           tap-pipedrive=tap_pipedrive.cli:main
       """,
       packages=["tap_pipedrive",
-                "tap_pipedrive.streams",
-                "tap_pipedrive.streams.recents",
-                "tap_pipedrive.streams.recents.dynamic_typing"],
+                "tap_pipedrive.streams"],
       include_package_data=True,
 )
