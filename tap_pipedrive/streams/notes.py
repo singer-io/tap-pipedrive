@@ -1,7 +1,8 @@
-from tap_pipedrive.stream import PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream
+from tap_pipedrive.stream import PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream, DynamicSchemaStream
 
-class NotesStream(PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream):
+class NotesStream(DynamicSchemaStream, PipedriveIncrementalStreamUsingSort, PipedriveV1IncrementalStream):
     endpoint = 'notes'
+    fields_endpoint = 'noteFields'
     schema = 'notes'
     key_properties = ['id']
     state_field = 'update_time'

@@ -283,6 +283,9 @@ class PipedriveTap(object):
 
                         if not row: # in case of a non-empty response with an empty element
                             continue
+
+                        # Flatten custom fields into the row
+                        row.update(row.get('custom_fields', {}))
                         transformed_row = transformer.transform(row, stream.get_schema(), stream_metadata)
                         if stream.write_record(row):
                             counter.increment()

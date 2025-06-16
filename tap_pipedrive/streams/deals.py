@@ -1,7 +1,8 @@
-from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.stream import DynamicSchemaStream
 
-class DealsStream(PipedriveStream):
+class DealsStream(DynamicSchemaStream):
     endpoint = 'deals'
+    fields_endpoint = 'dealFields'
     schema = 'deals'
     key_properties = ['id']
     replication_method = 'INCREMENTAL'

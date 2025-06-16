@@ -1,7 +1,8 @@
-from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.stream import DynamicSchemaStream
 
-class OrganizationsStream(PipedriveStream):
+class OrganizationsStream(DynamicSchemaStream):
     endpoint = 'organizations'
+    fields_endpoint = 'organizationFields'
     schema = 'organizations'
     key_properties = ['id']
     replication_method = 'INCREMENTAL'

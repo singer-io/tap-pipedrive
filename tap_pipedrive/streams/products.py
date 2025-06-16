@@ -1,7 +1,8 @@
-from tap_pipedrive.stream import PipedriveIncrementalStreamUsingSort
+from tap_pipedrive.stream import DynamicSchemaStream, PipedriveIncrementalStreamUsingSort
 
-class ProductsStream(PipedriveIncrementalStreamUsingSort):
+class ProductsStream(DynamicSchemaStream, PipedriveIncrementalStreamUsingSort):
     endpoint = 'products'
+    fields_endpoint = 'productFields'
     schema = 'products'
     key_properties = ['id']
     replication_method = 'INCREMENTAL'

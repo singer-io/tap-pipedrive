@@ -9,6 +9,7 @@ logger = singer.get_logger()
 class PipedriveStream(object):
     tap = None
     endpoint = ''
+    fields_endpoint = ''
     key_properties = []
     state_field = None
     initial_state = None
@@ -239,3 +240,59 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         # Stop fetching if the current replication value is less than the earliest state(bookmark)
         self.more_items_in_collection = False
         return False
+
+class DynamicSchemaStream(PipedriveStream):
+    static_fields = []
+    fields_more_items_in_collection = True
+
+    def get_schema(self):
+        if not self.schema_cache:
+            schema = self.load_schema()
+
+            while self.fields_more_items_in_collection:
+                fields_params = {
+                    "limit" : self.limit,
+                    "start" : self.start
+                } 
+
+                with singer.metrics.http_request_timer(self.schema) as timer:
+                    try:
+                        fields_response = self.tap.execute_request(endpoint=self.fields_endpoint, api_version= 'v1', params=fields_params)
+                    except (ConnectionError, RequestException) as e:
+                        raise e
+
+                    timer.tags[singer.metrics.Tag.http_status_code] = fields_response.status_code
+
+                    try: 
+                        properties = fields_response.json()
+                        for prop in properties['data']:
+                            if prop['key'] not in schema['properties']:
+                                schema['properties'][prop['key']] = prop
+                        
+                                property_content = {
+                                    'type': ['null']
+                                }
+                                if prop['field_type'] in ['int']:
+                                    property_content['type'].append('integer')
+                                elif prop['field_type'] in ['date']:
+                                    property_content['type'].append('string')
+                                    property_content['format'] = 'date-time'
+                                else:
+                                    property_content['type'].append('string')
+
+                                schema['properties'][prop['key']] = property_content
+
+                        if properties.get('additional_data') and 'pagination' in properties['additional_data']:
+                            pagination = properties['additional_data']['pagination']
+                            if 'more_items_in_collection' in pagination:
+                                self.fields_more_items_in_collection = pagination['more_items_in_collection']
+                                if 'next_start' in pagination:
+                                    self.start = pagination['next_start']
+                        else:
+                            self.fields_more_items_in_collection = False
+                    except:
+                        pass
+
+            self.schema_cache = schema
+
+        return self.schema_cache
