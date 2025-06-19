@@ -287,10 +287,10 @@ class PipedriveTap(object):
                         # Flatten custom fields into the row
                         row.update(row.get('custom_fields', {}))
                         transformed_row = transformer.transform(row, stream.get_schema(), stream_metadata)
-                        if stream.write_record(row):
+                        if stream.write_record(transformed_row):
                             counter.increment()
                             singer.write_record(stream.schema, transformed_row)
-                            stream.update_state(row)
+                            stream.update_state(transformed_row)
 
             # update state after each page
             if stream.state_field:

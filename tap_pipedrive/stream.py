@@ -50,6 +50,7 @@ class PipedriveStream(object):
         Update the state of the stream
         """
         current_bookmark = row.get(self.state_field)
+        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
         if current_bookmark and current_bookmark >= self.earliest_state:
             self.earliest_state = current_bookmark
 
@@ -113,15 +114,6 @@ class PipedriveV1IncrementalStream(PipedriveStream):
         """
         return params
 
-    def update_state(self, row):
-        """
-        Update the state of the stream
-        """
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark
-
     def paginate(self, response):
         """
         Implement page based pagination
@@ -139,6 +131,42 @@ class PipedriveV1IncrementalStream(PipedriveStream):
         else:
             logger.debug('Stream {} has no more data'.format(self.schema))
             self.more_items_in_collection = False
+
+class RecentsStream(PipedriveV1IncrementalStream):
+    recent_endpoint = 'recents'
+    items = None
+
+    def update_request_params(self, params):
+        """
+        /GET endpoint does not all to filter by updated_at for some of the endpoints.
+        Also, It is not good to fetch all records every time.
+        
+        /recents endpoint allows to filter by since_timestamp but it returns past 1 month data.
+        
+        So, use combination of both
+        """
+        if self.initial_state < pendulum.now().subtract(months=1).strftime("%Y-%m-%dT%H:%M:%SZ"):
+            return super().update_request_params(params)
+        else:
+            params.update({
+                'since_timestamp': datetime.strptime(self.initial_state, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S"),
+                'items': self.items
+            })
+            self.endpoint = self.recent_endpoint
+
+            return params
+
+    def process_row(self, row):
+        """
+        user response is list of dicts while other responses are dicts only
+        """
+        if self.endpoint == self.recent_endpoint:
+            if isinstance(row['data'], dict):
+                return row['data']
+            else:
+                return row['data'][0]
+        else:
+            return row
 
 class PipedriveIterStream(PipedriveV1IncrementalStream):
     id_list = True
