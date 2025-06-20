@@ -24,7 +24,7 @@ def get_response(date):
                 "data": {
                     "id": 1,
                     "field_key": "add_time",
-                    "log_time": "2022-04-25 00:00:00",
+                    "log_time": "2022-04-25T00:00:00.000000Z",
                 }
             },
             {
@@ -81,7 +81,7 @@ class TestDealflowBookmarking(unittest.TestCase):
             scenario: max bookmark is greater than (now - 3 hrs)
             assertion: state file contains bookmark of (now - 3 hrs)
         """
-        mocked_execute_stream_request.return_value = get_response("2022-05-01 04:00:00") # date with max bookmark value
+        mocked_execute_stream_request.return_value = get_response("2022-05-01T04:00:00.000000Z") # date with max bookmark value
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
         tap = PipedriveTap(self.mock_config, {})
@@ -96,7 +96,7 @@ class TestDealflowBookmarking(unittest.TestCase):
             scenario: max bookmark is lesser than (now - 3 hrs)
             assertion: state file contains bookmark of max bookmark
         """
-        mocked_execute_stream_request.return_value = get_response("2022-04-25 00:00:00") # date with max bookmark value
+        mocked_execute_stream_request.return_value = get_response("2022-04-25T00:00:00.000000Z") # date with max bookmark value
 
         # set "PipedriveTap" stream as "DealStageChangeStream"
         tap = PipedriveTap(self.mock_config, {})
