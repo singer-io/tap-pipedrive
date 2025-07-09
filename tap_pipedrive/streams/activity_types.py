@@ -1,9 +1,9 @@
-from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.stream import PipedriveV1IncrementalStream
 
 
-class ActivityTypesStream(PipedriveStream):
+class ActivityTypesStream(PipedriveV1IncrementalStream):
     endpoint = 'activityTypes'
     schema = 'activity_types'
     key_properties = ['id', ]
-    # Disabling this state_field as this stream is acting as FULL_TABLE now. 
-    # state_field = 'update_time'
+    replication_method = 'INCREMENTAL'
+    state_field = 'update_time'
