@@ -12,7 +12,7 @@ setup(name="tap-pipedrive",
       install_requires=[
           "pendulum==2.1.2",
           "requests==2.32.4",
-          "singer-python==5.12.1",
+          "singer-python==5.13.2",
       ],
       entry_points="""
           [console_scripts]
