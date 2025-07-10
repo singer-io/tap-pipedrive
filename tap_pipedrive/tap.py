@@ -285,7 +285,8 @@ class PipedriveTap(object):
                             continue
 
                         # Flatten custom fields into the row
-                        row.update(row.get('custom_fields', {}))
+                        if 'custom_fields' in row and row['custom_fields'] is not None:
+                            row.update(row.get('custom_fields', {}))
                         transformed_row = transformer.transform(row, stream.get_schema(), stream_metadata)
                         if stream.write_record(transformed_row):
                             counter.increment()
