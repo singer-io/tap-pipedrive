@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.3.1
+  * Fix Nonetype and datetime conversion error  [#146](https://github.com/singer-io/tap-pipedrive/pull/146)
+
 # 1.3.0
   * Upgrade api version to v2 below streams [#144](https://github.com/singer-io/tap-pipedrive/pull/144)
     * activities

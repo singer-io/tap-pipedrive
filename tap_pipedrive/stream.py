@@ -149,7 +149,7 @@ class RecentsStream(PipedriveV1IncrementalStream):
             return super().update_request_params(params)
         else:
             params.update({
-                'since_timestamp': datetime.strptime(self.initial_state, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S"),
+                'since_timestamp': datetime.strptime(self.initial_state, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d %H:%M:%S"),
                 'items': self.items
             })
             self.endpoint = self.recent_endpoint
