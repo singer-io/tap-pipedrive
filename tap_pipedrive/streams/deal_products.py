@@ -1,4 +1,3 @@
-import singer
 from tap_pipedrive.stream import PipedriveIterStream
 
 class DealsProductsStream(PipedriveIterStream):
