@@ -164,7 +164,7 @@ class RecentsStream(PipedriveV1IncrementalStream):
             if isinstance(row['data'], dict):
                 return row['data']
             else:
-                return row['data'][0]
+                return row['data'][0] if row['data'] else []
         else:
             return row
 
