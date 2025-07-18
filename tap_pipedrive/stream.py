@@ -319,6 +319,9 @@ class DynamicSchemaStream(PipedriveStream):
                                 elif prop['field_type'] in ['date']:
                                     property_content['type'].append('string')
                                     property_content['format'] = 'date-time'
+                                elif prop.get('json_column_flag'):
+                                    property_content['type'].append('object')
+                                    property_content['type'].append('string')
                                 else:
                                     property_content['type'].append('string')
 
