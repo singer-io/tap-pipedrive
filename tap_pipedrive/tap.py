@@ -129,6 +129,11 @@ class PipedriveTap(object):
         self.config.update(config)
         self.state = state
 
+        # page size configured from config, overrides the default value set in stream.py
+        page_size = int(self.config.get('page_size',500))
+        for stream in self.streams:
+            stream.limit = stream.next_start = page_size
+
     def do_discover(self):
         logger.info('Starting discover')
 
