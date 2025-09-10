@@ -9,3 +9,11 @@ class DealsStream(DynamicSchemaStream):
     state_field = 'update_time'
     cursor = None
 
+    def update_request_params(self, params):
+        """
+        Update the request parameters for the stream
+        """
+        params = super().update_request_params(params)
+        params['status'] = 'open,won,lost,deleted'
+
+        return params

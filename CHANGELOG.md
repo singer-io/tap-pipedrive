@@ -1,5 +1,7 @@
 # Changelog
 
+# 1.4.0
+  * Extract deleted deals as well [#149](https://github.com/singer-io/tap-pipedrive/pull/149)
 # 1.3.1
   * Fix Nonetype and datetime conversion error  [#146](https://github.com/singer-io/tap-pipedrive/pull/146)
 
