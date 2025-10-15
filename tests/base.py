@@ -32,9 +32,9 @@ class PipedriveBaseTest(unittest.TestCase):
     INCREMENTAL = "INCREMENTAL"
     FULL_TABLE = "FULL_TABLE"
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
-    BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00+00:00"
+    BOOKMARK_COMPARISON_FORMAT = "%Y-%m-%dT00:00:00Z"
     REPLICATION_KEY_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-    BOOKMARK_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
+    BOOKMARK_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
     LOGGER = singer.get_logger()
     STARTDATE_KEYS = "start_date"
 
@@ -93,7 +93,9 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'persons': {
                 self.PRIMARY_KEYS: {'id'},
@@ -107,7 +109,9 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'pipelines': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'notes': {
                 self.PRIMARY_KEYS: {'id'},
@@ -117,7 +121,9 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'stages': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'products': {
                 self.PRIMARY_KEYS: {'id'},
@@ -133,12 +139,15 @@ class PipedriveBaseTest(unittest.TestCase):
             },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'modified'},
                 self.STARTDATE_KEYS: {'modified'}
             },
             'filters': {
                 self.PRIMARY_KEYS: {'id'},
-                self.REPLICATION_METHOD: self.FULL_TABLE
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {'update_time'},
+                self.STARTDATE_KEYS: {'update_time'}
             },
             'deals': {
                 self.PRIMARY_KEYS: {'id'},

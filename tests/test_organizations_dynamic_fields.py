@@ -33,7 +33,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
         # (Need enough dynamic fields for organizations)
         for catalog in found_catalog:
             if catalog['stream_name'] == "organizations":
-                organization_fields_page_limit = 100
+                organization_fields_page_limit = 10
 
                 schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
                 schema_fields = schema_and_metadata.get('annotated-schema').get('properties').keys()
