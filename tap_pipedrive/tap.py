@@ -146,6 +146,13 @@ class PipedriveTap(object):
                 valid_replication_keys=[stream.state_field] if stream.state_field else None,
                 replication_method=stream.replication_method
             )
+            
+            meta = metadata.to_map(meta)
+            # Check if the stream has any parent attribute
+            parent_attribute = getattr(stream, "parent", None)
+            if parent_attribute:
+                meta = metadata.write(meta, (), "parent-tap-stream-id", parent_attribute)
+            meta = metadata.to_list(meta)
 
             # If the stream has a state_field, it needs to mark that property with automatic metadata
             if stream.state_field:
