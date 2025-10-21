@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.5.0
+  * Adds parent-tap-stream-id field to catalog for child streams [#150](https://github.com/singer-io/tap-pipedrive/pull/150)
+
 # 1.4.0
   * Extract deleted deals as well [#149](https://github.com/singer-io/tap-pipedrive/pull/149)
 # 1.3.1
