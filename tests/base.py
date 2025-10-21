@@ -28,6 +28,8 @@ class PipedriveBaseTest(unittest.TestCase):
     PRIMARY_KEYS = "table-key-properties"
     FOREIGN_KEYS = "table-foreign-key-properties"
     REPLICATION_METHOD = "forced-replication-method"
+    PARENT_TAP_STREAM_ID = "parent-tap-stream-id"
+    EXPECTED_PARENT_STREAM = "expected-parent-stream"
     API_LIMIT = "max-row-limit"
     INCREMENTAL = "INCREMENTAL"
     FULL_TABLE = "FULL_TABLE"
@@ -84,12 +86,14 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
                 self.REPLICATION_KEYS: {'log_time'},
-                self.STARTDATE_KEYS: {'log_time'}
+                self.STARTDATE_KEYS: {'log_time'},
+                self.EXPECTED_PARENT_STREAM: 'deals'
             },
             'deal_products': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
-                self.STARTDATE_KEYS: {'add_time'}
+                self.STARTDATE_KEYS: {'add_time'},
+                self.EXPECTED_PARENT_STREAM: 'deals'
             },
             'activity_types': {
                 self.PRIMARY_KEYS: {'id'},

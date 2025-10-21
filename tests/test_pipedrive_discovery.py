@@ -66,6 +66,13 @@ class PipedriveDiscovery(PipedriveBaseTest):
                         "metadata", {self.REPLICATION_KEYS: []}).get(self.REPLICATION_KEYS, [])
                 )
 
+                # Get parent-tap-stream-id if present
+                actual_parent_stream_id = stream_properties[0].get(
+                    "metadata", {}).get(self.PARENT_TAP_STREAM_ID)
+                
+                expected_parent_stream = self.expected_metadata().get(
+                    stream, {}).get(self.EXPECTED_PARENT_STREAM)
+
                 actual_replication_method = stream_properties[0].get(
                     "metadata", {self.REPLICATION_METHOD: None}).get(self.REPLICATION_METHOD)
 
@@ -97,7 +104,18 @@ class PipedriveDiscovery(PipedriveBaseTest):
                 self.assertEqual(
                     expected_replication_method, actual_replication_method
                 )
-                
+
+                # verify parent-tap-stream-id for child streams
+                if expected_parent_stream:
+                    self.assertEqual(
+                        expected_parent_stream, actual_parent_stream_id,
+                        msg=f"Parent stream mismatch for {stream}"
+                    )
+                else:
+                    self.assertIsNone(
+                        actual_parent_stream_id,
+                        msg=f"Expected no parent stream for {stream}, but found {actual_parent_stream_id}"
+                    )
 
                 # verify that primary keys and replication keys
                 # are given the inclusion of automatic in metadata.
