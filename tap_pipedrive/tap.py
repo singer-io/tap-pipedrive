@@ -148,7 +148,6 @@ class PipedriveTap(object):
             )
             
             meta = metadata.to_map(meta)
-            # Check if the stream has any parent attribute
             parent_attribute = getattr(stream, "parent", None)
             if parent_attribute:
                 meta = metadata.write(meta, (), "parent-tap-stream-id", parent_attribute)

@@ -71,7 +71,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
                     "metadata", {}).get(self.PARENT_TAP_STREAM_ID)
                 
                 expected_parent_stream = self.expected_metadata().get(
-                    stream, {}).get(self.EXPECTED_PARENT_STREAM)
+                    stream, {}).get(self.PARENT_TAP_STREAM_ID)
 
                 actual_replication_method = stream_properties[0].get(
                     "metadata", {self.REPLICATION_METHOD: None}).get(self.REPLICATION_METHOD)
