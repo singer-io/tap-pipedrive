@@ -14,7 +14,7 @@ class PaginationTest(PipedriveBaseTest):
         conn_id = connections.ensure_connection(self)
 
         # Checking pagination for "pipelines" stream
-        expected_streams = ["pipelines"]
+        expected_streams = ["deals"]
         found_catalogs = self.run_and_verify_check_mode(conn_id)
 
         # table and field selection

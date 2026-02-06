@@ -8,24 +8,8 @@ class PipedriveAllFields(PipedriveBaseTest):
 
     # Custom fields, not able to generate data for these fields.
     fields_to_remove = {
-        "organizations": {
-            "timeline_last_activity_time",
-            "timeline_last_activity_time_by_owner",
-            "reference_activities_count",
-        },
-        "persons": {
-            "timeline_last_activity_time",
-            "timeline_last_activity_time_by_owner",
-            "reference_activities_count",
-        },
         "files": {"email_message_id", "note_id"},
         "users": {"activated"},
-        "deals": {
-            "product_amount",
-            "pipeline",
-            "reference_activities_count",
-            "product_quantity",
-        },
         "products": {"unit_prices", "price"},
     }
 

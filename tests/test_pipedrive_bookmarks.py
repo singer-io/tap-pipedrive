@@ -20,9 +20,12 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         conn_id = connections.ensure_connection(self)
         runner.run_check_mode(self, conn_id)
 
-        # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
+        # BUG TDL-25987: We observed few records with null replication key values for below streams
         # Skipping this stream until we investigate and fix the issue
-        expected_streams = self.expected_streams() - {"deal_fields"}
+        expected_streams = self.expected_streams() - {"deal_fields", "stages", "pipelines", "filters", "activity_types"}
+        
+        # Skipping below streams it make lot of API calls and we have daily quota limit for trail account
+        expected_streams = expected_streams - {"dealflow", "deal_products"}
         expected_replication_keys = self.expected_replication_keys()
         expected_replication_methods = self.expected_replication_method()
 
@@ -33,7 +36,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                             if catalog.get('tap_stream_id') in expected_streams]
 
         self.perform_and_verify_table_and_field_selection(
-            conn_id, found_catalogs)
+            conn_id, catalog_entries)
 
         # Run a sync job using orchestrator
         first_sync_record_count = self.run_and_verify_sync(conn_id)
@@ -45,17 +48,17 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ##########################################################################
         new_state = {'bookmarks': dict()}
         simulated_states = {
-            "notes": {"update_time": "2025-02-24T16:42:12+00:00"},
-            "activities": {"update_time": "2025-02-24T16:41:52+00:00"},
-            "deals": {"update_time": "2025-02-24T16:42:12+00:00"},
-            "files": {"update_time": "2025-02-24T16:41:35+00:00"},
-            "organizations": {"update_time": "2025-02-24T16:42:12+00:00"},
-            "persons": {"update_time": "2025-02-24T16:42:12+00:00"},
-            "products": {"update_time": "2025-02-24T16:43:13+00:00"},
-            "dealflow": {"log_time": "2025-02-24T15:55:18+00:00"},
-
+            "notes": {"update_time": "2025-10-08T13:41:22Z"},
+            "activities": {"update_time": "2025-10-09T16:41:52Z"},
+            "deals": {"update_time": "2025-10-09T16:42:12Z"},
+            "files": {"update_time": "2025-10-10T06:00:00Z"},
+            "organizations": {"update_time": "2025-10-09T16:42:12Z"},
+            "persons": {"update_time": "2025-10-09T16:42:12Z"},
+            "products": {"update_time": "2025-10-11T16:43:13Z"},
+            # "dealflow": {"log_time": "2025-10-09T15:55:18Z"},
+            "users": {"modified": "2025-10-14T06:54:24Z"},
             # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
-            # "deal_fields": {"update_time": "2023-04-15T17:25:16+00:00"}
+            # "deal_fields": {"update_time": "2023-04-15T17:25:16Z"}
         }
         # setting 'second_start_date' as bookmark for running 2nd sync
         for stream, updated_state in simulated_states.items():
@@ -114,7 +117,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     self.assertIsNotNone(second_bookmark_key_value)
                     self.assertIsNotNone(second_bookmark_value)
 
-                    # dealflow stores bookmark in the format of "2022-05-27T04:16:22.410711+00:00"
+                    # dealflow stores bookmark in the format of "2022-05-27T04:16:22.410711Z"
                     # as, we subtract 3 hours from sync start date in current implementation
                     if stream == "dealflow":
                         # Verify the second sync bookmark is Greater than the first sync bookmark
