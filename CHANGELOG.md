@@ -1,5 +1,8 @@
 # Changelog
 
+# 1.5.0
+  * Add label_ids field in deals [#151](https://github.com/singer-io/tap-pipedrive/pull/151)
+
 # 1.4.0
   * Extract deleted deals as well [#149](https://github.com/singer-io/tap-pipedrive/pull/149)
 # 1.3.1

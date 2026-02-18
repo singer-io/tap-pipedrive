@@ -4,7 +4,7 @@ from base import PipedriveBaseTest
 class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
-    start_date_2 = "2025-10-10T00:00:00Z"
+    start_date_2 = "2026-02-18T00:00:00Z"
 
     @staticmethod
     def name():
@@ -87,10 +87,10 @@ class PipedriveStartDateTest(PipedriveBaseTest):
                 record_count_sync_1 = record_count_by_stream_1.get(stream, 0)
                 record_count_sync_2 = record_count_by_stream_2.get(stream, 0)
                 primary_keys_list_1 = [tuple(message.get('data').get(expected_pk) for expected_pk in expected_primary_keys)
-                                       for message in synced_records_1.get(stream).get('messages')
+                                       for message in synced_records_1.get(stream, {}).get('messages', [])
                                        if message.get('action') == 'upsert']
                 primary_keys_list_2 = [tuple(message.get('data').get(expected_pk) for expected_pk in expected_primary_keys)
-                                       for message in synced_records_2.get(stream).get('messages')
+                                       for message in synced_records_2.get(stream, {}).get('messages', [])
                                        if message.get('action') == 'upsert']
 
                 primary_keys_sync_1 = set(primary_keys_list_1)
@@ -98,9 +98,9 @@ class PipedriveStartDateTest(PipedriveBaseTest):
 
                 if self.is_start_date_appling(stream):
                     # Expected start_date key is one element in set so directly access it
-                    start_date_keys_list_1 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_1.get(stream).get('messages')
+                    start_date_keys_list_1 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_1.get(stream, {}).get('messages', [])
                                             if message.get('action') == 'upsert']
-                    start_date_keys_list_2 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_2.get(stream).get('messages')
+                    start_date_keys_list_2 = [message.get('data').get(next(iter(expected_start_date_keys))) for message in synced_records_2.get(stream, {}).get('messages', [])
                                             if message.get('action') == 'upsert']
 
                     start_date_key_sync_1 = set(start_date_keys_list_1)
