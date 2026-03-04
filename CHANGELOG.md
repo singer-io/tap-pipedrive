@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.0.0
+  * Update datatype for some of the schema fields [#152](https://github.com/singer-io/tap-pipedrive/pull/152)
+
 # 1.5.0
   * Add label_ids field in deals [#151](https://github.com/singer-io/tap-pipedrive/pull/151)
 
