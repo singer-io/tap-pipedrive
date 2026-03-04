@@ -164,7 +164,7 @@ class RecentsStream(PipedriveV1IncrementalStream):
             if isinstance(row['data'], dict):
                 return row['data']
             else:
-                return row['data'][0]
+                return row['data'][0] if row['data'] else []
         else:
             return row
 
@@ -316,9 +316,20 @@ class DynamicSchemaStream(PipedriveStream):
                                 }
                                 if prop['field_type'] in ['int']:
                                     property_content['type'].append('integer')
+                                elif prop['field_type'] == 'double':
+                                    property_content['type'].append('number')
+                                elif prop['field_type'] == 'set':
+                                    property_content['type'].append('array')
+                                    property_content['items'] = {'type': 'string'}
+                                elif prop['field_type'] == 'monetary':
+                                    property_content['type'].append('object')
+                                    property_content['properties'] = {'currency': {'type': ['null', 'string']}, 'value': {'type': ['null', 'number']}}
                                 elif prop['field_type'] in ['date']:
                                     property_content['type'].append('string')
                                     property_content['format'] = 'date-time'
+                                elif prop.get('json_column_flag'):
+                                    property_content['type'].append('object')
+                                    property_content['type'].append('string')
                                 else:
                                     property_content['type'].append('string')
 

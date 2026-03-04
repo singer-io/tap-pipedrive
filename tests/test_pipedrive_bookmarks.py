@@ -49,13 +49,13 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ##########################################################################
         new_state = {'bookmarks': dict()}
         simulated_states = {
-            "notes": {"update_time": "2026-02-17T05:40:00Z"},
-            "activities": {"update_time": "2026-02-17T05:40:00Z"},
-            "deals": {"update_time": "2026-02-17T05:40:00Z"},
-            "files": {"update_time": "2026-02-17T05:40:00Z"},
-            "organizations": {"update_time": "2026-02-17T05:40:00Z"},
-            "persons": {"update_time": "2026-02-17T05:40:00Z"},
-            "products": {"update_time": "2026-02-17T05:40:00Z"},
+            "notes": {"update_time": "2026-03-04T08:45:00Z"},
+            "activities": {"update_time": "2026-03-04T08:45:00Z"},
+            "deals": {"update_time": "2026-03-04T08:45:00Z"},
+            "files": {"update_time": "2026-03-04T08:45:00Z"},
+            "organizations": {"update_time": "2026-03-04T08:45:00Z"},
+            "persons": {"update_time": "2026-03-04T08:45:00Z"},
+            "products": {"update_time": "2026-03-04T08:45:00Z"},
             # "dealflow": {"log_time": "2026-02-17T05:40:00Z"},
             # Skipping users - only 1 user, assertLess(1,1) can never pass
             # "users": {"modified": "2026-02-17T05:40:00Z"},
