@@ -8,6 +8,8 @@ from .files import FilesStream
 from .notes import NotesStream
 from .activities import ActivitiesStream
 from .deals import DealsStream
+from .leads import LeadsStream
+from .lead_labels import LeadLabelsStream
 from .organizations import OrganizationsStream
 from .persons import PersonsStream
 from .products import ProductsStream
@@ -18,7 +20,8 @@ from .deal_fields import DealFields
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
            'UsersStream', 'FilesStream',
-           'NotesStream', 'ActivitiesStream', 'DealsStream', 'OrganizationsStream',
+           'NotesStream', 'ActivitiesStream', 'DealsStream', 'LeadsStream', 'LeadLabelsStream',
+           'OrganizationsStream',
            'PersonsStream', 'ProductsStream', 'DealStageChangeStream', 'DealsProductsStream',
            'DealFields'
            ]

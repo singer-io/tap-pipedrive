@@ -15,7 +15,7 @@ from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadReq
                         PipedriveForbiddenError, PipedriveGoneError, PipedriveUnsupportedMediaError, PipedriveUnprocessableEntityError, PipedriveTooManyRequestsError, 
                         PipedriveTooManyRequestsInSecondError,PipedriveInternalServiceError, PipedriveNotImplementedError, PipedriveServiceUnavailableError, Pipedrive5xxError)
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
-                      NotesStream, UsersStream, ActivitiesStream, DealsStream,
+                      NotesStream, UsersStream, ActivitiesStream, DealsStream, LeadsStream, LeadLabelsStream,
                       FilesStream, OrganizationsStream, PersonsStream, ProductsStream,
                       DealStageChangeStream, DealsProductsStream, DealFields)
 
@@ -115,6 +115,8 @@ class PipedriveTap(object):
         UsersStream(),
         ActivitiesStream(),
         DealsStream(),
+        LeadsStream(),
+        LeadLabelsStream(),
         FilesStream(),
         OrganizationsStream(),
         PersonsStream(),
