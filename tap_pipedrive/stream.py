@@ -50,7 +50,15 @@ class PipedriveStream(object):
         Update the state of the stream
         """
         current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        if current_bookmark:
+            for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"):
+                try:
+                    current_bookmark = datetime.strptime(current_bookmark, fmt).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    break
+                except ValueError:
+                    continue
+            else:
+                current_bookmark = None
         if current_bookmark and current_bookmark >= self.earliest_state:
             self.earliest_state = current_bookmark
 
@@ -279,7 +287,15 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
             return
 
         current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        if current_bookmark:
+            for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"):
+                try:
+                    current_bookmark = datetime.strptime(current_bookmark, fmt).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    break
+                except ValueError:
+                    continue
+            else:
+                current_bookmark = None
         if current_bookmark and current_bookmark >= self.earliest_state:
             self.earliest_state = current_bookmark
 
