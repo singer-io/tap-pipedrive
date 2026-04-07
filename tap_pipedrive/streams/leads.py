@@ -11,6 +11,20 @@ class LeadsStream(DynamicSchemaStream):
     api_version = 'v1'
     cursor = None
 
+    INCLUDE_FIELDS = (
+        'last_activity_id',
+        'last_incoming_mail_time',
+        'last_outgoing_mail_time',
+        'email_messages_count',
+        'activities_count',
+        'done_activities_count',
+        'undone_activities_count',
+        'participants_count',
+        'files_count',
+        'notes_count',
+        'followers_count',
+    )
+
     def paginate(self, response):
         payload = response.json()
         if payload.get('additional_data') and 'pagination' in payload['additional_data']:
@@ -28,6 +42,7 @@ class LeadsStream(DynamicSchemaStream):
             'start': self.start,
             'sort': 'update_time ASC',
         }
+        params['include_fields'] = ','.join(self.INCLUDE_FIELDS)
         return params
 
     def process_row(self, row):
