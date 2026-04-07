@@ -326,6 +326,13 @@
         "string"
       ],
       "format": "date-time"
+    },
+    "last_incoming_mail_time": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     }
   }
 }
