@@ -6,8 +6,8 @@ class LeadsStream(DynamicSchemaStream):
     fields_endpoint = 'dealFields'
     schema = 'leads'
     key_properties = ['id']
-    replication_method = 'INCREMENTAL'
-    state_field = 'update_time'
+    replication_method = 'FULL_TABLE'
+    state_field = None
     api_version = 'v1'
     cursor = None
 
@@ -25,6 +25,10 @@ class LeadsStream(DynamicSchemaStream):
         'followers_count',
     )
 
+    # Track which endpoints we still need to paginate through
+    _endpoints = ['leads', 'leads/archived']
+    _endpoint_index = 0
+
     def paginate(self, response):
         payload = response.json()
         if payload.get('additional_data') and 'pagination' in payload['additional_data']:
@@ -33,14 +37,29 @@ class LeadsStream(DynamicSchemaStream):
                 self.more_items_in_collection = pagination['more_items_in_collection']
                 if 'next_start' in pagination:
                     self.start = pagination['next_start']
+
+                # Current endpoint exhausted — move to the next one if there is one
+                if not self.more_items_in_collection:
+                    self._endpoint_index += 1
+                    if self._endpoint_index < len(self._endpoints):
+                        self.endpoint = self._endpoints[self._endpoint_index]
+                        self.start = 0
+                        self.more_items_in_collection = True
         else:
-            self.more_items_in_collection = False
+            # No pagination block at all — treat as exhausted and advance
+            self._endpoint_index += 1
+            if self._endpoint_index < len(self._endpoints):
+                self.endpoint = self._endpoints[self._endpoint_index]
+                self.start = 0
+                self.more_items_in_collection = True
+            else:
+                self.more_items_in_collection = False
 
     def update_request_params(self, params):
         params = {
             'limit': self.limit,
             'start': self.start,
-            'sort': 'update_time ASC',
+            'sort': 'add_time ASC',
         }
         params['include_fields'] = ','.join(self.INCLUDE_FIELDS)
         return params
