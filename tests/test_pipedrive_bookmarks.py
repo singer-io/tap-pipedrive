@@ -66,7 +66,14 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
             if values:
                 # Pick a value at the 50% mark so the second sync returns roughly half the records
                 mid_idx = len(values) // 2
-                simulated_states[stream] = {replication_key: values[mid_idx]}
+                mid_value = values[mid_idx]
+                # Normalize to bookmark format (strip microseconds) so dt_to_ts can parse it
+                from datetime import datetime as _dt
+                try:
+                    mid_value = _dt.strptime(mid_value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+                except (ValueError, TypeError):
+                    pass
+                simulated_states[stream] = {replication_key: mid_value}
 
         # setting simulated bookmark as starting point for 2nd sync
         for stream, updated_state in simulated_states.items():
