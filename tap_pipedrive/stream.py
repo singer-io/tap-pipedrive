@@ -269,19 +269,31 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         self.more_items_in_collection = False
         return False
 
+    def set_initial_state(self, state, start_date):
+        super().set_initial_state(state, start_date)
+        self._max_seen_bookmark = None
+
     def update_state(self, row):
         """
         Update the state only after the stream has been fully processed.
         Because it fetched all records in descending order, the first records will have latest replication value.
         So if some interruption happens, it would miss some records.
+        Track the maximum bookmark seen across all pages and commit it only when pagination is complete.
         """
-        if self.more_items_in_collection:
-            return
-
         current_bookmark = row.get(self.state_field)
         current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark
+
+        # Always track the running maximum across all processed rows
+        if current_bookmark:
+            max_seen = getattr(self, '_max_seen_bookmark', None)
+            if max_seen is None or current_bookmark > max_seen:
+                self._max_seen_bookmark = current_bookmark
+
+        # Only commit the maximum to state when all pages have been fetched
+        if not self.more_items_in_collection:
+            max_seen = getattr(self, '_max_seen_bookmark', None)
+            if max_seen and max_seen >= self.earliest_state:
+                self.earliest_state = max_seen
 
 class DynamicSchemaStream(PipedriveStream):
     static_fields = []

@@ -48,21 +48,27 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ### Update State
         ##########################################################################
         new_state = {'bookmarks': dict()}
-        simulated_states = {
-            "notes": {"update_time": "2026-03-04T08:45:00Z"},
-            "activities": {"update_time": "2026-03-04T08:45:00Z"},
-            "deals": {"update_time": "2026-03-04T08:45:00Z"},
-            "files": {"update_time": "2026-03-04T08:45:00Z"},
-            "organizations": {"update_time": "2026-03-04T08:45:00Z"},
-            "persons": {"update_time": "2026-03-04T08:45:00Z"},
-            "products": {"update_time": "2026-03-04T08:45:00Z"},
-            # "dealflow": {"log_time": "2026-02-17T05:40:00Z"},
-            # Skipping users - only 1 user, assertLess(1,1) can never pass
-            # "users": {"modified": "2026-02-17T05:40:00Z"},
-            # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
-            # "deal_fields": {"update_time": "2023-04-15T17:25:16Z"}
-        }
-        # setting 'second_start_date' as bookmark for running 2nd sync
+
+        # Dynamically compute simulated states using the median replication-key value from the
+        # first sync. This ensures the second sync retrieves a strict subset of first sync records
+        # regardless of when the test data was created, avoiding failures caused by hardcoded dates
+        # that pre-date all seeded records.
+        simulated_states = {}
+        for stream in expected_streams:
+            if expected_replication_methods.get(stream) != self.INCREMENTAL:
+                continue
+            replication_key = list(expected_replication_keys[stream])[0]
+            messages = [r.get('data') for r in
+                        first_sync_records.get(stream, {}).get('messages', [])
+                        if r.get('action') == 'upsert']
+            values = sorted([m.get(replication_key) for m in messages
+                             if m and m.get(replication_key)])
+            if values:
+                # Pick a value at the 50% mark so the second sync returns roughly half the records
+                mid_idx = len(values) // 2
+                simulated_states[stream] = {replication_key: values[mid_idx]}
+
+        # setting simulated bookmark as starting point for 2nd sync
         for stream, updated_state in simulated_states.items():
             new_state['bookmarks'][stream] = updated_state
 
