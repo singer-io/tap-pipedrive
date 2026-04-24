@@ -58,7 +58,13 @@ class PipedriveStream(object):
         """
         Set the initial state of the stream
         """
-        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
+        bookmark = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
+        # Normalize to the format Pipedrive accepts (no microseconds)
+        try:
+            bookmark = datetime.strptime(bookmark, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+        except (ValueError, TypeError):
+            pass
+        self.initial_state = bookmark
         self.earliest_state = self.initial_state
 
     def has_data(self):
