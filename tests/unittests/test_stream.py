@@ -328,11 +328,25 @@ class TestPipedriveIncrementalStreamUsingSortWriteRecord(unittest.TestCase):
         """write_record returns False and sets more_items_in_collection=False for old records."""
         stream = _SimpleIncrementalSortStream()
         stream.initial_state = "2024-06-01T00:00:00Z"
+        stream.earliest_state = "2024-06-01T00:00:00Z"
         stream.more_items_in_collection = True
         row = {"update_time": "2024-01-01T00:00:00Z"}
         result = stream.write_record(row)
         self.assertFalse(result)
         self.assertFalse(stream.more_items_in_collection)
+
+    def test_commits_max_seen_bookmark_when_stopping_early(self):
+        """write_record commits _max_seen_bookmark to earliest_state on early stop."""
+        stream = _SimpleIncrementalSortStream()
+        stream.initial_state = "2024-01-01T00:00:00Z"
+        stream.earliest_state = "2024-01-01T00:00:00Z"
+        stream._max_seen_bookmark = "2024-06-01T00:00:00Z"
+        stream.more_items_in_collection = True
+        # A row older than initial_state triggers the early stop
+        row = {"update_time": "2023-12-01T00:00:00.000000Z"}
+        result = stream.write_record(row)
+        self.assertFalse(result)
+        self.assertEqual(stream.earliest_state, "2024-06-01T00:00:00Z")
 
 
 # ---------------------------------------------------------------------------

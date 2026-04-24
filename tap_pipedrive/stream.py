@@ -271,8 +271,13 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
-        # Stop fetching if the current replication value is less than the earliest state(bookmark)
+        # Stop fetching because this record is older than the bookmark.
+        # Commit the tracked max now — update_state won't be called for this row
+        # since write_record returns False.
         self.more_items_in_collection = False
+        max_seen = getattr(self, '_max_seen_bookmark', None)
+        if max_seen and max_seen >= self.earliest_state:
+            self.earliest_state = max_seen
         return False
 
     def set_initial_state(self, state, start_date):
