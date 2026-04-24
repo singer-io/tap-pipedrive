@@ -242,6 +242,7 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
     sort_by = 'update_time'
     sort_direction = 'desc'
+    max_replication_key_value = None
 
     def update_request_params(self, params):
         """
@@ -262,26 +263,23 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         Write the record to the stream
         """
         current_bookmark = row.get(self.state_field)
+        if not self.max_replication_key_value and current_bookmark:
+            # First record will have latest replication value.
+            self.max_replication_key_value = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ")
+
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
+
+        # Update the state only after the stream has been fully processed.
+        # Because some interruption happens, it would miss some records if we write bookmark in advance
+        self.earliest_state = self.max_replication_key_value
 
         # Stop fetching if the current replication value is less than the earliest state(bookmark)
         self.more_items_in_collection = False
         return False
 
     def update_state(self, row):
-        """
-        Update the state only after the stream has been fully processed.
-        Because it fetched all records in descending order, the first records will have latest replication value.
-        So if some interruption happens, it would miss some records.
-        """
-        if self.more_items_in_collection:
-            return
-
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark
+        pass
 
 class DynamicSchemaStream(PipedriveStream):
     static_fields = []
