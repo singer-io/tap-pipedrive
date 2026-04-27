@@ -260,6 +260,7 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
     sort_by = 'update_time'
     sort_direction = 'desc'
+    _max_seen_bookmark = None
 
     def update_request_params(self, params):
         """
@@ -287,9 +288,8 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         # Commit the tracked max now — update_state won't be called for this row
         # since write_record returns False.
         self.more_items_in_collection = False
-        max_seen = getattr(self, '_max_seen_bookmark', None)
-        if max_seen and max_seen >= self.earliest_state:
-            self.earliest_state = max_seen
+        if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
+            self.earliest_state = self._max_seen_bookmark
         return False
 
     def set_initial_state(self, state, start_date):
@@ -305,17 +305,15 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         """
         current_bookmark = self._normalize_bookmark(row.get(self.state_field))
 
-        # Always track the running maximum across all processed rows
+        # Track the highest bookmark seen across all pages (records arrive newest-first)
         if current_bookmark:
-            max_seen = getattr(self, '_max_seen_bookmark', None)
-            if max_seen is None or current_bookmark > max_seen:
+            if self._max_seen_bookmark is None or current_bookmark > self._max_seen_bookmark:
                 self._max_seen_bookmark = current_bookmark
 
-        # Only commit the maximum to state when all pages have been fetched
+        # Commit the running maximum to state once all pages are exhausted
         if not self.more_items_in_collection:
-            max_seen = getattr(self, '_max_seen_bookmark', None)
-            if max_seen and max_seen >= self.earliest_state:
-                self.earliest_state = max_seen
+            if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
+                self.earliest_state = self._max_seen_bookmark
 
 class DynamicSchemaStream(PipedriveStream):
     static_fields = []
