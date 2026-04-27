@@ -45,12 +45,28 @@ class PipedriveStream(object):
     def get_name(self):
         return self.endpoint
 
+    @staticmethod
+    def _normalize_bookmark(value):
+        """Normalize a Pipedrive timestamp to '%Y-%m-%dT%H:%M:%SZ' (no microseconds).
+
+        Pipedrive API rows often carry microseconds (e.g. '...27.000000Z') while
+        stored bookmarks are already stripped to second precision.  Comparing the
+        raw string lexicographically can give wrong results because '.0' < 'Z' in
+        ASCII, making a record at the *same* second appear older than the bookmark.
+        Normalizing before any comparison avoids this class of off-by-one bugs.
+        """
+        if not value:
+            return None
+        try:
+            return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+        except (ValueError, TypeError):
+            return value
+
     def update_state(self, row):
         """
         Update the state of the stream
         """
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if current_bookmark and current_bookmark >= self.earliest_state:
             self.earliest_state = current_bookmark
 
@@ -60,11 +76,7 @@ class PipedriveStream(object):
         """
         bookmark = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
         # Normalize to the format Pipedrive accepts (no microseconds)
-        try:
-            bookmark = datetime.strptime(bookmark, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
-        except (ValueError, TypeError):
-            pass
-        self.initial_state = bookmark
+        self.initial_state = self._normalize_bookmark(bookmark) or bookmark
         self.earliest_state = self.initial_state
 
     def has_data(self):
@@ -102,7 +114,7 @@ class PipedriveStream(object):
         """
         Write the record to the stream
         """
-        current_bookmark = row.get(self.state_field)
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
@@ -267,7 +279,7 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         """
         Write the record to the stream
         """
-        current_bookmark = row.get(self.state_field)
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
@@ -291,8 +303,7 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         So if some interruption happens, it would miss some records.
         Track the maximum bookmark seen across all pages and commit it only when pagination is complete.
         """
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
 
         # Always track the running maximum across all processed rows
         if current_bookmark:
@@ -318,7 +329,7 @@ class DynamicSchemaStream(PipedriveStream):
                 fields_params = {
                     "limit" : self.limit,
                     "start" : self.start
-                } 
+                }
 
                 with singer.metrics.http_request_timer(self.schema) as timer:
                     try:
@@ -328,12 +339,12 @@ class DynamicSchemaStream(PipedriveStream):
 
                     timer.tags[singer.metrics.Tag.http_status_code] = fields_response.status_code
 
-                    try: 
+                    try:
                         properties = fields_response.json()
                         for prop in properties['data']:
                             if prop['key'] not in schema['properties']:
                                 schema['properties'][prop['key']] = prop
-                        
+
                                 property_content = {
                                     'type': ['null']
                                 }

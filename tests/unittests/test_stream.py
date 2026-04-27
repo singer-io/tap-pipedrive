@@ -83,6 +83,37 @@ class TestPipedriveStreamHasData(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# TestNormalizeBookmark
+# ---------------------------------------------------------------------------
+
+class TestNormalizeBookmark(unittest.TestCase):
+    """Verify _normalize_bookmark strips microseconds to second precision."""
+
+    def test_strips_microseconds(self):
+        """000000Z suffix is stripped to plain Z format."""
+        result = PipedriveStream._normalize_bookmark("2024-06-01T10:20:30.000000Z")
+        self.assertEqual(result, "2024-06-01T10:20:30Z")
+
+    def test_strips_non_zero_microseconds(self):
+        """Non-zero microseconds are also stripped (fractional seconds are not kept)."""
+        result = PipedriveStream._normalize_bookmark("2024-06-01T10:20:30.123456Z")
+        self.assertEqual(result, "2024-06-01T10:20:30Z")
+
+    def test_already_normalized_value_is_returned_unchanged(self):
+        """A value already in the normalized format passes through unchanged."""
+        result = PipedriveStream._normalize_bookmark("2024-06-01T10:20:30Z")
+        self.assertEqual(result, "2024-06-01T10:20:30Z")
+
+    def test_returns_none_for_none_input(self):
+        """None input returns None."""
+        self.assertIsNone(PipedriveStream._normalize_bookmark(None))
+
+    def test_returns_none_for_empty_string(self):
+        """Empty string returns None."""
+        self.assertIsNone(PipedriveStream._normalize_bookmark(""))
+
+
+# ---------------------------------------------------------------------------
 # TestPipedriveStreamSetInitialState
 # ---------------------------------------------------------------------------
 
@@ -169,6 +200,25 @@ class TestPipedriveStreamWriteRecord(unittest.TestCase):
         stream.initial_state = "2024-06-01T00:00:00Z"
         row = {"update_time": "2024-01-01T00:00:00Z"}
         self.assertFalse(stream.write_record(row))
+
+    def test_returns_true_when_record_has_microseconds_equal_to_initial_state(self):
+        """write_record returns True when a microsecond-format row equals the bookmark.
+
+        '2024-06-01T00:00:00.000000Z' must compare equal to '2024-06-01T00:00:00Z'
+        after normalization; without normalization the lexicographic comparison
+        '...00.000000Z' < '...00Z' would incorrectly return False.
+        """
+        stream = _SimpleStream()
+        stream.initial_state = "2024-06-01T00:00:00Z"
+        row = {"update_time": "2024-06-01T00:00:00.000000Z"}
+        self.assertTrue(stream.write_record(row))
+
+    def test_returns_true_when_record_has_microseconds_after_initial_state(self):
+        """write_record returns True when microsecond row is newer than bookmark."""
+        stream = _SimpleStream()
+        stream.initial_state = "2024-06-01T00:00:00Z"
+        row = {"update_time": "2024-06-01T00:00:01.000000Z"}
+        self.assertTrue(stream.write_record(row))
 
 
 # ---------------------------------------------------------------------------
@@ -347,6 +397,21 @@ class TestPipedriveIncrementalStreamUsingSortWriteRecord(unittest.TestCase):
         result = stream.write_record(row)
         self.assertFalse(result)
         self.assertEqual(stream.earliest_state, "2024-06-01T00:00:00Z")
+
+    def test_returns_true_when_row_microseconds_equal_initial_state(self):
+        """write_record returns True when microsecond-format row equals the bookmark.
+
+        '2024-06-01T00:00:00.000000Z' must compare equal to '2024-06-01T00:00:00Z'
+        after normalization; raw string comparison would incorrectly stop pagination.
+        """
+        stream = _SimpleIncrementalSortStream()
+        stream.initial_state = "2024-06-01T00:00:00Z"
+        stream.earliest_state = "2024-06-01T00:00:00Z"
+        stream.more_items_in_collection = True
+        row = {"update_time": "2024-06-01T00:00:00.000000Z"}
+        result = stream.write_record(row)
+        self.assertTrue(result)
+        self.assertTrue(stream.more_items_in_collection)
 
 
 # ---------------------------------------------------------------------------
