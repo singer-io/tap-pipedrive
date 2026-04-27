@@ -26,20 +26,20 @@ creating them, so re-running is safe.
 
 | Stream | Pipedrive Resource | API Endpoint | Notes |
 |---|---|---|---|
-| `pipelines` | Pipeline | `POST /v1/pipelines` | Creates "Stitch Test Pipeline" |
-| `stages` | Stage | `POST /v1/stages` | Creates 4 stages inside the test pipeline |
-| `organizations` | Organization | `POST /v1/organizations` | Creates 3 test organizations |
-| `persons` | Person | `POST /v1/persons` | Creates 3 persons linked to organizations |
-| `products` | Product | `POST /v1/products` | Creates 2 products with USD pricing |
-| `deals` | Deal | `POST /v1/deals` | Creates 4 deals (open + won) linked to persons/orgs/stages |
-| `dealflow` | Deal Stage-Change Events | `PUT /v1/deals/{id}` (stage move) | Moves deals between stages to generate `dealChange` events captured by this stream |
-| `deal_products` | Deal ↔ Product | `POST /v1/deals/{id}/products` | Attaches products to deals |
-| `activity_types` | Activity Type | `POST /v1/activityTypes` | Creates 2 custom activity types |
-| `activities` | Activity | `POST /v1/activities` | Creates 3 activities linked to deals and persons |
-| `notes` | Note | `POST /v1/notes` | Creates 3 notes linked to deals, persons, and orgs |
-| `filters` | Filter | `POST /v1/filters` | Creates 1 deal filter |
-| `deal_fields` | Custom Deal Field | `POST /v1/dealFields` | Creates 2 custom fields (numeric + enum) |
-| `files` | File | `POST /v1/files` (multipart) | Uploads a small text attachment linked to a deal |
+| `pipelines` | Pipeline | `POST /v1/pipelines` | Creates "Stitch Pipeline Alpha" and "Stitch Pipeline Beta" |
+| `stages` | Stage | `POST /v1/stages` | Creates the test stages used by the Alpha/Beta pipelines |
+| `organizations` | Organization | `POST /v1/organizations` | Creates approximately 110 test organizations per wave |
+| `persons` | Person | `POST /v1/persons` | Creates approximately 110 persons per wave, linked to organizations |
+| `products` | Product | `POST /v1/products` | Creates seeded test products with USD pricing |
+| `deals` | Deal | `POST /v1/deals` | Creates approximately 110 deals per wave, linked to persons, organizations, and stages |
+| `dealflow` | Deal Stage-Change Events | `PUT /v1/deals/{id}` (stage move) | Moves seeded deals between stages to generate `dealChange` events captured by this stream |
+| `deal_products` | Deal ↔ Product | `POST /v1/deals/{id}/products` | Attaches seeded products to deals |
+| `activity_types` | Activity Type | `POST /v1/activityTypes` | Creates custom activity types used by the seeded data |
+| `activities` | Activity | `POST /v1/activities` | Creates wave-based seeded activities linked to deals and persons |
+| `notes` | Note | `POST /v1/notes` | Creates wave-based seeded notes linked to deals, persons, and orgs |
+| `filters` | Filter | `POST /v1/filters` | Creates a seeded deal filter for QA verification |
+| `deal_fields` | Custom Deal Field | `POST /v1/dealFields` | Creates seeded custom fields (numeric + enum) |
+| `files` | File | `POST /v1/files` (multipart) | Uploads a small text attachment linked to a seeded deal |
 
 **Total: 14 of 16 streams seeded via script.**
 
