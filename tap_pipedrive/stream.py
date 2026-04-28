@@ -260,7 +260,10 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
     sort_by = 'update_time'
     sort_direction = 'desc'
-    _max_seen_bookmark = None
+
+    def __init__(self):
+        super().__init__()
+        self._max_seen_bookmark = None 
 
     def update_request_params(self, params):
         """
