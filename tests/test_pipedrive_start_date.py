@@ -4,7 +4,7 @@ from base import PipedriveBaseTest
 class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
-    start_date_2 = "2026-03-05T00:00:00Z"
+    start_date_2 = "2026-04-25T00:00:00Z"
 
     @staticmethod
     def name():
@@ -24,7 +24,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         # and start_date_2_epoch. So the assertion of assertGreater b/t sync_1 and sync_2 records
         # is failing
         expected_streams = self.expected_streams() - {"deal_fields", "stages", "pipelines", "filters", "activity_types"}
-        
+
         # Skipping below streams it make lot of API calls and we have daily quota limit for trail account
         expected_streams = expected_streams - {"dealflow", "deal_products"}
         ##########################################################################
@@ -50,7 +50,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         ### Update START DATE Between Syncs
         ##########################################################################
 
-        print("REPLICATION START DATE CHANGE: {} ===>>> {} ".format(self.start_date, self.start_date_2))
+        self.LOGGER.info("REPLICATION START DATE CHANGE: %s ===>>> %s", self.start_date, self.start_date_2)
         self.start_date = self.start_date_2
 
         ##########################################################################

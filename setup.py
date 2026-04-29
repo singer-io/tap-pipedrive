@@ -10,9 +10,9 @@ setup(name="tap-pipedrive",
       classifiers=["Programming Language :: Python :: 3 :: Only"],
       py_modules=["tap_pipedrive"],
       install_requires=[
-          "pendulum==3.1.0",
-          "requests==2.32.4",
-          "singer-python==6.1.1",
+          "pendulum==3.2.0",
+          "requests==2.33.1",
+          "singer-python==6.8.0",
       ],
       entry_points="""
           [console_scripts]

@@ -45,12 +45,28 @@ class PipedriveStream(object):
     def get_name(self):
         return self.endpoint
 
+    @staticmethod
+    def _normalize_bookmark(value):
+        """Normalize a Pipedrive timestamp to '%Y-%m-%dT%H:%M:%SZ' (no microseconds).
+
+        Pipedrive API rows often carry microseconds (e.g. '...27.000000Z') while
+        stored bookmarks are already stripped to second precision.  Comparing the
+        raw string lexicographically can give wrong results because '.0' < 'Z' in
+        ASCII, making a record at the *same* second appear older than the bookmark.
+        Normalizing before any comparison avoids this class of off-by-one bugs.
+        """
+        if not value:
+            return None
+        try:
+            return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+        except (ValueError, TypeError):
+            return value
+
     def update_state(self, row):
         """
         Update the state of the stream
         """
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if current_bookmark and current_bookmark >= self.earliest_state:
             self.earliest_state = current_bookmark
 
@@ -58,7 +74,9 @@ class PipedriveStream(object):
         """
         Set the initial state of the stream
         """
-        self.initial_state = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
+        bookmark = state.get("bookmarks", {}).get(self.schema, {}).get(self.state_field) or start_date
+        # Normalize to the format Pipedrive accepts (no microseconds)
+        self.initial_state = self._normalize_bookmark(bookmark) or bookmark
         self.earliest_state = self.initial_state
 
     def has_data(self):
@@ -96,7 +114,7 @@ class PipedriveStream(object):
         """
         Write the record to the stream
         """
-        current_bookmark = row.get(self.state_field)
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
@@ -243,6 +261,10 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
     sort_by = 'update_time'
     sort_direction = 'desc'
 
+    def __init__(self):
+        super().__init__()
+        self._max_seen_bookmark = None 
+
     def update_request_params(self, params):
         """
         Update the request parameters with sorting options
@@ -261,27 +283,40 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         """
         Write the record to the stream
         """
-        current_bookmark = row.get(self.state_field)
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
 
-        # Stop fetching if the current replication value is less than the earliest state(bookmark)
+        # Stop fetching because this record is older than the bookmark.
+        # Commit the tracked max now — update_state won't be called for this row
+        # since write_record returns False.
         self.more_items_in_collection = False
+        if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
+            self.earliest_state = self._max_seen_bookmark
         return False
+
+    def set_initial_state(self, state, start_date):
+        super().set_initial_state(state, start_date)
+        self._max_seen_bookmark = None
 
     def update_state(self, row):
         """
         Update the state only after the stream has been fully processed.
         Because it fetched all records in descending order, the first records will have latest replication value.
         So if some interruption happens, it would miss some records.
+        Track the maximum bookmark seen across all pages and commit it only when pagination is complete.
         """
-        if self.more_items_in_collection:
-            return
+        current_bookmark = self._normalize_bookmark(row.get(self.state_field))
 
-        current_bookmark = row.get(self.state_field)
-        current_bookmark = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ") if current_bookmark else None
-        if current_bookmark and current_bookmark >= self.earliest_state:
-            self.earliest_state = current_bookmark
+        # Track the highest bookmark seen across all pages (records arrive newest-first)
+        if current_bookmark:
+            if self._max_seen_bookmark is None or current_bookmark > self._max_seen_bookmark:
+                self._max_seen_bookmark = current_bookmark
+
+        # Commit the running maximum to state once all pages are exhausted
+        if not self.more_items_in_collection:
+            if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
+                self.earliest_state = self._max_seen_bookmark
 
 class DynamicSchemaStream(PipedriveStream):
     static_fields = []
@@ -295,7 +330,7 @@ class DynamicSchemaStream(PipedriveStream):
                 fields_params = {
                     "limit" : self.limit,
                     "start" : self.start
-                } 
+                }
 
                 with singer.metrics.http_request_timer(self.schema) as timer:
                     try:
@@ -305,12 +340,12 @@ class DynamicSchemaStream(PipedriveStream):
 
                     timer.tags[singer.metrics.Tag.http_status_code] = fields_response.status_code
 
-                    try: 
+                    try:
                         properties = fields_response.json()
                         for prop in properties['data']:
                             if prop['key'] not in schema['properties']:
                                 schema['properties'][prop['key']] = prop
-                        
+
                                 property_content = {
                                     'type': ['null']
                                 }

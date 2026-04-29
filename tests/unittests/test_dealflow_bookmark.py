@@ -2,8 +2,6 @@ from unittest import mock
 from tap_pipedrive.tap import PipedriveTap
 from tap_pipedrive.streams.dealflow import DealStageChangeStream
 import unittest
-import pendulum
-from pendulum.tz.timezone import Timezone
 
 class Mockresponse:
     def __init__(self, status_code, json, headers=None):
