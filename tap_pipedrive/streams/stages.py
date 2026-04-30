@@ -7,3 +7,4 @@ class StagesStream(PipedriveIncrementalStreamUsingSort):
     replication_method = 'INCREMENTAL'
     state_field = 'update_time'
     cursor = None
+    max_replication_key_value = None

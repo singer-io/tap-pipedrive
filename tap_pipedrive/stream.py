@@ -272,7 +272,8 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
         # Update the state only after the stream has been fully processed.
         # Because some interruption happens, it would miss some records if we write bookmark in advance
-        self.earliest_state = self.max_replication_key_value
+        if self.max_replication_key_value and self.max_replication_key_value >= self.earliest_state:
+            self.earliest_state = self.max_replication_key_value
 
         # Stop fetching if the current replication value is less than the earliest state(bookmark)
         self.more_items_in_collection = False
