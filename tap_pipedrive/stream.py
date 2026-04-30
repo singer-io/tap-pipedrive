@@ -20,6 +20,7 @@ class PipedriveStream(object):
     replication_method = 'FULL_TABLE'
     api_version = 'api/v2'
     cursor = None
+    additional_fields = []
 
     start = 0
     limit = 100
@@ -89,6 +90,9 @@ class PipedriveStream(object):
         }
         if self.cursor:
             params['cursor'] = self.cursor
+
+        if self.additional_fields:
+            params['include_fields'] = ','.join(self.additional_fields)
 
         return params
 
