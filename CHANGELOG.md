@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.0.1
+  * Fix bookmarking issue for notes stream [#157](https://github.com/singer-io/tap-pipedrive/pull/157)
+  * Bump requests from 2.32.4 to 2.33.0
+
 # 2.0.0
   * Update datatype for some of the schema fields [#152](https://github.com/singer-io/tap-pipedrive/pull/152)
 
