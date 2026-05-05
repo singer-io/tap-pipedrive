@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.1.0
+  * Add support of additional_fields [#158](https://github.com/singer-io/tap-pipedrive/pull/158)
+
 # 2.0.1
   * Fix bookmarking issue for notes stream [#157](https://github.com/singer-io/tap-pipedrive/pull/157)
   * Bump requests from 2.32.4 to 2.33.0
