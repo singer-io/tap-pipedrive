@@ -326,7 +326,7 @@
         "string"
       ],
       "format": "date-time"
-    }
+    },
     "last_outgoing_mail_time": {
       "type": [
         "null",
