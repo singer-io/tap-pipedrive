@@ -320,6 +320,13 @@
         "null"
       ]
     },
+    "last_incoming_mail_time": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    }
     "last_outgoing_mail_time": {
       "type": [
         "null",
