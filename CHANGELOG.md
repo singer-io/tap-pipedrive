@@ -1,7 +1,20 @@
 # Changelog
 
-# 1.5.0
+# 2.2.0
   * Adds parent-tap-stream-id field to catalog for child streams [#150](https://github.com/singer-io/tap-pipedrive/pull/150)
+
+# 2.1.0
+  * Add support of additional_fields [#158](https://github.com/singer-io/tap-pipedrive/pull/158)
+
+# 2.0.1
+  * Fix bookmarking issue for notes stream [#157](https://github.com/singer-io/tap-pipedrive/pull/157)
+  * Bump requests from 2.32.4 to 2.33.0
+
+# 2.0.0
+  * Update datatype for some of the schema fields [#152](https://github.com/singer-io/tap-pipedrive/pull/152)
+
+# 1.5.0
+  * Add label_ids field in deals [#151](https://github.com/singer-io/tap-pipedrive/pull/151)
 
 # 1.4.0
   * Extract deleted deals as well [#149](https://github.com/singer-io/tap-pipedrive/pull/149)

@@ -116,6 +116,15 @@
         "null"
       ]
     },
+    "label_ids": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": "integer"
+      }
+    },
     "origin": {
       "type": [
         "null",
