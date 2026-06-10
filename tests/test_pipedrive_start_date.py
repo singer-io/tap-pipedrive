@@ -4,11 +4,7 @@ from base import PipedriveBaseTest
 class PipedriveStartDateTest(PipedriveBaseTest):
 
     start_date_1 = ""
-<<<<<<< HEAD
     start_date_2 = "2026-04-25T00:00:00Z"
-=======
-    start_date_2 = "2026-04-29T00:00:00Z"
->>>>>>> origin/master
 
     @staticmethod
     def name():

@@ -288,7 +288,6 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         """
         Write the record to the stream
         """
-<<<<<<< HEAD
         current_bookmark = self._normalize_bookmark(row.get(self.state_field))
         if not current_bookmark or current_bookmark >= self.initial_state:
             return True
@@ -296,22 +295,6 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         # Stop fetching because this record is older than the bookmark.
         # Commit the tracked max now — update_state won't be called for this row
         # since write_record returns False.
-=======
-        current_bookmark = row.get(self.state_field)
-        if not self.max_replication_key_value and current_bookmark:
-            # First record will have latest replication value.
-            self.max_replication_key_value = datetime.strptime(current_bookmark, "%Y-%m-%dT%H:%M:%S.000000Z").strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        if not current_bookmark or current_bookmark >= self.initial_state:
-            return True
-
-        # Update the state only after the stream has been fully processed.
-        # Because some interruption happens, it would miss some records if we write bookmark in advance
-        if self.max_replication_key_value and self.max_replication_key_value >= self.earliest_state:
-            self.earliest_state = self.max_replication_key_value
-
-        # Stop fetching if the current replication value is less than the earliest state(bookmark)
->>>>>>> origin/master
         self.more_items_in_collection = False
         if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
             self.earliest_state = self._max_seen_bookmark
@@ -322,7 +305,6 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         self._max_seen_bookmark = None
 
     def update_state(self, row):
-<<<<<<< HEAD
         """
         Update the state only after the stream has been fully processed.
         Because it fetched all records in descending order, the first records will have latest replication value.
@@ -340,9 +322,6 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
         if not self.more_items_in_collection:
             if self._max_seen_bookmark and self._max_seen_bookmark >= self.earliest_state:
                 self.earliest_state = self._max_seen_bookmark
-=======
-        pass
->>>>>>> origin/master
 
 class DynamicSchemaStream(PipedriveStream):
     static_fields = []
