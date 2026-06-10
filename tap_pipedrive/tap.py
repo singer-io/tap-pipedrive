@@ -299,6 +299,15 @@ class PipedriveTap(object):
                                                    str(stream.earliest_state))
             singer.write_state(self.state)
 
+        # After pagination completes, update earliest_state if max_replication_key_value was captured
+        # This handles the case where all records are newer than the bookmark (no early termination)
+        if getattr(stream, 'max_replication_key_value', None) and stream.max_replication_key_value > stream.earliest_state:
+            stream.earliest_state = stream.max_replication_key_value
+            if stream.state_field:
+                self.state = singer.write_bookmark(self.state, stream.schema, stream.state_field,
+                                                   str(stream.earliest_state))
+                singer.write_state(self.state)
+
     def get_default_config(self):
         return CONFIG_DEFAULTS
 

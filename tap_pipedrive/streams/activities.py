@@ -8,3 +8,4 @@ class ActivitiesStream(DynamicSchemaStream):
     replication_method = 'INCREMENTAL'
     state_field = 'update_time'
     cursor = None
+    additional_fields = ['attendees']

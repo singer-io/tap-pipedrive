@@ -7,6 +7,7 @@ class NotesStream(DynamicSchemaStream, PipedriveIncrementalStreamUsingSort, Pipe
     key_properties = ['id']
     state_field = 'update_time'
     replication_method = 'INCREMENTAL'
+    max_replication_key_value = None
 
     def update_request_params(self, params):
         """

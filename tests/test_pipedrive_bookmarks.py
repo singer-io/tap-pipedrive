@@ -48,6 +48,7 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ### Update State
         ##########################################################################
         new_state = {'bookmarks': dict()}
+<<<<<<< HEAD
 
         # Dynamically compute simulated states using the median replication-key value from the
         # first sync. This ensures the second sync retrieves a strict subset of first sync records
@@ -76,6 +77,23 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                 simulated_states[stream] = {replication_key: mid_value}
 
         # setting simulated bookmark as starting point for 2nd sync
+=======
+        simulated_states = {
+            "notes": {"update_time": "2026-04-29T00:00:00Z"},
+            "activities": {"update_time": "2026-04-29T00:00:00Z"},
+            "deals": {"update_time": "2026-04-29T00:00:00Z"},
+            "files": {"update_time": "2026-04-29T00:00:00Z"},
+            "organizations": {"update_time": "2026-04-29T00:00:00Z"},
+            "persons": {"update_time": "2026-04-29T00:00:00Z"},
+            "products": {"update_time": "2026-04-29T00:00:00Z"},
+            # "dealflow": {"log_time": "2026-02-17T05:40:00Z"},
+            # Skipping users - only 1 user, assertLess(1,1) can never pass
+            # "users": {"modified": "2026-02-17T05:40:00Z"},
+            # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
+            # "deal_fields": {"update_time": "2023-04-15T17:25:16Z"}
+        }
+        # setting 'second_start_date' as bookmark for running 2nd sync
+>>>>>>> origin/master
         for stream, updated_state in simulated_states.items():
             new_state['bookmarks'][stream] = updated_state
 
