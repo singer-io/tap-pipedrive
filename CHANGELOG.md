@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.3.0
+  * Streams the credentials cannot access (403) are now excluded from the catalog during discovery instead of raising an error.
+  * Added unit tests for discovery access checks, bookmark read/write behavior, and sync orchestration.
+
 # 2.2.0
   * Adds parent-tap-stream-id field to catalog for child streams [#150](https://github.com/singer-io/tap-pipedrive/pull/150)
 

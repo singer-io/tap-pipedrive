@@ -3,6 +3,7 @@ import singer
 import pendulum
 from datetime import datetime
 from requests.exceptions import RequestException
+from .exceptions import PipedriveForbiddenError
 
 logger = singer.get_logger()
 
@@ -108,6 +109,45 @@ class PipedriveStream(object):
 
     def process_row(self, row):
         return row
+
+    def check_access(self):
+        """
+        Verify that the configured credentials can read this stream.
+        Child streams always return True and are pruned if their parent is excluded.
+        """
+        if getattr(self, 'parent', None):
+            return True
+
+        if not self.tap:
+            return True
+
+        params = {
+            'start': 0,
+            'limit': 1,
+        }
+
+        previous_initial_state = self.initial_state
+        if self.initial_state is None:
+            self.initial_state = self.tap.config.get('start_date')
+
+        try:
+            params = self.update_request_params(params)
+        except Exception:
+            # Fallback to a minimal probe if a stream-specific param builder fails.
+            pass
+
+        try:
+            self.tap.execute_request(self.endpoint, self.api_version, params=params)
+            return True
+        except PipedriveForbiddenError as exc:
+            logger.warning(
+                "Permission Error: Stream '%s' - %s",
+                self.__class__.__name__,
+                exc,
+            )
+            return False
+        finally:
+            self.initial_state = previous_initial_state
 
 class PipedriveV1IncrementalStream(PipedriveStream):
     api_version = 'v1'
