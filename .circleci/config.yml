@@ -25,13 +25,11 @@ jobs:
           path: htmlcov
       - add_ssh_keys
       - run:
-          name: 'Integration Tests'
+          name: 'Mocked Integration Tests'
           command: |
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            uv pip install --upgrade awscli
-            aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/tap_tester_sandbox dev_env.sh
-            source dev_env.sh
-            run-test --tap=tap-pipedrive tests
+            source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
+            uv pip install pytest
+            pytest tests/mockedtests
 
 workflows:
   version: 2
