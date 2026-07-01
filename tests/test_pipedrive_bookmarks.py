@@ -61,18 +61,23 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
             messages = [r.get('data') for r in
                         first_sync_records.get(stream, {}).get('messages', [])
                         if r.get('action') == 'upsert']
-            values = sorted([m.get(replication_key) for m in messages
-                             if m and m.get(replication_key)])
-            if values:
-                # Pick a value at the 50% mark so the second sync returns roughly half the records
-                mid_idx = len(values) // 2
-                mid_value = values[mid_idx]
-                # Normalize to bookmark format (strip microseconds) so dt_to_ts can parse it
-                from datetime import datetime as _dt
+
+            # Normalize values *before* sorting to avoid lexicographic issues between
+            # second-precision and microsecond-precision timestamps.
+            from datetime import datetime as _dt
+            values = []
+            for m in messages:
+                if not m:
+                    continue
+                v = m.get(replication_key)
+                if not v:
+                    continue
                 try:
-                    mid_value = _dt.strptime(mid_value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+                    v = _dt.strptime(v, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
                 except (ValueError, TypeError):
                     pass
+                values.append(v)
+            values = sorted(values)
                 simulated_states[stream] = {replication_key: mid_value}
 
         # setting simulated bookmark as starting point for 2nd sync
