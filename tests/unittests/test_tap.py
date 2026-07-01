@@ -4,9 +4,8 @@ Unit tests for tap_pipedrive.tap module.
 Covers: do_discover, iterate_response, validate_response, rate_throttling,
         get_selected_streams, raise_for_error (5xx catch-all), do_paginate.
 """
-import time
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import requests
 
