@@ -268,8 +268,7 @@ class PipedriveIncrementalStreamUsingSort(PipedriveStream):
 
     def __init__(self):
         super().__init__()
-        self._max_seen_bookmark = None 
-
+        self._max_seen_bookmark = None
     def update_request_params(self, params):
         """
         Update the request parameters with sorting options
