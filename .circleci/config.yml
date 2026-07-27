@@ -15,7 +15,7 @@ jobs:
           name: 'Unit Tests & Coverage Run'
           command: |
             source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
-            uv pip install coverage
+            uv pip install pytest coverage
             coverage run -m pytest tests/unittests
       - run:
           name: 'Coverage Report'
