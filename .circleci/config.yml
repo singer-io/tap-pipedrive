@@ -24,8 +24,6 @@ jobs:
             source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
             coverage report -m | tee coverage.txt
             coverage html
-            echo "Coverage summary:"
-            cat coverage.txt
       - store_test_results:
           path: test_output/report.xml
       - store_artifacts:
