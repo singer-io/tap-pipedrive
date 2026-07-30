@@ -27,6 +27,12 @@ def get_mock_http_response(status_code, contents):
     response._content = contents.encode()
     return response
 
+
+class TestMockResponseHelpers(unittest.TestCase):
+    def test_raise_for_status_returns_status_when_not_raise_error(self):
+        response = Mockresponse(200, {}, raise_error=False)
+        self.assertEqual(200, response.raise_for_status())
+
 @mock.patch('time.sleep')
 @mock.patch('requests.get')
 class TestExecuteRequestExceptionHandling(unittest.TestCase):

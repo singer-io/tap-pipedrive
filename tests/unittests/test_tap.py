@@ -92,6 +92,12 @@ class TestIterateResponse(unittest.TestCase):
         result = tap.iterate_response(resp)
         self.assertEqual(result, records)
 
+    def test_make_response_with_raise_exc_sets_raise_side_effect(self):
+        err = requests.HTTPError("boom")
+        resp = _make_response(500, json_body={"error": "x"}, raise_exc=err)
+        with self.assertRaises(requests.HTTPError):
+            resp.raise_for_status()
+
 
 # ---------------------------------------------------------------------------
 # TestValidateResponse
@@ -411,6 +417,3 @@ class TestDoPaginate(unittest.TestCase):
 
         mock_write_record.assert_not_called()
 
-
-if __name__ == "__main__":
-    unittest.main()

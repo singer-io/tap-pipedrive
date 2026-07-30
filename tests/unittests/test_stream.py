@@ -500,6 +500,3 @@ class TestPipedriveIterStreamFindDealIds(unittest.TestCase):
         result = stream.find_deal_ids([], start="2024-01-01T00:00:00Z", stop="2024-06-01T00:00:00Z")
         self.assertEqual(result, [])
 
-
-if __name__ == "__main__":
-    unittest.main()
