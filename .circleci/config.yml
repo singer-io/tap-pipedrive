@@ -22,7 +22,7 @@ jobs:
           name: 'Coverage Report'
           command: |
             source /usr/local/share/virtualenvs/tap-pipedrive/bin/activate
-            coverage report -m | tee coverage.txt
+            coverage report -m --fail-under=99 | tee coverage.txt
             coverage html
       - store_test_results:
           path: test_output/report.xml
