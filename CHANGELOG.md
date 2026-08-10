@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.2.0
+  * Python Upgrade, State Standardization [#159](https://github.com/singer-io/tap-pipedrive/pull/159)
+
 # 2.1.0
   * Add support of additional_fields [#158](https://github.com/singer-io/tap-pipedrive/pull/158)
 

@@ -257,7 +257,7 @@ class PipedriveBaseTest(unittest.TestCase):
         found_catalog_names = set(map(lambda c: c['stream_name'] , found_catalogs))
 
         self.assertSetEqual(self.expected_streams(), found_catalog_names, msg="discovered schemas do not match")
-        print("discovered schemas are OK")
+        self.LOGGER.info("discovered schemas are OK")
 
         return found_catalogs
 
@@ -279,9 +279,13 @@ class PipedriveBaseTest(unittest.TestCase):
             self, conn_id, self.expected_streams(), self.expected_primary_keys())
         self.assertGreater(
             sum(sync_record_count.values()), 0,
-            msg="failed to replicate any data: {}".format(sync_record_count)
+            msg=(
+                "No records were replicated for any stream: {}.\n"
+                "Ensure the Pipedrive test account has been seeded with data. "
+                "See spike/seed_pipedrive.md for instructions."
+            ).format(sync_record_count)
         )
-        print("total replicated row count: {}".format(sum(sync_record_count.values())))
+        self.LOGGER.info("total replicated row count: %d", sum(sync_record_count.values()))
 
         return sync_record_count
 
@@ -310,7 +314,7 @@ class PipedriveBaseTest(unittest.TestCase):
 
             # Verify all testable streams are selected
             selected = catalog_entry.get('annotated-schema').get('selected')
-            print("Validating selection on {}: {}".format(cat['stream_name'], selected))
+            self.LOGGER.info("Validating selection on %s: %s", cat['stream_name'], selected)
             if cat['stream_name'] not in expected_selected:
                 self.assertFalse(selected, msg="Stream selected, but not testable.")
                 continue # Skip remaining assertions if we aren't selecting this stream
@@ -320,8 +324,8 @@ class PipedriveBaseTest(unittest.TestCase):
                 # Verify all fields within each selected stream are selected
                 for field, field_props in catalog_entry.get('annotated-schema').get('properties').items():
                     field_selected = field_props.get('selected')
-                    print("\tValidating selection on {}.{}: {}".format(
-                        cat['stream_name'], field, field_selected))
+                    self.LOGGER.info("\tValidating selection on %s.%s: %s",
+                                     cat['stream_name'], field, field_selected)
                     self.assertTrue(field_selected, msg="Field not selected.")
             else:
                 # Verify only automatic fields are selected
@@ -406,7 +410,7 @@ class PipedriveBaseTest(unittest.TestCase):
 
     def is_start_date_appling(self, stream):
         if self.expected_metadata().get(stream).get(self.STARTDATE_KEYS,None) is None:
-            return False 
+            return False
         return True
 
     def dt_to_ts(self, dtime, format):

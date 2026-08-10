@@ -27,6 +27,12 @@ def get_mock_http_response(status_code, contents):
     response._content = contents.encode()
     return response
 
+
+class TestMockResponseHelpers(unittest.TestCase):
+    def test_raise_for_status_returns_status_when_not_raise_error(self):
+        response = Mockresponse(200, {}, raise_error=False)
+        self.assertEqual(200, response.raise_for_status())
+
 @mock.patch('time.sleep')
 @mock.patch('requests.get')
 class TestExecuteRequestExceptionHandling(unittest.TestCase):
@@ -50,7 +56,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         self.assertEqual(mocked_jsondecode_successful_request.call_count, 1)
 
     def test_json_decode_exception(self, mocked_jsondecode_failing_request, mocked_sleep):
-        json_decode_error_str = '{\Currency\': \'value\'}'
+        json_decode_error_str = "{'Currency': 'value'}"
         mocked_jsondecode_failing_request.return_value = get_mock_http_response(200, json_decode_error_str)
 
         with self.assertRaises(simplejson.scanner.JSONDecodeError) as e:
@@ -66,7 +72,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
 
         expected_error_message = "HTTP-error-code: 400, Error: Request is missing or has a bad parameter."
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -79,7 +85,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -92,7 +98,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 402, Error: Company account is not open (possible reason: trial expired, payment details not entered)."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -105,7 +111,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 403, Error: Invalid authorization credentials or permissions."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -118,7 +124,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 404, Error: The requested resource does not exist."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -131,7 +137,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 410, Error: The old resource is permanently unavailable."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -144,7 +150,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 415, Error: The feature is not enabled."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -157,7 +163,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 422, Error: Webhook limit reached."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -171,7 +177,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 429, Error: Rate limit has been exceeded. Please retry after 2 seconds."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 3)
 
@@ -185,7 +191,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 429, Error: Daily Rate limit has been exceeded. Please retry after 200 seconds."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 1)
 
@@ -198,7 +204,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 500, Error: Internal Service Error from PipeDrive."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 5)
 
@@ -211,7 +217,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 501, Error: Functionality does not exist."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 5)
 
@@ -224,7 +230,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 503, Error: Schedule maintenance on Pipedrive's end."
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 5)
 
@@ -237,6 +243,6 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         expected_error_message = "HTTP-error-code: 524, Error: Unknown Error"
 
         # Verifying the message formed for the custom exception
-        self.assertEquals(str(e.exception), expected_error_message)
+        self.assertEqual(str(e.exception), expected_error_message)
 
         self.assertEqual(mocked_request.call_count, 5)
