@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.2.1
+  * Adds parent-tap-stream-id field to catalog for child streams [#150](https://github.com/singer-io/tap-pipedrive/pull/150)
+
 # 2.2.0
   * Python Upgrade, State Standardization [#159](https://github.com/singer-io/tap-pipedrive/pull/159)
 

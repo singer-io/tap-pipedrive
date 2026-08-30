@@ -8,6 +8,7 @@ class DealStageChangeStream(PipedriveIterStream):
     state_field = 'log_time'
     key_properties = ['id', ]
     replication_method = 'INCREMENTAL'
+    parent = 'deals'
 
     def get_name(self):
         return self.schema
