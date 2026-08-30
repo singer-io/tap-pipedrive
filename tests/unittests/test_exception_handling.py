@@ -27,6 +27,12 @@ def get_mock_http_response(status_code, contents):
     response._content = contents.encode()
     return response
 
+
+class TestMockResponseHelpers(unittest.TestCase):
+    def test_raise_for_status_returns_status_when_not_raise_error(self):
+        response = Mockresponse(200, {}, raise_error=False)
+        self.assertEqual(200, response.raise_for_status())
+
 @mock.patch('time.sleep')
 @mock.patch('requests.get')
 class TestExecuteRequestExceptionHandling(unittest.TestCase):
@@ -50,7 +56,7 @@ class TestExecuteRequestExceptionHandling(unittest.TestCase):
         self.assertEqual(mocked_jsondecode_successful_request.call_count, 1)
 
     def test_json_decode_exception(self, mocked_jsondecode_failing_request, mocked_sleep):
-        json_decode_error_str = '{\\Currency\': \\\'value\\\'}'
+        json_decode_error_str = "{'Currency': 'value'}"
         mocked_jsondecode_failing_request.return_value = get_mock_http_response(200, json_decode_error_str)
 
         with self.assertRaises(simplejson.scanner.JSONDecodeError) as e:

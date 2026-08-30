@@ -48,21 +48,39 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         ### Update State
         ##########################################################################
         new_state = {'bookmarks': dict()}
-        simulated_states = {
-            "notes": {"update_time": "2026-04-29T00:00:00Z"},
-            "activities": {"update_time": "2026-04-29T00:00:00Z"},
-            "deals": {"update_time": "2026-04-29T00:00:00Z"},
-            "files": {"update_time": "2026-04-29T00:00:00Z"},
-            "organizations": {"update_time": "2026-04-29T00:00:00Z"},
-            "persons": {"update_time": "2026-04-29T00:00:00Z"},
-            "products": {"update_time": "2026-04-29T00:00:00Z"},
-            # "dealflow": {"log_time": "2026-02-17T05:40:00Z"},
-            # Skipping users - only 1 user, assertLess(1,1) can never pass
-            # "users": {"modified": "2026-02-17T05:40:00Z"},
-            # BUG TDL-25987: We observed few records with null replication key values for deal_fields stream
-            # "deal_fields": {"update_time": "2023-04-15T17:25:16Z"}
-        }
-        # setting 'second_start_date' as bookmark for running 2nd sync
+
+        # Dynamically compute simulated states using the median replication-key value from the
+        # first sync. This ensures the second sync retrieves a strict subset of first sync records
+        # regardless of when the test data was created, avoiding failures caused by hardcoded dates
+        # that pre-date all seeded records.
+        simulated_states = {}
+        for stream in expected_streams:
+            if expected_replication_methods.get(stream) != self.INCREMENTAL:
+                continue
+            replication_key = list(expected_replication_keys[stream])[0]
+            messages = [r.get('data') for r in
+                        first_sync_records.get(stream, {}).get('messages', [])
+                        if r.get('action') == 'upsert']
+
+            # Normalize values *before* sorting to avoid lexicographic issues between
+            # second-precision and microsecond-precision timestamps.
+            from datetime import datetime as _dt
+            values = []
+            for m in messages:
+                if not m:
+                    continue
+                v = m.get(replication_key)
+                if not v:
+                    continue
+                try:
+                    v = _dt.strptime(v, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+                except (ValueError, TypeError):
+                    pass
+                values.append(v)
+            values = sorted(values)
+                simulated_states[stream] = {replication_key: mid_value}
+
+        # setting simulated bookmark as starting point for 2nd sync
         for stream, updated_state in simulated_states.items():
             new_state['bookmarks'][stream] = updated_state
 
