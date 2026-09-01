@@ -24,12 +24,17 @@ class FakeStream:
         self.endpoint = schema
         self.state_field = state_field
         self.replication_method = replication_method
+        self.parent = None
+        self.accessible = True
         self.key_properties = ["id"]
         self.more_items_in_collection = True
         self.initial_state = None
         self.earliest_state = None
         self.start = 0
         self.cursor = None
+
+    def check_access(self):
+        return self.accessible
 
     def get_schema(self):
         properties = {
