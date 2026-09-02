@@ -165,16 +165,15 @@ class PipedriveTap(object):
 
         accessible_streams = self._prune_inaccessible_children(accessible_streams)
 
-        if not accessible_streams:
-            raise PipedriveForbiddenError(
-                "HTTP-error-code: 403, Error: The credentials do not have 'read' access to any supported streams."
-            )
         if inaccessible_streams:
             logger.warning(
                 "No 'read' access to stream(s): %s. Excluded from catalog.",
                 ", ".join(inaccessible_streams),
-            "Unauthorized streams excluded from catalog: %s",
-
+            )
+        if not accessible_streams:
+            raise PipedriveForbiddenError(
+                "HTTP-error-code: 403, Error: The credentials do not have 'read' access to any supported streams."
+            )
         return accessible_streams
 
     def do_discover(self):

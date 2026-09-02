@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from tap_pipedrive.stream import PipedriveStream
 from tap_pipedrive.tap import PipedriveTap
@@ -71,8 +72,21 @@ class TestDiscoveryAccessChecks(unittest.TestCase):
             FakeStream("dealflow", parent="deals", accessible=True),
         ]
 
-        with self.assertRaises(PipedriveForbiddenError) as error:
-            self.tap.do_discover()
+        with patch("tap_pipedrive.tap.logger.warning") as mock_warning:
+            with self.assertRaises(PipedriveForbiddenError) as error:
+                self.tap.do_discover()
+
+        self.assertTrue(
+            any(
+                call.args
+                and call.args[0] == "No 'read' access to stream(s): %s. Excluded from catalog."
+                and len(call.args) > 1
+                and "deals" in call.args[1]
+                and "users" in call.args[1]
+                for call in mock_warning.call_args_list
+            ),
+            "Expected inaccessible parent stream warning to include deals and users.",
+        )
 
         self.assertEqual(
             str(error.exception),
