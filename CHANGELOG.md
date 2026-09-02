@@ -1,7 +1,7 @@
 # Changelog
 
 # 2.3.0
-  * Streams the credentials cannot access (403) are now excluded from the catalog during discovery instead of raising an error.
+  * Streams that return 403 (Forbidden) during discovery are now excluded from the catalog. Discovery still raises an error if no supported streams are accessible.
   * Added unit tests for discovery access checks, bookmark read/write behavior, and sync orchestration.
 
 # 2.2.1

@@ -131,7 +131,7 @@ class PipedriveTap(object):
 
     def _prune_inaccessible_children(self, streams):
         """
-        Remove child streams whose parent stream is not in the selected stream list.
+        Remove child streams whose parent stream is not present in the provided stream list.
         """
         allowed_schemas = {stream.schema for stream in streams}
         pruned_streams = []
@@ -173,7 +173,7 @@ class PipedriveTap(object):
             logger.warning(
                 "No 'read' access to stream(s): %s. Excluded from catalog.",
                 ", ".join(inaccessible_streams),
-            )
+            "Unauthorized streams excluded from catalog: %s",
 
         return accessible_streams
 

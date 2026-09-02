@@ -159,7 +159,7 @@ class PipedriveStream(object):
             return True
         except PipedriveForbiddenError as exc:
             logger.warning(
-                "Permission Error: Stream '%s' - %s",
+                "Unauthorized Stream: %s, excluding from catalog. HTTP-Error-Message:'%s'",
                 self.__class__.__name__,
                 exc,
             )
