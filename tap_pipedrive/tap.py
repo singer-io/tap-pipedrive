@@ -172,7 +172,8 @@ class PipedriveTap(object):
             )
         if not accessible_streams:
             raise PipedriveForbiddenError(
-                "HTTP-error-code: 403, Error: The credentials do not have 'read' access to any supported streams."
+                "HTTP-error-code: 403, Error: No accessible streams remain; "
+                "the credentials do not have 'read' access to any supported streams."
             )
         return accessible_streams
 
@@ -192,7 +193,7 @@ class PipedriveTap(object):
                 valid_replication_keys=[stream.state_field] if stream.state_field else None,
                 replication_method=stream.replication_method
             )
-            
+
             meta = metadata.to_map(meta)
             parent_attribute = getattr(stream, "parent", None)
             if parent_attribute:

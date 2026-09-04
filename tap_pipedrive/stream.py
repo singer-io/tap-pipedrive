@@ -148,11 +148,7 @@ class PipedriveStream(object):
         if self.initial_state is None:
             self.initial_state = self.tap.config.get('start_date')
 
-        try:
-            params = self.update_request_params(params)
-        except Exception:
-            # Fallback to a minimal probe if a stream-specific param builder fails.
-            pass
+        params = self.update_request_params(params)
 
         try:
             self.tap.execute_request(self.endpoint, self.api_version, params=params)

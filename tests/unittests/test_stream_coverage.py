@@ -84,7 +84,7 @@ class TestStreamCoverageBranches(unittest.TestCase):
         self.assertIsNone(stream.initial_state)
         tap.execute_request.assert_called_once()
 
-    def test_check_access_uses_minimal_probe_when_param_builder_fails(self):
+    def test_check_access_propagates_param_builder_error(self):
         stream = _BaseStream()
         stream.endpoint = "deals"
         stream.initial_state = "2024-05-01T00:00:00Z"
@@ -92,14 +92,13 @@ class TestStreamCoverageBranches(unittest.TestCase):
 
         tap = MagicMock()
         tap.config = {"start_date": "2024-01-01T00:00:00Z"}
-        tap.execute_request.return_value = MagicMock()
         stream.tap = tap
 
         with patch.object(stream, "update_request_params", side_effect=RuntimeError("bad params")):
-            self.assertTrue(stream.check_access())
+            with self.assertRaisesRegex(RuntimeError, "bad params"):
+                stream.check_access()
 
-        call_kwargs = tap.execute_request.call_args.kwargs
-        self.assertEqual({"start": 0, "limit": 1}, call_kwargs["params"])
+        tap.execute_request.assert_not_called()
         self.assertEqual("2024-05-01T00:00:00Z", stream.initial_state)
 
     def test_check_access_returns_false_on_forbidden_and_restores_state(self):
