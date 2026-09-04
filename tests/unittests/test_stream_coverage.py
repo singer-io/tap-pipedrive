@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from requests.exceptions import RequestException
+from tap_pipedrive.exceptions import PipedriveForbiddenError
 
 from tap_pipedrive.stream import (
     DynamicSchemaStream,
@@ -56,6 +57,63 @@ class TestStreamCoverageBranches(unittest.TestCase):
         params = stream.update_request_params({})
         self.assertEqual("cursor-1", params["cursor"])
         self.assertEqual("a,b", params["include_fields"])
+
+    def test_check_access_returns_true_for_child_stream(self):
+        stream = _BaseStream()
+        stream.parent = "deals"
+        self.assertTrue(stream.check_access())
+
+    def test_check_access_returns_true_when_tap_missing(self):
+        stream = _BaseStream()
+        stream.parent = None
+        stream.tap = None
+        self.assertTrue(stream.check_access())
+
+    def test_check_access_success_restores_initial_state(self):
+        stream = _BaseStream()
+        stream.endpoint = "deals"
+        stream.initial_state = None
+        stream.parent = None
+
+        tap = MagicMock()
+        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
+        tap.execute_request.return_value = MagicMock()
+        stream.tap = tap
+
+        self.assertTrue(stream.check_access())
+        self.assertIsNone(stream.initial_state)
+        tap.execute_request.assert_called_once()
+
+    def test_check_access_propagates_param_builder_error(self):
+        stream = _BaseStream()
+        stream.endpoint = "deals"
+        stream.initial_state = "2024-05-01T00:00:00Z"
+        stream.parent = None
+
+        tap = MagicMock()
+        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
+        stream.tap = tap
+
+        with patch.object(stream, "update_request_params", side_effect=RuntimeError("bad params")):
+            with self.assertRaisesRegex(RuntimeError, "bad params"):
+                stream.check_access()
+
+        tap.execute_request.assert_not_called()
+        self.assertEqual("2024-05-01T00:00:00Z", stream.initial_state)
+
+    def test_check_access_returns_false_on_forbidden_and_restores_state(self):
+        stream = _BaseStream()
+        stream.endpoint = "deals"
+        stream.initial_state = "2024-06-01T00:00:00Z"
+        stream.parent = None
+
+        tap = MagicMock()
+        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
+        tap.execute_request.side_effect = PipedriveForbiddenError("forbidden")
+        stream.tap = tap
+
+        self.assertFalse(stream.check_access())
+        self.assertEqual("2024-06-01T00:00:00Z", stream.initial_state)
 
     @patch("tap_pipedrive.stream.singer.metrics.http_request_timer", return_value=_DummyTimer())
     @patch("tap_pipedrive.stream.singer.write_bookmark", side_effect=lambda state, *args, **kwargs: state)

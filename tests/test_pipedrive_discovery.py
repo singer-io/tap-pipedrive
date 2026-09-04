@@ -69,7 +69,7 @@ class PipedriveDiscovery(PipedriveBaseTest):
                 # Get parent-tap-stream-id if present
                 actual_parent_stream_id = stream_properties[0].get(
                     "metadata", {}).get(self.PARENT_TAP_STREAM_ID)
-                
+
                 expected_parent_stream = self.expected_metadata().get(
                     stream, {}).get(self.PARENT_TAP_STREAM_ID)
 

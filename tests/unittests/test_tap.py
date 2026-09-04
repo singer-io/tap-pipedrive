@@ -309,7 +309,8 @@ class TestDiscover(unittest.TestCase):
 
     @patch("tap_pipedrive.stream.DynamicSchemaStream.get_schema", return_value=_MOCK_SCHEMA)
     @patch("tap_pipedrive.stream.PipedriveStream.get_schema", return_value=_MOCK_SCHEMA)
-    def test_discover_returns_catalog_with_all_streams(self, mock_base, mock_dyn):
+    @patch("tap_pipedrive.stream.PipedriveStream.check_access", return_value=True)
+    def test_discover_returns_catalog_with_all_streams(self, mock_base, mock_dyn, mock_check_access):
         """do_discover returns a Catalog containing an entry for every configured stream."""
         tap = _make_tap()
         catalog = tap.do_discover()
@@ -320,7 +321,8 @@ class TestDiscover(unittest.TestCase):
 
     @patch("tap_pipedrive.stream.DynamicSchemaStream.get_schema", return_value=_MOCK_SCHEMA)
     @patch("tap_pipedrive.stream.PipedriveStream.get_schema", return_value=_MOCK_SCHEMA)
-    def test_discover_sets_key_properties(self, mock_base, mock_dyn):
+    @patch("tap_pipedrive.stream.PipedriveStream.check_access", return_value=True)
+    def test_discover_sets_key_properties(self, mock_base, mock_dyn, mock_check_access):
         """do_discover attaches the correct key_properties to each catalog entry."""
         tap = _make_tap()
         catalog = tap.do_discover()
@@ -329,7 +331,8 @@ class TestDiscover(unittest.TestCase):
 
     @patch("tap_pipedrive.stream.DynamicSchemaStream.get_schema", return_value=_MOCK_SCHEMA)
     @patch("tap_pipedrive.stream.PipedriveStream.get_schema", return_value=_MOCK_SCHEMA)
-    def test_discover_incremental_stream_has_replication_key_in_metadata(self, mock_base, mock_dyn):
+    @patch("tap_pipedrive.stream.PipedriveStream.check_access", return_value=True)
+    def test_discover_incremental_stream_has_replication_key_in_metadata(self, mock_base, mock_dyn, mock_check_access):
         """do_discover marks the replication key as automatic for incremental streams."""
         from singer import metadata
         tap = _make_tap()
