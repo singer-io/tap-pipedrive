@@ -162,9 +162,9 @@ class RecentsStream(PipedriveV1IncrementalStream):
         """
         /GET endpoint does not all to filter by updated_at for some of the endpoints.
         Also, It is not good to fetch all records every time.
-        
+
         /recents endpoint allows to filter by since_timestamp but it returns past 1 month data.
-        
+
         So, use combination of both
         """
         if self.initial_state < pendulum.now().subtract(months=1).strftime("%Y-%m-%dT%H:%M:%SZ"):
@@ -241,6 +241,12 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
 
             self.state = singer.write_bookmark(tap.state, self.schema, self.deal_replication_key, response.json().get('data')[-1]["update_time"])
 
+    def get_child_ids(self, tap):
+        return self.get_deal_ids(tap)
+
+    @property
+    def child_ids(self):
+        return self.these_deals
 
     def find_deal_ids(self, data, start, stop):
 
