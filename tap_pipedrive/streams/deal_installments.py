@@ -2,6 +2,7 @@ import singer
 from datetime import datetime
 
 from tap_pipedrive.stream import PipedriveStream
+from tap_pipedrive.exceptions import PipedriveBadRequestError
 
 logger = singer.get_logger()
 
@@ -52,6 +53,21 @@ class DealInstallmentsStream(PipedriveStream):
         if self.current_deal_ids:
             params['deal_ids'] = ','.join(str(deal_id) for deal_id in self.current_deal_ids)
         return params
+
+    def check_access(self):
+        """
+        Override access probe to include a dummy deal_ids value.
+        The endpoint requires the deal_ids parameter, probing without it can raise a 400 and break discovery.
+        """
+        previous_deal_ids = self.current_deal_ids
+        try:
+            # Provide a sentinel deal id so the access probe includes deal_ids.
+            self.current_deal_ids = [0]
+            return super().check_access()
+        except PipedriveBadRequestError:
+            return True
+        finally:
+            self.current_deal_ids = previous_deal_ids
 
     def get_child_ids(self, tap):
         """

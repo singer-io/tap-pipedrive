@@ -1,5 +1,17 @@
 # Changelog
 
+# 2.4.0
+  * Adds new streams `organization_fields`, `product_variations` and `deal_installments` streams using the Pipedrive v2 API. [#161](https://github.com/singer-io/tap-pipedrive/pull/161)
+  * Adds missing fields to `deal_products`, these fields require a Pipedrive Growth+ plan.
+  * Adds unit tests for the newly added streams and fields.
+
+# 2.3.0
+  * Streams that return 403 (Forbidden) during discovery are now excluded from the catalog. Discovery still raises an error if no supported streams are accessible.
+  * Added unit tests for discovery access checks, bookmark read/write behavior, and sync orchestration.
+
+# 2.2.1
+  * Adds parent-tap-stream-id field to catalog for child streams [#150](https://github.com/singer-io/tap-pipedrive/pull/150)
+
 # 2.2.0
   * Python Upgrade, State Standardization [#159](https://github.com/singer-io/tap-pipedrive/pull/159)
 
