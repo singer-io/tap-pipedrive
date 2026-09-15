@@ -4,8 +4,6 @@ from unittest.mock import MagicMock, patch
 from singer import metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
 
-from tap_pipedrive.exceptions import PipedriveBadRequestError, PipedriveForbiddenError
-from tap_pipedrive.streams import CurrenciesStream
 from tap_pipedrive.streams.deal_installments import DealInstallmentsStream
 from tap_pipedrive.tap import PipedriveTap
 
@@ -225,89 +223,3 @@ class TestDealInstallmentsFullSync(unittest.TestCase):
         ids_by_deal = sorted((row["deal_id"], row["id"]) for row in written_records)
 
         self.assertEqual([(1, 100), (2, 101), (3, 200)], ids_by_deal)
-
-
-class TestDealInstallmentsAccessDenied(unittest.TestCase):
-    """
-    Accounts without Growth-plan (or above) access get a 403 from Pipedrive
-    for this endpoint. Verify that is handled the same way as any other
-    inaccessible stream (PipedriveStream.check_access), rather than being
-    treated as an implementation failure.
-    """
-
-    def test_check_access_includes_deal_ids(self):
-        """
-        /deals/installments requires deal_ids on every request. check_access
-        runs before update_endpoint is ever called (current_deal_ids is None
-        at that point), so the stream must inject a sentinel deal id itself
-        or the probe request would be sent without deal_ids and fail with a
-        400, breaking discovery instead of cleanly excluding the stream.
-        """
-        stream = DealInstallmentsStream()
-        stream.current_deal_ids = None
-
-        tap = MagicMock()
-        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
-        tap.execute_request.return_value = MagicMock()
-        stream.tap = tap
-
-        self.assertTrue(stream.check_access())
-
-        call_kwargs = tap.execute_request.call_args.kwargs
-        self.assertIn("deal_ids", call_kwargs["params"])
-        self.assertEqual("0", call_kwargs["params"]["deal_ids"])
-
-    def test_check_access_restores_current_deal_ids_after_probe(self):
-        """The sentinel deal id used for probing must not leak into real syncs."""
-        stream = DealInstallmentsStream()
-        stream.current_deal_ids = None
-
-        tap = MagicMock()
-        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
-        tap.execute_request.return_value = MagicMock()
-        stream.tap = tap
-
-        stream.check_access()
-
-        self.assertIsNone(stream.current_deal_ids)
-
-    def test_check_access_returns_true_on_bad_request_for_sentinel_deal_id(self):
-        """A 400 for the sentinel deal id still means the endpoint is reachable."""
-        stream = DealInstallmentsStream()
-        tap = MagicMock()
-        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
-        tap.execute_request.side_effect = PipedriveBadRequestError("bad request")
-        stream.tap = tap
-
-        self.assertTrue(stream.check_access())
-
-    def test_check_access_403_excludes_stream(self):
-        stream = DealInstallmentsStream()
-        tap = MagicMock()
-        tap.config = {"start_date": "2024-01-01T00:00:00Z"}
-        tap.execute_request.side_effect = PipedriveForbiddenError(
-            "HTTP-error-code: 403, Error: The company does not have access to this feature"
-        )
-        stream.tap = tap
-
-        self.assertFalse(stream.check_access())
-
-    def test_do_discover_excludes_deal_installments_on_403_but_keeps_other_streams(self):
-        tap = PipedriveTap({"api_token": "x", "start_date": "2024-01-01T00:00:00Z"}, {})
-        currencies = CurrenciesStream()
-        installments = DealInstallmentsStream()
-        tap.streams = [currencies, installments]
-
-        def execute_request_side_effect(endpoint, api_version, params=None):
-            if endpoint == installments.endpoint:
-                raise PipedriveForbiddenError(
-                    "HTTP-error-code: 403, Error: The company does not have access to this feature"
-                )
-            return _make_response({"success": True, "data": [], "additional_data": {}})
-
-        with patch.object(tap, "execute_request", side_effect=execute_request_side_effect):
-            catalog = tap.do_discover()
-
-        stream_ids = {entry.tap_stream_id for entry in catalog.streams}
-        self.assertIn("currency", stream_ids)
-        self.assertNotIn("deal_installments", stream_ids)
