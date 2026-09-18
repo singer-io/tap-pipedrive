@@ -196,6 +196,10 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
     cursor = None
     deal_replication_key = "deal_update_time"
 
+    def __init__(self):
+        super().__init__()
+        self.child_ids = []
+
     def get_deal_ids(self, tap):
 
         # note when the stream starts syncing
@@ -235,7 +239,7 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
             # find all deals ids for deals added or with stage changes after start and before stop
             this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
 
-            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            self.child_ids = this_page_ids  # need the list of deals to check for last id in the tap
             for deal_id in this_page_ids:
                 yield deal_id
 
@@ -243,10 +247,6 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
 
     def get_child_ids(self, tap):
         return self.get_deal_ids(tap)
-
-    @property
-    def child_ids(self):
-        return self.these_deals
 
     def find_deal_ids(self, data, start, stop):
 

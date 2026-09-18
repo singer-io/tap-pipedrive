@@ -69,7 +69,7 @@ class TestDealflowBookmarking(unittest.TestCase):
     # create dealflow stream object
     dealflow_obj = DealStageChangeStream()
     # handle some variables which are used when calling "do_sync"
-    dealflow_obj.these_deals = [1] # set deal ids
+    dealflow_obj.child_ids = [1] # set deal ids
     dealflow_obj.more_ids_to_get = False # set we have no more records
     # set sync start date to desired date
     dealflow_obj.stream_start = "2022-05-01T05:00:00Z"
