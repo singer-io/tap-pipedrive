@@ -1,5 +1,10 @@
 # Changelog
 
+# 2.3.0
+  * Adds new streams `organization_fields`, `product_variations` and `deal_installments` streams using the Pipedrive v2 API. [#161](https://github.com/singer-io/tap-pipedrive/pull/161)
+  * Adds missing fields to `deal_products`, these fields require a Pipedrive Growth+ plan.
+  * Adds unit tests for the newly added streams and fields.
+
 # 2.2.0
   * Python Upgrade, State Standardization [#159](https://github.com/singer-io/tap-pipedrive/pull/159)
 

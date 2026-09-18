@@ -137,6 +137,10 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.REPLICATION_KEYS: {'update_time'},
                 self.STARTDATE_KEYS: {'update_time'}
             },
+            'organization_fields': {
+                self.PRIMARY_KEYS: {'field_code'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+            },
             'users': {
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
@@ -160,6 +164,11 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.REPLICATION_METHOD: self.INCREMENTAL,
                 self.REPLICATION_KEYS: {'update_time'},
                 self.STARTDATE_KEYS: {'update_time'}
+            },
+            'product_variations': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
+                self.PARENT_TAP_STREAM_ID: 'products'
             }
         }
 

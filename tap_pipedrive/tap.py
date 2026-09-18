@@ -17,7 +17,8 @@ from .exceptions import (PipedriveError, PipedriveNotFoundError, PipedriveBadReq
 from .streams import (CurrenciesStream, ActivityTypesStream, FiltersStream, StagesStream, PipelinesStream,
                       NotesStream, UsersStream, ActivitiesStream, DealsStream,
                       FilesStream, OrganizationsStream, PersonsStream, ProductsStream,
-                      DealStageChangeStream, DealsProductsStream, DealFields)
+                      DealStageChangeStream, DealsProductsStream, DealFields,
+                      OrganizationFieldsStream, ProductVariationsStream, DealInstallmentsStream)
 
 
 logger = singer.get_logger()
@@ -117,11 +118,14 @@ class PipedriveTap(object):
         DealsStream(),
         FilesStream(),
         OrganizationsStream(),
+        OrganizationFieldsStream(),
         PersonsStream(),
         ProductsStream(),
+        ProductVariationsStream(),
         DealStageChangeStream(),
         DealsProductsStream(),
-        DealFields()
+        DealFields(),
+        DealInstallmentsStream()
     ]
 
     def __init__(self, config, state):
@@ -206,26 +210,26 @@ class PipedriveTap(object):
             catalog_stream = catalog.get_stream(stream.schema)
             stream_metadata = metadata.to_map(catalog_stream.metadata)
 
-            if stream.id_list: # see if we want to iterate over a list of deal_ids
+            if stream.id_list: # see if we want to iterate over a list of parent ids (e.g. deal or product ids)
 
-                for deal_id in stream.get_deal_ids(self):
+                for child_id in stream.get_child_ids(self):
                     is_last_id = False
 
-                    if deal_id == stream.these_deals[-1]: #find out if this is last deal_id in the current set
+                    if child_id == stream.child_ids[-1]: #find out if this is last id in the current page
                         is_last_id = True
 
-                    # if last page of deals, more_items in collection will be False
-                    # Need to set it to True to get deal_id pagination for the first deal on the last page
-                    if deal_id == stream.these_deals[0]:
+                    # if last page of ids, more_items in collection will be False
+                    # Need to set it to True to get id pagination for the first id on the last page
+                    if child_id == stream.child_ids[0]:
                         stream.more_items_in_collection = True
 
-                    stream.update_endpoint(deal_id)
-                    stream.start = 0   # set back to zero for each new deal_id
+                    stream.update_endpoint(child_id)
+                    stream.start = 0   # set back to zero for each new parent id
                     self.do_paginate(stream, stream_metadata)
 
                     if not is_last_id:
-                        stream.more_items_in_collection = True   #set back to True for pagination of next deal_id request
-                    elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of deal_ids
+                        stream.more_items_in_collection = True   #set back to True for pagination of next id's request
+                    elif is_last_id and stream.more_ids_to_get:  # need to get the next batch of ids
                         stream.more_items_in_collection = True
                         stream.start = stream.next_start
                     else:

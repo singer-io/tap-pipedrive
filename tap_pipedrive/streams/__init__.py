@@ -14,11 +14,14 @@ from .products import ProductsStream
 from .dealflow import DealStageChangeStream
 from .deal_products import DealsProductsStream
 from .deal_fields import DealFields
+from .organization_fields import OrganizationFieldsStream
+from .product_variations import ProductVariationsStream
+from .deal_installments import DealInstallmentsStream
 
 
 __all__ = ['CurrenciesStream', 'ActivityTypesStream', 'FiltersStream', 'StagesStream', 'PipelinesStream',
            'UsersStream', 'FilesStream',
            'NotesStream', 'ActivitiesStream', 'DealsStream', 'OrganizationsStream',
            'PersonsStream', 'ProductsStream', 'DealStageChangeStream', 'DealsProductsStream',
-           'DealFields'
+           'DealFields', 'OrganizationFieldsStream', 'ProductVariationsStream', 'DealInstallmentsStream'
            ]

@@ -26,7 +26,7 @@ class PipedriveStartDateTest(PipedriveBaseTest):
         expected_streams = self.expected_streams() - {"deal_fields", "stages", "pipelines", "filters", "activity_types"}
 
         # Skipping below streams it make lot of API calls and we have daily quota limit for trail account
-        expected_streams = expected_streams - {"dealflow", "deal_products"}
+        expected_streams = expected_streams - {"dealflow", "deal_products", "product_variations"}
         ##########################################################################
         ### First Sync
         ##########################################################################
