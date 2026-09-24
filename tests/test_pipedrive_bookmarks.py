@@ -23,10 +23,10 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
         # BUG TDL-25987: We observed few records with null replication key values for below streams
         # Skipping this stream until we investigate and fix the issue
         expected_streams = self.expected_streams() - {"deal_fields", "stages", "pipelines", "filters", "activity_types"}
-        
+
         # Skipping below streams it make lot of API calls and we have daily quota limit for trail account
         # Skipping users as there is only 1 user and assertLess(1,1) can never pass
-        expected_streams = expected_streams - {"dealflow", "deal_products", "users"}
+        expected_streams = expected_streams - {"dealflow", "deal_products", "product_variations", "users"}
         expected_replication_keys = self.expected_replication_keys()
         expected_replication_methods = self.expected_replication_method()
 

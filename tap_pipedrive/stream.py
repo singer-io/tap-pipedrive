@@ -162,9 +162,9 @@ class RecentsStream(PipedriveV1IncrementalStream):
         """
         /GET endpoint does not all to filter by updated_at for some of the endpoints.
         Also, It is not good to fetch all records every time.
-        
+
         /recents endpoint allows to filter by since_timestamp but it returns past 1 month data.
-        
+
         So, use combination of both
         """
         if self.initial_state < pendulum.now().subtract(months=1).strftime("%Y-%m-%dT%H:%M:%SZ"):
@@ -195,6 +195,10 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
     api_version = 'v1'
     cursor = None
     deal_replication_key = "deal_update_time"
+
+    def __init__(self):
+        super().__init__()
+        self.child_ids = []
 
     def get_deal_ids(self, tap):
 
@@ -235,12 +239,14 @@ class PipedriveIterStream(PipedriveV1IncrementalStream):
             # find all deals ids for deals added or with stage changes after start and before stop
             this_page_ids = self.find_deal_ids(response.json()['data'], start=checkpoint, stop=self.stream_start)
 
-            self.these_deals = this_page_ids  # need the list of deals to check for last id in the tap
+            self.child_ids = this_page_ids  # need the list of deals to check for last id in the tap
             for deal_id in this_page_ids:
                 yield deal_id
 
             self.state = singer.write_bookmark(tap.state, self.schema, self.deal_replication_key, response.json().get('data')[-1]["update_time"])
 
+    def get_child_ids(self, tap):
+        return self.get_deal_ids(tap)
 
     def find_deal_ids(self, data, start, stop):
 

@@ -1,0 +1,188 @@
+{
+  "type": "object",
+  "properties": {
+    "field_code": {
+      "type": [
+        "string"
+      ]
+    },
+    "field_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "field_type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "options": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "default_option": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      }
+    },
+    "subfields": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "field_code": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "field_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "field_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "ui_visibility": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "add_visible_flag": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "details_visible_flag": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "org_detail_visible_flag": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "person_detail_visible_flag": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "deal_detail_visible_flag": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "show_in_add_deal_dialog": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "properties": {
+            "show": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "order": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
+        },
+        "show_in_add_person_dialog": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "properties": {
+            "show": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "order": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "is_custom_field": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "is_optional_response_field": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "is_writable": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    }
+  }
+}

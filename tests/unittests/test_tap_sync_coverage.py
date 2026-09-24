@@ -23,7 +23,7 @@ class _DummyStream:
         self.more_ids_to_get = False
         self.next_start = 10
         self.stream_start = "2024-01-01T03:00:00+00:00"
-        self.these_deals = [101, 102]
+        self.child_ids = [101, 102]
 
     def set_initial_state(self, state, start_date):
         self.initial_state = start_date
@@ -32,12 +32,12 @@ class _DummyStream:
     def write_schema(self):
         return None
 
-    def get_deal_ids(self, _tap):
-        for deal_id in self.these_deals:
-            yield deal_id
+    def get_child_ids(self, _tap):
+        for child_id in self.child_ids:
+            yield child_id
 
-    def update_endpoint(self, deal_id):
-        self.endpoint = f"deals/{deal_id}/flow"
+    def update_endpoint(self, child_id):
+        self.endpoint = f"deals/{child_id}/flow"
 
     def update_request_params(self, params):
         params["custom"] = "ok"

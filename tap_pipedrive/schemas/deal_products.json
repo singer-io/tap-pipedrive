@@ -120,6 +120,25 @@
         "null",
         "integer"
       ]
+    },
+    "billing_frequency": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "billing_frequency_cycles": {
+      "type": [
+        "null",
+        "integer"
+      ]
+    },
+    "billing_start_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     }
   }
 }
