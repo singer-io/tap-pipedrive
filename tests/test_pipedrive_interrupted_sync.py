@@ -24,7 +24,7 @@ class PipedriveInterruptedSyncTest(PipedriveBaseTest):
 
     def test_run(self):
         """
-        Scenario: First sync is interrupted while syncing `deals`.
+        Scenario: First sync is interrupted part way through an incremental stream.
         - Verify an interrupted sync can resume using `currently_syncing` in the state
         - Verify `currently_syncing` is cleared from the state once the resumed sync completes
         - Verify streams completed before the interruption are skipped by the resumed sync
@@ -50,19 +50,7 @@ class PipedriveInterruptedSyncTest(PipedriveBaseTest):
         expected_replication_methods = self.expected_replication_method()
         expected_primary_keys = self.expected_primary_keys()
 
-        # Stream to simulate the interruption on. It must be an incremental stream, as the tap only
-        # sets `currently_syncing` for streams with a replication key.
-        interrupted_stream = 'deals'
-        self.assertEqual(expected_replication_methods[interrupted_stream], self.INCREMENTAL)
-
         ordered_streams = [stream for stream in self.TAP_STREAM_ORDER if stream in expected_streams]
-        interrupted_index = ordered_streams.index(interrupted_stream)
-        completed_streams = set(ordered_streams[:interrupted_index])
-        pending_streams = set(ordered_streams[interrupted_index + 1:])
-
-        # Ensure the scenario exercises every branch of the resume logic
-        self.assertTrue(completed_streams, msg="No streams precede the interrupted stream")
-        self.assertTrue(pending_streams, msg="No streams follow the interrupted stream")
 
         conn_id = connections.ensure_connection(self)
 
@@ -82,6 +70,36 @@ class PipedriveInterruptedSyncTest(PipedriveBaseTest):
         full_sync_bookmarks = menagerie.get_state(conn_id).get('bookmarks', {})
 
         ##########################################################################
+        ### Pick Interrupted Stream
+        ##########################################################################
+
+        # The interrupted stream must be incremental (the tap only sets `currently_syncing` for
+        # streams with a replication key), must have streams before and after it so every branch
+        # of the resume logic is exercised, and needs at least 2 distinct replication key values
+        # (at bookmark precision) so a mid-point bookmark yields a strict, non-empty subset.
+        # Seeded test data is often created in bulk with identical timestamps, so pick dynamically.
+        interrupted_stream = None
+        for stream in ordered_streams[1:-1]:
+            if expected_replication_methods[stream] != self.INCREMENTAL:
+                continue
+            replication_key = next(iter(expected_replication_keys[stream]))
+            replication_key_values = sorted({
+                self.parse_date(message['data'][replication_key]).strftime(self.BOOKMARK_FORMAT)
+                for message in full_sync_records.get(stream, {}).get('messages', [])
+                if message.get('action') == 'upsert' and message['data'].get(replication_key)
+            })
+            if len(replication_key_values) > 1:
+                interrupted_stream = stream
+                break
+
+        self.assertIsNotNone(interrupted_stream,
+                             msg="No incremental stream with at least 2 distinct replication key values to interrupt on")
+        self.LOGGER.info("Simulating interruption on stream: %s", interrupted_stream)
+
+        interrupted_index = ordered_streams.index(interrupted_stream)
+        completed_streams = set(ordered_streams[:interrupted_index])
+
+        ##########################################################################
         ### Build Interrupted State
         ##########################################################################
 
@@ -97,15 +115,7 @@ class PipedriveInterruptedSyncTest(PipedriveBaseTest):
 
         # The interrupted stream gets a bookmark in the middle of the records from the
         # full sync, so the resumed sync should replicate a strict, non-empty subset of them.
-        replication_key = next(iter(expected_replication_keys[interrupted_stream]))
-        interrupted_stream_values = sorted({
-            self.parse_date(message['data'][replication_key]).strftime(self.BOOKMARK_FORMAT)
-            for message in full_sync_records.get(interrupted_stream, {}).get('messages', [])
-            if message.get('action') == 'upsert' and message['data'].get(replication_key)
-        })
-        self.assertGreater(len(interrupted_stream_values), 1,
-                           msg="Need at least 2 distinct replication key values to simulate an interruption on {}".format(interrupted_stream))
-        simulated_bookmark = interrupted_stream_values[len(interrupted_stream_values) // 2]
+        simulated_bookmark = replication_key_values[len(replication_key_values) // 2]
         interrupted_state['bookmarks'][interrupted_stream] = {replication_key: simulated_bookmark}
 
         # Pending streams have no bookmark yet, they were never reached by the interrupted sync
