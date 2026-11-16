@@ -26,7 +26,8 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
 
         # Skipping below streams it make lot of API calls and we have daily quota limit for trail account
         # Skipping users as there is only 1 user and assertLess(1,1) can never pass
-        expected_streams = expected_streams - {"dealflow", "deal_products", "product_variations", "users"}
+        # Skipping deal_installments as it also requires a Pipedrive Growth plan or above (403 otherwise)
+        expected_streams = expected_streams - {"dealflow", "deal_products", "product_variations", "users", "deal_installments"}
         expected_replication_keys = self.expected_replication_keys()
         expected_replication_methods = self.expected_replication_method()
 
@@ -78,6 +79,8 @@ class PipedriveBookmarksTest(PipedriveBaseTest):
                     pass
                 values.append(v)
             values = sorted(values)
+            if values:
+                mid_value = values[len(values) // 2]
                 simulated_states[stream] = {replication_key: mid_value}
 
         # setting simulated bookmark as starting point for 2nd sync

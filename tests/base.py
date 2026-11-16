@@ -29,6 +29,7 @@ class PipedriveBaseTest(unittest.TestCase):
     FOREIGN_KEYS = "table-foreign-key-properties"
     REPLICATION_METHOD = "forced-replication-method"
     API_LIMIT = "max-row-limit"
+    PARENT_TAP_STREAM_ID = "parent-tap-stream-id"
     INCREMENTAL = "INCREMENTAL"
     FULL_TABLE = "FULL_TABLE"
     START_DATE_FORMAT = "%Y-%m-%dT00:00:00Z"
@@ -169,6 +170,10 @@ class PipedriveBaseTest(unittest.TestCase):
                 self.PRIMARY_KEYS: {'id'},
                 self.REPLICATION_METHOD: self.FULL_TABLE,
                 self.PARENT_TAP_STREAM_ID: 'products'
+            },
+            'deal_installments': {
+                self.PRIMARY_KEYS: {'id'},
+                self.REPLICATION_METHOD: self.FULL_TABLE,
             }
         }
 
